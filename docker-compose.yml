@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:17
+    container_name: microfinanciera-postgres
+    environment:
+      POSTGRES_DB: microfinanciera
+      POSTGRES_USER: mf_user
+      POSTGRES_PASSWORD: mf_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.4
+    container_name: microfinanciera-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
