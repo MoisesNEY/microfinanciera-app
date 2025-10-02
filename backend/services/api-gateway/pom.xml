@@ -12,48 +12,20 @@
   </parent>
 
   <groupId>com.microfinance</groupId>
-  <artifactId>loan-microservice</artifactId>
+  <artifactId>api-gateway</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Microfinanciera :: Loan Microservice</name>
+  <name>Microfinanciera :: API Gateway</name>
   <packaging>jar</packaging>
 
   <properties>
     <java.version>21</java.version>
-    <!-- springdoc se versiona fuera del BOM -->
-    <springdoc.version>2.5.0</springdoc.version>
   </properties>
 
   <dependencies>
-    <!-- Web + Validation -->
+    <!-- Gateway REACTIVO -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-
-    <!-- JPA + PostgreSQL -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-
-    <!-- Seguridad (Keycloak): Resource Server -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-    </dependency>
-
-    <!-- Liquibase -->
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-gateway</artifactId>
     </dependency>
 
     <!-- Actuator -->
@@ -62,26 +34,37 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
-    <!-- Swagger/OpenAPI -->
+    <!-- (opcional) validar JWT en el gateway -->
     <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>${springdoc.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
     </dependency>
 
-    <!-- Lombok -->
+    <!-- utilidades -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
 
-    <!-- Test -->
+    <!-- test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+	</dependency>
+
+
   </dependencies>
 
   <build>

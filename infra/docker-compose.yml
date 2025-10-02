@@ -1,28 +1,122 @@
-version: '3.8'
 services:
   postgres:
-    image: postgres:17
-    container_name: microfinanciera-postgres
+    image: postgres:16
+    container_name: mf_postgres
     environment:
-      POSTGRES_DB: microfinanciera
-      POSTGRES_USER: mf_user
-      POSTGRES_PASSWORD: mf_pass
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ms_prestamos  
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ms_prestamos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [mfnet]
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.3.4
-    container_name: microfinanciera-keycloak
-    command: start-dev
+  # 🔒 Desactívalo en el primer arranque (o déjalo si ya quieres JWT)
+  # keycloak:
+  #   image: quay.io/keycloak/keycloak:25.0
+  #   container_name: mf_keycloak
+  #   command: ["start-dev"]
+  #   environment:
+  #     KEYCLOAK_ADMIN: admin
+  #     KEYCLOAK_ADMIN_PASSWORD: admin
+  #   ports:
+  #     - "8085:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks: [mfnet]
+
+  # customer-microservice:
+  #   build:
+  #     context: ..
+  #     dockerfile: backend/services/customer-microservice/Dockerfile
+  #   container_name: mf_customer
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: prod
+  #     DB_USER: postgres
+  #     DB_PASS: postgres
+  #     APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+  #     # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf  # descomenta cuando uses keycloak
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     # keycloak:
+  #     #   condition: service_started
+  #   networks: [mfnet]
+
+  loan-microservice:
+    build:
+      context: ..
+      dockerfile: backend/services/loan-microservice/Dockerfile
+    container_name: mf_loan
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      SPRING_PROFILES_ACTIVE: prod
+      DB_USER: postgres
+      DB_PASS: postgres
+      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
     ports:
-      - "8180:8080"
+      - "8082:8082"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      # keycloak:
+      #   condition: service_started
+    networks: [mfnet]
+
+  # payment-microservice:
+  #   build:
+  #     context: ..
+  #     dockerfile: backend/services/payment-microservice/Dockerfile
+  #   container_name: mf_payment
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: prod
+  #     DB_USER: postgres
+  #     DB_PASS: postgres
+  #     APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+  #     # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+  #   ports:
+  #     - "8083:8083"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     # keycloak:
+  #     #   condition: service_started
+  #   networks: [mfnet]
+
+  api-gateway:
+    build:
+      context: ..
+      dockerfile: backend/services/api-gateway/Dockerfile
+    container_name: mf_gateway
+    environment:
+      GATEWAY_SECURITY_DISABLED: "true"  # ← sin Keycloak
+      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+    ports:
+      - "8080:8080"
+    depends_on:
+      loan-microservice:
+        condition: service_started
+    networks: [mfnet]
+
+  # ✅ Solo si vas a usar rate limiting en el gateway; si no, comenta este bloque
+  # redis:
+  #   image: redis:7
+  #   container_name: mf_redis
+  #   ports:
+  #     - "6379:6379"
+  #   networks: [mfnet]
 
 volumes:
   pgdata:
+
+networks:
+  mfnet:

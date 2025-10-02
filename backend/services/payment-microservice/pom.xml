@@ -9,7 +9,7 @@
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>backend</artifactId>
+	<artifactId>payment-microservice</artifactId>
     <packaging>jar</packaging>
 
 	<dependencies>
