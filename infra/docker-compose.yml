@@ -1,21 +1,27 @@
 services:
-  postgres:
+  postgres_main:
     image: postgres:16
-    container_name: mf_postgres
+    container_name: mf_postgres_main
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ms_prestamos  
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
     ports:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ms_prestamos"]
+      test: ["CMD-SHELL", "pg_isready -U root -d postgres"]  
       interval: 5s
       timeout: 5s
       retries: 10
     networks: [mfnet]
+
+    
+
+ 
+ 
 
   # 🔒 Desactívalo en el primer arranque (o déjalo si ya quieres JWT)
   # keycloak:
@@ -59,14 +65,35 @@ services:
     container_name: mf_loan
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: postgres
-      DB_PASS: postgres
+      DB_USER: root
+      DB_PASS: root
       APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
       # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
     ports:
       - "8082:8082"
     depends_on:
-      postgres:
+      postgres_main:
+        condition: service_healthy
+      # keycloak:
+      #   condition: service_started
+    networks: [mfnet]
+
+
+  accounting-microservice:
+    build:
+      context: ..
+      dockerfile: backend/services/accounting_microservice/Dockerfile
+    container_name: mf_accounting
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_USER: root
+      DB_PASS: root
+      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres_main:
         condition: service_healthy
       # keycloak:
       #   condition: service_started
