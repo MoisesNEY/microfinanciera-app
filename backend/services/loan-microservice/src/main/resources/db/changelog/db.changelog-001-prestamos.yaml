@@ -1,0 +1,139 @@
+databaseChangeLog:
+  # =========================
+  # loan_products
+  # =========================
+  - changeSet:
+      id: 001-loan-products
+      author: equipo
+      changes:
+        - createTable:
+            tableName: loan_products
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name, type: "varchar(100)", constraints: { nullable: false } }
+              - column: { name: description, type: text }
+              - column: { name: min_amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: max_amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: interest_rate, type: "decimal(5,2)", constraints: { nullable: false } }
+              - column: { name: term_months, type: integer, constraints: { nullable: false } }
+              - column: { name: is_active, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+        - createIndex:
+            tableName: loan_products
+            indexName: idx_loan_products_active
+            columns:
+              - column: { name: is_active }
+
+  # =========================
+  # loan_applications
+  # =========================
+  - changeSet:
+      id: 002-loan-applications
+      author: equipo
+      changes:
+        - createTable:
+            tableName: loan_applications
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: client_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: loan_product_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: requested_amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: term_months, type: integer, constraints: { nullable: false } }
+              - column: { name: status, type: "varchar(15)", constraints: { nullable: false } }
+              - column: { name: application_date, type: date, constraints: { nullable: false } }
+              - column: { name: approved_date, type: date }
+              - column: { name: officer_id, type: uuid, constraints: { nullable: false } }
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE loan_applications
+              ADD CONSTRAINT chk_loan_app_status
+              CHECK (status IN ('PENDIENTE','APROBADA','RECHAZADA'));
+        - createIndex:
+            tableName: loan_applications
+            indexName: idx_loan_app_client
+            columns:
+              - column: { name: client_id }
+        - createIndex:
+            tableName: loan_applications
+            indexName: idx_loan_app_product
+            columns:
+              - column: { name: loan_product_id }
+
+  # =========================
+  # loans
+  # =========================
+  - changeSet:
+      id: 003-loans
+      author: equipo
+      changes:
+        - createTable:
+            tableName: loans
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: application_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: loan_code, type: "varchar(20)", constraints: { nullable: false, unique: true } }
+              - column: { name: principal_amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: interest_rate, type: "decimal(5,2)", constraints: { nullable: false } }
+              - column: { name: disbursement_date, type: date, constraints: { nullable: false } }
+              - column: { name: maturity_date, type: date, constraints: { nullable: false } }
+              - column: { name: status, type: "varchar(15)", constraints: { nullable: false } }
+              - column: { name: sector_economico, type: "varchar(100)", constraints: { nullable: false } }
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE loans
+              ADD CONSTRAINT chk_loans_status
+              CHECK (status IN ('ACTIVO','PAGADO','EN_MORA','CANCELADO'));
+        - addForeignKeyConstraint:
+            baseTableName: loans
+            baseColumnNames: application_id
+            referencedTableName: loan_applications
+            referencedColumnNames: id
+            constraintName: fk_loans_application
+            onDelete: CASCADE
+        - createIndex:
+            tableName: loans
+            indexName: idx_loans_app
+            columns:
+              - column: { name: application_id }
+
+  # =========================
+  # loan_schedules
+  # =========================
+  - changeSet:
+      id: 004-loan-schedules
+      author: equipo
+      changes:
+        - createTable:
+            tableName: loan_schedules
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: loan_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: due_date, type: date, constraints: { nullable: false } }
+              - column: { name: principal_due, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: interest_due, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: total_due, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: status, type: "varchar(15)", constraints: { nullable: false } }
+        - sql:
+          dbms: postgresql
+          sql: |
+            ALTER TABLE loan_schedules
+            ADD CONSTRAINT chk_schedules_status
+            CHECK (status IN ('PENDIENTE','PAGADA','ATRASADA'));
+        - addForeignKeyConstraint:
+            baseTableName: loan_schedules
+            baseColumnNames: loan_id
+            referencedTableName: loans
+            referencedColumnNames: id
+            constraintName: fk_schedules_loan
+            onDelete: CASCADE
+        - createIndex:
+            tableName: loan_schedules
+            indexName: idx_schedules_loan
+            columns:
+              - column: { name: loan_id }
+        - createIndex:
+            tableName: loan_schedules
+            indexName: idx_schedules_status
+            columns:
+              - column: { name: status }
