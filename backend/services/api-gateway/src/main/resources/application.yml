@@ -1,0 +1,115 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      # Timeouts del cliente HTTP del gateway
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+
+      # Filtros por defecto (opcionales)
+      default-filters:
+        - SaveSession
+        - RemoveRequestHeader=Cookie
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials RETAIN_FIRST
+
+      routes:
+        - id: customers
+          uri: http://customer-microservice:8081
+          predicates:
+            - Path=/api/customers/**, /api/clients/**
+          filters:
+            - StripPrefix=2
+            - AddRequestHeader=X-From-Gateway, true
+            # Reintentos básicos para GET
+            - name: Retry
+              args:
+                retries: 2
+                methods: GET
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+        - id: loans
+          uri: http://loan-microservice:8082
+          predicates:
+            - Path=/api/loans/**, /api/loan-products/**, /api/loan-applications/**, /api/loan-schedules/**
+          filters:
+            - StripPrefix=2
+            # 🔁 Reintentos si el MS responde 502/503/504 en GET
+            - name: Retry
+              args:
+                retries: 2
+                methods: GET
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+            # 🧯 Circuit Breaker + Fallback
+            - name: CircuitBreaker
+              args:
+                name: loans
+                fallbackUri: forward:/fallback/loans
+            # (Opcional) Rate limit por IP (requiere Redis, ver más abajo)
+            # - name: RequestRateLimiter
+            #   args:
+            #     redis-rate-limiter.replenishRate: 20
+            #     redis-rate-limiter.burstCapacity: 40
+            #     key-resolver: "#{@ipKeyResolver}"
+
+        - id: payments
+          uri: http://payment-microservice:8083
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=2
+            - name: Retry
+              args:
+                retries: 1
+                methods: GET
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+      # CORS global (el front solo habla con el gateway)
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173,http://localhost:3000"
+            allowedMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+  # (Opcional pero recomendado) Validación JWT en el gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OIDC_ISSUER_URI:http://keycloak:8080/realms/mf}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# ⚙️ Config de Resilience4j (para circuit breaker y timeout lógico)
+resilience4j:
+  circuitbreaker:
+    instances:
+      loans:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  timelimiter:
+    instances:
+      loans:
+        timeoutDuration: 4s
+
+# (Opcional) Config de Redis para rate limiting si lo habilitas
+# spring:
+#   data:
+#     redis:
+#       host: redis
+#       port: 6379

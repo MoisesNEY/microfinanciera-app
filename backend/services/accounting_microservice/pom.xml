@@ -3,16 +3,25 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.microfinance</groupId>
-		<artifactId>microfinanciera-backend</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
-	</parent>
+    	<groupId>com.microfinance</groupId>
+    	<artifactId>microfinanciera-backend</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<relativePath>../../../pom.xml</relativePath>
+    </parent>
 
-	<artifactId>payment-microservice</artifactId>
-    <packaging>jar</packaging>
 
-	<dependencies>
+	<groupId>com.microfinance</groupId>
+	<artifactId>accounting_microservice</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>accounting_microservice</name>
+	<packaging>jar</packaging>
+
+	
+	<properties>
+    <java.version>21</java.version>
+  </properties>
+
+  <dependencies>
     <!-- Web + Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -33,7 +42,7 @@
       <artifactId>postgresql</artifactId>
     </dependency>
 
-    <!-- Seguridad (Keycloak): Resource Server -->
+    <!-- Seguridad (Ke  ycloak): Resource Server -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
@@ -71,13 +80,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-	
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
