@@ -135,6 +135,26 @@ services:
         condition: service_started
     networks: [mfnet]
 
+  workers_microservice:
+    build:
+      context: ..
+      dockerfile: backend/services/workers_microservice/Dockerfile
+    container_name: mf_workers
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_USER: root
+      DB_PASS: root
+      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres_main:
+        condition: service_healthy
+      # keycloak:
+      #   condition: service_started
+    networks: [mfnet]
+
   # ✅ Solo si vas a usar rate limiting en el gateway; si no, comenta este bloque
   # redis:
   #   image: redis:7

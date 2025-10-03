@@ -16,6 +16,7 @@
     <module>backend/services/payment-microservice</module>
     <module>backend/services/api-gateway</module>
     <module>backend/services/accounting_microservice</module>
+    <module>backend/services/workers_microservice</module>
   </modules>
 
   <properties>

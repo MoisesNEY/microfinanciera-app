@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-workers
+      author: you
+      changes:
+        - createTable:
+            tableName: workers
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: first_name, type: VARCHAR(120), constraints: { nullable: false } }
+              - column: { name: last_name, type: VARCHAR(120), constraints: { nullable: false } }
+              - column: { name: document, type: VARCHAR(50), constraints: { nullable: false, unique: true } }
+              - column: { name: phone, type: VARCHAR(20) }
+              - column: { name: email, type: VARCHAR(150), constraints: { nullable: false, unique: true } }
+              - column: { name: position, type: VARCHAR(50), constraints: { nullable: false } }
+              - column: { name: department, type: VARCHAR(50) }
+              - column: { name: hire_date, type: DATE, constraints: { nullable: false } }
+              - column: { name: status, type: VARCHAR(16), constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+        - sql:
+            sql: |
+              CREATE OR REPLACE FUNCTION set_updated_at()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                NEW.updated_at = NOW();
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+              DROP TRIGGER IF EXISTS trg_set_updated_at ON workers;
+              CREATE TRIGGER trg_set_updated_at
+              BEFORE UPDATE ON workers
+              FOR EACH ROW EXECUTE FUNCTION set_updated_at();
