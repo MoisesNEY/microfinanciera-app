@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="copilot">
+        <sql>
+            CREATE TYPE transaction_type_enum AS ENUM ('DESEMBOLSO', 'PAGO_CAPITAL', 'PAGO_INTERES', 'COMISION');
+            CREATE TYPE account_type_enum AS ENUM ('ACTIVO', 'PASIVO', 'PATRIMONIO', 'INGRESO', 'GASTO');
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="copilot">
+        <createTable tableName="transactions">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_type" type="transaction_type_enum">
+                <constraints nullable="false"/>
+            </column>
+            <column name="related_entity_id" type="UUID"/>
+            <column name="amount" type="DECIMAL(18,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="copilot">
+        <createTable tableName="chart_of_accounts">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="account_code" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_type" type="account_type_enum">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_account_id" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="copilot">
+        <createTable tableName="journal_entries">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="debit_amount" type="DECIMAL(18,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="credit_amount" type="DECIMAL(18,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entry_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="copilot">
+        <addForeignKeyConstraint baseTableName="journal_entries"
+                                 baseColumnNames="transaction_id"
+                                 constraintName="fk_journal_entries_transaction"
+                                 referencedTableName="transactions"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="journal_entries"
+                                 baseColumnNames="account_id"
+                                 constraintName="fk_journal_entries_account"
+                                 referencedTableName="chart_of_accounts"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="chart_of_accounts"
+                                 baseColumnNames="parent_account_id"
+                                 constraintName="fk_chart_of_accounts_parent"
+                                 referencedTableName="chart_of_accounts"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
