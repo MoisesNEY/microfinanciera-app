@@ -98,27 +98,28 @@ services:
       # keycloak:
       #   condition: service_started
     networks: [mfnet]
+  
+  payment-microservice:
+    build:
+      context: ..
+      dockerfile: backend/services/payment-microservice/Dockerfile
+    container_name: mf_payment
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_USER: root
+      DB_PASS: root
+      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres_main:
+        condition: service_healthy
+      # keycloak:
+      #   condition: service_started
+    networks: [mfnet]
 
-  # payment-microservice:
-  #   build:
-  #     context: ..
-  #     dockerfile: backend/services/payment-microservice/Dockerfile
-  #   container_name: mf_payment
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: prod
-  #     DB_USER: postgres
-  #     DB_PASS: postgres
-  #     APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
-  #     # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
-  #   ports:
-  #     - "8083:8083"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     # keycloak:
-  #     #   condition: service_started
-  #   networks: [mfnet]
-
+  
   api-gateway:
     build:
       context: ..
