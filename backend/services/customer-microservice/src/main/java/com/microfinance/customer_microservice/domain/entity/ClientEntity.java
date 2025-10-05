@@ -16,7 +16,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.GeneratedValue;
+
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
+
 import java.util.UUID;
 
 import lombok.Data;
@@ -44,10 +48,10 @@ public class ClientEntity {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "id_document_type", nullable = false)
     private DocumentType idDocumentType;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "id_document_number", nullable = false, length = 50)
     private String idDocumentNumber;
 
@@ -55,6 +59,7 @@ public class ClientEntity {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "gender", nullable = true)
     private Gender gender;
 
@@ -62,6 +67,7 @@ public class ClientEntity {
     private String nationality;
 
     @Enumerated(EnumType.STRING)    
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "marital_status", nullable = true)
     private Marital_Status maritalStatus;
 

@@ -1,53 +1,26 @@
 databaseChangeLog:
   - changeSet:
-      id: 002-create-addresses-table
-      author: tu_nombre_de_usuario
+      id: create-addresses-table
+      author: moises
       changes:
         - createTable:
             tableName: addresses
             columns:
-              - column:
-                  name: id
-                  type: UUID
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: client_id
-                  type: UUID
-                  constraints:
-                    nullable: false
-              - column:
-                  name: address_type
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: department
-                  type: VARCHAR(100)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: municipality
-                  type: VARCHAR(100)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: street_address
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: is_primary
-                  type: BOOLEAN
-                  constraints:
-                    nullable: false
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: client_id, type: UUID, constraints: { nullable: false } }
+              - column: { name: address_type, type: VARCHAR(20), constraints: { nullable: false } }
+              - column: { name: department, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: municipality, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: street_address, type: TEXT, constraints: { nullable: false } }
+              - column: { name: is_primary, type: BOOLEAN, constraints: { nullable: false } }
         - addForeignKeyConstraint:
             baseTableName: addresses
             baseColumnNames: client_id
             referencedTableName: clients
             referencedColumnNames: id
             constraintName: fk_addresses_client
-      rollback:
-        - dropTable:
-            tableName: addresses
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE addresses
+              ADD CONSTRAINT chk_addresses_type CHECK (address_type IN ('DOMICILIO','TRABAJO','NEGOCIO'));

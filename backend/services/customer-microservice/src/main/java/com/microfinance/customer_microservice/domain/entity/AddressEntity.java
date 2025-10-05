@@ -1,7 +1,10 @@
 package com.microfinance.customer_microservice.domain.entity;
 
 import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import com.microfinance.customer_microservice.domain.enums.AddressType;
 
@@ -35,6 +38,7 @@ public class AddressEntity {
     private ClientEntity client;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "address_type", nullable = false)
     private AddressType addressType;
 

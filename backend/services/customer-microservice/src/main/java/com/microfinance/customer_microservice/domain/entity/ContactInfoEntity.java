@@ -15,7 +15,11 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
+
 
 
 
@@ -36,6 +40,7 @@ public class ContactInfoEntity {
     private ClientEntity client;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "contact_type", nullable = false)
     private ContactType contactType;
 

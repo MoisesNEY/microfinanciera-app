@@ -32,7 +32,7 @@ public class ClientServiceImpl implements IClientService {
 
     // METODO PARA OBTENER UN CLIENTE POR ID
     public ClientResponseDTO getClientById(UUID id) {
-        ClientEntity client = clientRepository.findByIdAndIsActive(id, true)
+        ClientEntity client = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
         ClientResponseDTO clientResponseDTO = ClientMapper.mapper.toClientResponseDTO(client);
@@ -42,7 +42,7 @@ public class ClientServiceImpl implements IClientService {
 
     // METODO PARA OBTENER TODOS LOS CLIENTES ACTIVOS
     public List<ClientResponseDTO> getAllClients() {
-        List<ClientEntity> clients = clientRepository.findByIsActive(true);
+        List<ClientEntity> clients = clientRepository.findByActive(true);
         List<ClientResponseDTO> clientsResponseDTOs = clients.stream().map(
             client -> ClientMapper.mapper.toClientResponseDTO(client)).collect(Collectors.toList());
 
@@ -52,7 +52,7 @@ public class ClientServiceImpl implements IClientService {
     // METODO PARA DESACTIVAR UN CLIENTE
     public void deActivateClient(UUID id)
     {
-        ClientEntity client = clientRepository.findByIdAndIsActive(id, true)
+        ClientEntity client = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
         client.setActive(false);
         clientRepository.save(client);
@@ -61,7 +61,7 @@ public class ClientServiceImpl implements IClientService {
     // METODO PARA ACTUALIZAR UN CLIENTE (PARCIALMENTE)
     public ClientResponseDTO updateClient(UUID id, ClientUpdateDTO clientUpdateDTO)
     {
-        ClientEntity client = clientRepository.findByIdAndIsActive(id, true)
+        ClientEntity client = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
         if (clientUpdateDTO.getFirstName() != null) {
@@ -106,7 +106,7 @@ public class ClientServiceImpl implements IClientService {
 
     public ClientResponseDTO replaceClient(UUID id, ClientReplaceDTO clientReplaceDTO)
     {
-        ClientEntity clientEntity = clientRepository.findByIdAndIsActive(id, true)
+        ClientEntity clientEntity = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
         clientEntity.setFirstName(clientReplaceDTO.getFirstName());
