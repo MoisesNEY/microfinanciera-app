@@ -134,6 +134,9 @@ services:
     depends_on:
       loan-microservice:
         condition: service_started
+      customer-microservice:
+        condition: service_started
+      
     networks: [mfnet]
 
   # ✅ Solo si vas a usar rate limiting en el gateway; si no, comenta este bloque
