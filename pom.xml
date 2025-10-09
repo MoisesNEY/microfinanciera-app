@@ -14,8 +14,10 @@
     <module>backend/services/customer-microservice</module>
     <module>backend/services/loan-microservice</module>
     <module>backend/services/payment-microservice</module>
-    <module>backend/services/api-gateway</module>
     <module>backend/services/accounting_microservice</module>
+    <module>backend/gateway/api-gateway</module>
+    <module>backend/eureka/eureka-server</module>
+    <module>backend/config/config-server</module>
   </modules>
 
   <properties>
@@ -110,7 +112,7 @@
               <path>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-mapstruct-binding</artifactId>
-                <version>0.2.0</version> <!-- Usar la versión que ya tienes definida -->
+                <version>0.2.0</version>
               </path>
             </annotationProcessorPaths>
             <compilerArgs>
