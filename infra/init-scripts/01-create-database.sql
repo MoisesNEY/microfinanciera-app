@@ -2,5 +2,4 @@
  CREATE DATABASE ms_accounting;
  CREATE DATABASE ms_payment;
  CREATE DATABASE ms_workers;
-
  CREATE DATABASE ms_customer;
