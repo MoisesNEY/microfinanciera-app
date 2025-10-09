@@ -26,5 +26,6 @@ public class ChartOfAccount {
     private AccountType accountType;
 
     @Column(name = "parent_account_id")
+
     private Integer parentAccountId;
 }

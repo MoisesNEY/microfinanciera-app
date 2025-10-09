@@ -68,7 +68,7 @@ public class TransactionService {
     return TransactionResponseDTO.builder()
             .id(transaction.getId())
             .transactionType(transaction.getTransactionType().name())
-            // .relatedEntityId(transaction.getRelatedEntityId()) ← QUITAR ESTA LÍNEA
+            //.relatedEntityId(transaction.getRelatedEntityId()) ← QUITAR ESTA LÍNEA
             .amount(transaction.getAmount())
             .transactionDate(transaction.getTransactionDate())
             .description(transaction.getDescription())
