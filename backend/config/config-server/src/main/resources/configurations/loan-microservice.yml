@@ -1,0 +1,75 @@
+server:
+  port: 8082
+
+APP_SECURITY_DISABLED: true
+
+# oidc:
+#   issuer-uri: http://keycloak-prod:8080/realms/mf 
+
+spring:
+  application:
+    name: loan-microservice
+  datasource:
+    url: jdbc:postgresql://postgres_main:5432/ms_loan
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true # Default para dev
+    properties:
+      hibernate:
+        format_sql: true # Default para dev
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/mf
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8078/eureka
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,loggers # Default para dev
+  endpoint:
+    health:
+      show-details: NEVER # Default para dev
+
+---
+APP_SECURITY_DISABLED: true
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://postgres_main:5432/ms_loan
+    username: root
+    password: root
+  jpa:
+    show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8085/realms/mf
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: ALWAYS
