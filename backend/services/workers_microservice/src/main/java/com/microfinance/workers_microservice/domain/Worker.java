@@ -65,4 +65,15 @@ public class Worker {
 
   @Column(name="updated_at", nullable=false, columnDefinition="TIMESTAMP WITH TIME ZONE")
   private OffsetDateTime updatedAt;
+ // MÉTODOS
+  @PrePersist
+  protected void onCreate() {
+      createdAt = OffsetDateTime.now();
+      updatedAt = OffsetDateTime.now();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+      updatedAt = OffsetDateTime.now();
+  }
 }

@@ -17,7 +17,7 @@ import org.springdoc.core.models.GroupedOpenApi;
         contact = @Contact(name = "Microfinance Team", email = "dev@acme.com")
     ),
     servers = {
-        @Server(url = "/", description = "Servidor por defecto")
+        @Server(url = "http://localhost:8088", description = "Servidor de desarrollo")
     }
 )
 public class OpenApiConfig {
@@ -26,7 +26,7 @@ public class OpenApiConfig {
     public GroupedOpenApi workersApi() {
         return GroupedOpenApi.builder()
             .group("workers")
-            .pathsToMatch("/api/v1/**")
+            .pathsToMatch("/workers/**")
             .packagesToScan("com.microfinance.workers_microservice.web")
             .build();
     }
