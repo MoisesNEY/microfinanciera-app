@@ -38,19 +38,19 @@ public class WorkerController {
     }
 
     @GetMapping("/{id}")
-    public WorkerResponse get(@PathVariable("id") UUID id) { 
+    public WorkerResponse get(@PathVariable UUID id) { 
         return service.get(id); 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<WorkerResponse> update(@PathVariable("id") UUID id,
+    public ResponseEntity<WorkerResponse> update(@PathVariable UUID id,
                                                @Valid @RequestBody WorkerUpdateRequest req) {
     return ResponseEntity.ok(service.update(id, req));
     }
 
     // Opcional: PATCH para actualizaciones parciales
     @PatchMapping("/{id}")
-    public ResponseEntity<WorkerResponse> patch(@PathVariable("id") UUID id,
+    public ResponseEntity<WorkerResponse> patch(@PathVariable UUID id,
                                             @RequestBody JsonNode body) {
     return ResponseEntity.ok(service.patch(id, body));
     }
@@ -58,7 +58,7 @@ public class WorkerController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  Código 204 para eliminación
-    public void delete(@PathVariable("id") UUID id) { 
+    public void delete(@PathVariable UUID id) { 
         service.delete(id); 
     }
 }

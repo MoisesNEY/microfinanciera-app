@@ -119,6 +119,7 @@
             <compilerArgs>
               <arg>-Amapstruct.defaultComponentModel=spring</arg>
               <arg>-Amapstruct.verbose=true</arg> <!-- MODO VERBOSO -->
+              <arg>-parameters</arg>
             </compilerArgs>
           </configuration>
         </plugin>

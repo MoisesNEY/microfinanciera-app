@@ -23,7 +23,7 @@ public class ChartOfAccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ChartOfAccountDTO> getById(@PathVariable("id") Integer id) {
+    public ResponseEntity<ChartOfAccountDTO> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(chartOfAccountService.findById(id));
     }
 
@@ -35,14 +35,14 @@ public class ChartOfAccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ChartOfAccountDTO> update(
-            @PathVariable("id") Integer id, 
+            @PathVariable Integer id, 
             @Valid @RequestBody ChartOfAccountDTO dto) {
         return ResponseEntity.ok(chartOfAccountService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         chartOfAccountService.delete(id);
         return ResponseEntity.noContent().build();
     }
