@@ -27,28 +27,49 @@ public class JournalEntryService {
                 .build();
 
         JournalEntry saved = journalEntryRepository.save(entry);
-
-        return JournalEntryDTO.builder()
-                .id(saved.getId())
-                .transactionId(saved.getTransactionId())
-                .accountId(saved.getAccountId())
-                .debitAmount(saved.getDebitAmount())
-                .creditAmount(saved.getCreditAmount())
-                .entryDate(saved.getEntryDate())
-                .build();
+        return toDTO(saved);
     }
 
     public List<JournalEntryDTO> findAll() {
         return journalEntryRepository.findAll().stream()
-                .map(j -> JournalEntryDTO.builder()
-                        .id(j.getId())
-                        .transactionId(j.getTransactionId())
-                        .accountId(j.getAccountId())
-                        .debitAmount(j.getDebitAmount())
-                        .creditAmount(j.getCreditAmount())
-                        .entryDate(j.getEntryDate())
-                        .build())
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
-}
 
+    public JournalEntryDTO findById(UUID id) {
+        JournalEntry entry = journalEntryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
+        return toDTO(entry);
+    }
+
+    public JournalEntryDTO update(UUID id, JournalEntryDTO dto) {
+        JournalEntry entry = journalEntryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
+        
+        entry.setTransactionId(dto.getTransactionId());
+        entry.setAccountId(dto.getAccountId());
+        entry.setDebitAmount(dto.getDebitAmount());
+        entry.setCreditAmount(dto.getCreditAmount());
+        entry.setEntryDate(dto.getEntryDate());
+
+        JournalEntry updated = journalEntryRepository.save(entry);
+        return toDTO(updated);
+    }
+
+    public void delete(UUID id) {
+        JournalEntry entry = journalEntryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
+        journalEntryRepository.delete(entry);
+    }
+
+    private JournalEntryDTO toDTO(JournalEntry entry) {
+        return JournalEntryDTO.builder()
+                .id(entry.getId())
+                .transactionId(entry.getTransactionId())
+                .accountId(entry.getAccountId())
+                .debitAmount(entry.getDebitAmount())
+                .creditAmount(entry.getCreditAmount())
+                .entryDate(entry.getEntryDate())
+                .build();
+    }
+}

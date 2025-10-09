@@ -26,24 +26,47 @@ public class ChartOfAccountService {
 
         ChartOfAccount saved = chartOfAccountRepository.save(account);
 
-        return ChartOfAccountDTO.builder()
-                .id(saved.getId())
-                .accountCode(saved.getAccountCode())
-                .accountName(saved.getAccountName())
-                .accountType(saved.getAccountType().name())
-                .parentAccountId(saved.getParentAccountId())
-                .build();
+        return toDTO(saved);
     }
 
     public List<ChartOfAccountDTO> findAll() {
         return chartOfAccountRepository.findAll().stream()
-                .map(c -> ChartOfAccountDTO.builder()
-                        .id(c.getId())
-                        .accountCode(c.getAccountCode())
-                        .accountName(c.getAccountName())
-                        .accountType(c.getAccountType().name())
-                        .parentAccountId(c.getParentAccountId())
-                        .build())
+                .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public ChartOfAccountDTO findById(Integer id) {
+        ChartOfAccount account = chartOfAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+        return toDTO(account);
+    }
+
+    public ChartOfAccountDTO update(Integer id, ChartOfAccountDTO dto) {
+        ChartOfAccount account = chartOfAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+        
+        account.setAccountCode(dto.getAccountCode());
+        account.setAccountName(dto.getAccountName());
+        account.setAccountType(AccountType.valueOf(dto.getAccountType()));
+        account.setParentAccountId(dto.getParentAccountId());
+
+        ChartOfAccount updated = chartOfAccountRepository.save(account);
+        return toDTO(updated);
+    }
+
+    public void delete(Integer id) {
+        ChartOfAccount account = chartOfAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+        chartOfAccountRepository.delete(account);
+    }
+
+    private ChartOfAccountDTO toDTO(ChartOfAccount account) {
+        return ChartOfAccountDTO.builder()
+                .id(account.getId())
+                .accountCode(account.getAccountCode())
+                .accountName(account.getAccountName())
+                .accountType(account.getAccountType().name())
+                .parentAccountId(account.getParentAccountId())
+                .build();
     }
 }

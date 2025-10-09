@@ -1,0 +1,116 @@
+databaseChangeLog:
+  # =========================
+  # transactions
+  # =========================
+  - changeSet:
+      id: 001-transactions
+      author: equipo
+      changes:
+        - createTable:
+            tableName: transactions
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: transaction_type, type: "varchar(20)", constraints: { nullable: false } }
+              - column: { name: related_entity_id, type: uuid }
+              - column: { name: amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: transaction_date, type: timestamp, constraints: { nullable: false } }
+              - column: { name: description, type: text }
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE transactions
+              ADD CONSTRAINT chk_transactions_type
+              CHECK (transaction_type IN ('DESEMBOLSO', 'PAGO_CAPITAL', 'PAGO_INTERES', 'COMISION'));
+        - createIndex:
+            tableName: transactions
+            indexName: idx_transactions_type
+            columns:
+              - column: { name: transaction_type }
+        - createIndex:
+            tableName: transactions
+            indexName: idx_transactions_date
+            columns:
+              - column: { name: transaction_date }
+
+  # =========================
+  # chart_of_accounts
+  # =========================
+  - changeSet:
+      id: 003-chart-of-accounts
+      author: equipo
+      changes:
+        - createTable:
+            tableName: chart_of_accounts
+            columns:
+              - column: { name: id, type: serial, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: account_code, type: "varchar(20)", constraints: { nullable: false, unique: true } }
+              - column: { name: account_name, type: "varchar(100)", constraints: { nullable: false } }
+              - column: { name: account_type, type: "varchar(15)", constraints: { nullable: false } }
+              - column: { name: parent_account_id, type: integer }
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE chart_of_accounts
+              ADD CONSTRAINT chk_accounts_type
+              CHECK (account_type IN ('ACTIVO', 'PASIVO', 'PATRIMONIO', 'INGRESO', 'GASTO'));
+        - addForeignKeyConstraint:
+            baseTableName: chart_of_accounts
+            baseColumnNames: parent_account_id
+            referencedTableName: chart_of_accounts
+            referencedColumnNames: id
+            constraintName: fk_chart_of_accounts_parent
+        - createIndex:
+            tableName: chart_of_accounts
+            indexName: idx_chart_accounts_code
+            columns:
+              - column: { name: account_code }
+        - createIndex:
+            tableName: chart_of_accounts
+            indexName: idx_chart_accounts_type
+            columns:
+              - column: { name: account_type }
+
+  # =========================
+  # journal_entries
+  # =========================
+  - changeSet:
+      id: 004-journal-entries
+      author: equipo
+      changes:
+        - createTable:
+            tableName: journal_entries
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: transaction_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: account_id, type: integer, constraints: { nullable: false } }
+              - column: { name: debit_amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: credit_amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: entry_date, type: timestamp, constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: journal_entries
+            baseColumnNames: transaction_id
+            referencedTableName: transactions
+            referencedColumnNames: id
+            constraintName: fk_journal_entries_transaction
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: journal_entries
+            baseColumnNames: account_id
+            referencedTableName: chart_of_accounts
+            referencedColumnNames: id
+            constraintName: fk_journal_entries_account
+        - createIndex:
+            tableName: journal_entries
+            indexName: idx_journal_entries_transaction
+            columns:
+              - column: { name: transaction_id }
+        - createIndex:
+            tableName: journal_entries
+            indexName: idx_journal_entries_account
+            columns:
+              - column: { name: account_id }
+        - createIndex:
+            tableName: journal_entries
+            indexName: idx_journal_entries_date
+            columns:
+              - column: { name: entry_date }
