@@ -24,7 +24,7 @@ public class JournalEntryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JournalEntryDTO> getById(@PathVariable("id") UUID id) {
+    public ResponseEntity<JournalEntryDTO> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(journalEntryService.findById(id));
     }
 
@@ -36,14 +36,14 @@ public class JournalEntryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<JournalEntryDTO> update(
-            @PathVariable("id") UUID id, 
+            @PathVariable UUID id, 
             @Valid @RequestBody JournalEntryDTO dto) {
         return ResponseEntity.ok(journalEntryService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         journalEntryService.delete(id);
         return ResponseEntity.noContent().build();
     }

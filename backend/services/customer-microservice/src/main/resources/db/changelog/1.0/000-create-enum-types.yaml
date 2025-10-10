@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-clients-status-enums
+      author: moises
+      changes:
+        # id_document_type allowed values
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- Se dejará como VARCHAR con CHECK al crear la tabla
+              -- Valores permitidos: 'CEDULA','RESIDENCIA','PASAPORTE'
+
+        # gender allowed values
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- Valores permitidos: 'MASCULINO','FEMENINO','OTRO'
+
+        # marital_status allowed values
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- Valores permitidos: 'SOLTERO','CASADO','UNION_LIBRE','DIVORCIADO','VIUDO'
+
+        # address_type allowed values
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- Valores permitidos: 'DOMICILIO','TRABAJO','NEGOCIO'
+
+        # contact_type allowed values
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- Valores permitidos: 'TELEFONO_MOVIL','TELEFONO_FIJO','EMAIL'

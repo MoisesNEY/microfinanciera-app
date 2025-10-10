@@ -1,0 +1,77 @@
+server:
+  port: 8080
+
+eureka:
+    client:
+      service-url:
+        defaultZone: http://eureka-server:8078/eureka
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # Accounting Microservice
+        - id: accounting_transactions
+          uri: lb://ACCOUNTING-MICROSERVICE
+          predicates:
+            - Path=/api/transactions/**
+        - id: accounting_journal
+          uri: lb://ACCOUNTING-MICROSERVICE
+          predicates:
+            - Path=/api/journal-entries/**
+        - id: accounting_chart
+          uri: lb://ACCOUNTING-MICROSERVICE
+          predicates:
+            - Path=/api/chart-of-accounts/**
+
+        # Customer Microservice
+        - id: customer_contact
+          uri: lb://CUSTOMER-MICROSERVICE
+          predicates:
+            - Path=/api/contact-info/**
+        - id: customer_clients
+          uri: lb://CUSTOMER-MICROSERVICE
+          predicates:
+            - Path=/api/clients/**
+        - id: customer_address
+          uri: lb://CUSTOMER-MICROSERVICE
+          predicates:
+            - Path=/api/address/**
+
+        # Loan Microservice
+        - id: loan_applications
+          uri: lb://LOAN-MICROSERVICE
+          predicates:
+            - Path=/api/loan-applications/**
+        - id: loan_loans
+          uri: lb://LOAN-MICROSERVICE
+          predicates:
+            - Path=/api/loans/**
+        - id: loan_products
+          uri: lb://LOAN-MICROSERVICE
+          predicates:
+            - Path=/api/loan-products/**
+        - id: loan_schedules
+          uri: lb://LOAN-MICROSERVICE
+          predicates:
+            - Path=/api/loan-schedules/**
+
+        # Payment Microservice
+        - id: payment_payments
+          uri: lb://PAYMENT-MICROSERVICE
+          predicates:
+            - Path=/api/payments/**
+        
+        # Workers Microservice
+        - id: workers_workers
+          uri: lb://WORKERS-MICROSERVICE
+          predicates:
+            - Path=/workers/**

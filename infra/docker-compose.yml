@@ -18,9 +18,48 @@ services:
       retries: 10
     networks: [mfnet]
 
-    
+  config-server:
+    build:
+      context: ..
+      dockerfile: backend/config/config-server/Dockerfile
+    ports:
+      - "8079:8079"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8079/actuator/health"]
+    networks: [mfnet]
 
- 
+  eureka-server:
+    build:
+      context: ..
+      dockerfile: backend/eureka/eureka-server/Dockerfile
+    ports:
+      - "8078:8078"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8078/actuator/health"]
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
+    depends_on:
+      config-server:
+        condition:
+          service_healthy
+    networks: [mfnet]
+  
+  api-gateway:
+    build:
+      context: ..
+      dockerfile: backend/gateway/api-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
+    depends_on:
+      eureka-server:
+        condition:
+          service_healthy
+      config-server:
+        condition:
+          service_healthy   
+    networks: [mfnet]
  
 
   # 🔒 Desactívalo en el primer arranque (o déjalo si ya quieres JWT)
@@ -38,25 +77,28 @@ services:
   #       condition: service_healthy
   #   networks: [mfnet]
 
-  # customer-microservice:
-  #   build:
-  #     context: ..
-  #     dockerfile: backend/services/customer-microservice/Dockerfile
-  #   container_name: mf_customer
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: prod
-  #     DB_USER: postgres
-  #     DB_PASS: postgres
-  #     APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
-  #     # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf  # descomenta cuando uses keycloak
-  #   ports:
-  #     - "8081:8081"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     # keycloak:
-  #     #   condition: service_started
-  #   networks: [mfnet]
+  customer-microservice:
+    build:
+      context: ..
+      dockerfile: backend/services/customer-microservice/Dockerfile
+    container_name: mf_customer
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres_main:
+        condition: service_healthy
+      # keycloak:
+      #   condition: service_started
+      eureka-server:
+        condition:
+          service_started
+      config-server:
+        condition:
+          service_healthy
+    networks: [mfnet]
 
   loan-microservice:
     build:
@@ -65,10 +107,7 @@ services:
     container_name: mf_loan
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: root
-      DB_PASS: root
-      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
-      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     ports:
       - "8082:8082"
     depends_on:
@@ -76,6 +115,12 @@ services:
         condition: service_healthy
       # keycloak:
       #   condition: service_started
+      eureka-server:
+        condition:
+          service_started
+      config-server:
+        condition:
+          service_healthy
     networks: [mfnet]
 
 
@@ -86,10 +131,7 @@ services:
     container_name: mf_accounting
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: root
-      DB_PASS: root
-      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
-      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     ports:
       - "8086:8086"
     depends_on:
@@ -97,6 +139,12 @@ services:
         condition: service_healthy
       # keycloak:
       #   condition: service_started
+      eureka-server:
+        condition:
+          service_started
+      config-server:
+        condition:
+          service_healthy
     networks: [mfnet]
   
   payment-microservice:
@@ -106,10 +154,7 @@ services:
     container_name: mf_payment
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: root
-      DB_PASS: root
-      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
-      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     ports:
       - "8083:8083"
     depends_on:
@@ -117,23 +162,14 @@ services:
         condition: service_healthy
       # keycloak:
       #   condition: service_started
+      eureka-server:
+        condition:
+          service_started
+      config-server:
+        condition:
+          service_healthy
     networks: [mfnet]
 
-  
-  api-gateway:
-    build:
-      context: ..
-      dockerfile: backend/services/api-gateway/Dockerfile
-    container_name: mf_gateway
-    environment:
-      GATEWAY_SECURITY_DISABLED: "true"  # ← sin Keycloak
-      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
-    ports:
-      - "8080:8080"
-    depends_on:
-      loan-microservice:
-        condition: service_started
-    networks: [mfnet]
 
   workers_microservice:
     build:
@@ -142,9 +178,7 @@ services:
     container_name: mf_workers
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: root
-      DB_PASS: root
-      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
       # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
     ports:
       - "8088:8088"
@@ -153,6 +187,12 @@ services:
         condition: service_healthy
       # keycloak:
       #   condition: service_started
+      eureka-server:
+        condition:
+          service_started
+      config-server:
+        condition:
+          service_healthy
     networks: [mfnet]
 
   # ✅ Solo si vas a usar rate limiting en el gateway; si no, comenta este bloque

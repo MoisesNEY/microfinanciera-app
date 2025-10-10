@@ -1,0 +1,102 @@
+# ==========================================
+# Valores por defecto (comunes a todos los perfiles)
+# ==========================================
+server:
+  port: 8086
+
+APP_SECURITY_DISABLED: true
+
+spring:
+  application:
+    name: accounting-microservice
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/mf
+
+logging:
+  level:
+    org.springframework: INFO
+    com.microfinance: DEBUG
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,loggers
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+# ==========================================
+# Perfil DEV
+# ==========================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5433/ms_accounting
+    username: root
+    password: root
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8078/eureka
+
+# ==========================================
+# Perfil PROD
+# ==========================================
+---
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres_main:5432/ms_accounting
+    username: root
+    password: root
+  jpa:
+    show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/mf
+
+logging:
+  level:
+    org.springframework: INFO
+    com.microfinance: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: NEVER
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8078/eureka

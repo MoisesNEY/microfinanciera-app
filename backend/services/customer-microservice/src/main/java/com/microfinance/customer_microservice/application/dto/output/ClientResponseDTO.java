@@ -1,0 +1,37 @@
+package com.microfinance.customer_microservice.application.dto.output;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import com.microfinance.customer_microservice.domain.enums.DocumentType;
+import com.microfinance.customer_microservice.domain.enums.Gender;
+import com.microfinance.customer_microservice.domain.enums.Marital_Status;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientResponseDTO {
+
+    private UUID id;
+    private String  clientCode;
+    private String  firstName;
+    private String  lastName;
+    private DocumentType idDocumentType;
+    private String  idDocumentNumber;
+    private LocalDate dateOfBirth;
+    private Gender  gender;
+    private String  nationality;
+    private Marital_Status maritalStatus;
+    private String  occupation;
+    private String  economicActivity;
+    private boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    /*
+    private List<AddressResponseDTO> addresses;
+    private List<ContactInfoResponseDTO> contactInfoList;
+     */
+}
