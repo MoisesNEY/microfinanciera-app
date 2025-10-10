@@ -1,11 +1,14 @@
+# ==========================================
+# Valores por defecto (comunes a todos los perfiles)
+# ==========================================
 server:
-  port: 8083
+  port: 8086
 
 APP_SECURITY_DISABLED: true
 
 spring:
   application:
-    name: payment-microservice
+    name: accounting-microservice
   datasource:
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -18,20 +21,28 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/mf
+
+logging:
+  level:
+    org.springframework: INFO
+    com.microfinance: DEBUG
 
 springdoc:
   api-docs:
-    path: /v3/api-docs-payments
-    enabled: true
+    path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui-payments.html
-    enabled: true
+    path: /swagger-ui.html
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,env
+        include: health,info,metrics,env,loggers
   endpoint:
     health:
       show-details: ALWAYS
@@ -45,7 +56,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5433/ms_payment
+    url: jdbc:postgresql://localhost:5433/ms_accounting
     username: root
     password: root
 
@@ -59,27 +70,31 @@ eureka:
 # ==========================================
 ---
 spring:
-  config:
-    activate:
-      on-profile: prod
   datasource:
-    url: jdbc:postgresql://postgres_main:5432/ms_payment
+    url: jdbc:postgresql://postgres_main:5432/ms_accounting
     username: root
     password: root
   jpa:
     show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/mf
 
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
+logging:
+  level:
+    org.springframework: INFO
+    com.microfinance: INFO
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: NEVER
 
 eureka:
   client:

@@ -83,7 +83,7 @@ services:
       dockerfile: backend/services/customer-microservice/Dockerfile
     container_name: mf_customer
     environment:
-      #SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     ports:
       - "8081:8081"
@@ -106,7 +106,7 @@ services:
       dockerfile: backend/services/loan-microservice/Dockerfile
     container_name: mf_loan
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     ports:
       - "8082:8082"
@@ -178,9 +178,7 @@ services:
     container_name: mf_workers
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: root
-      DB_PASS: root
-      APP_SECURITY_DISABLED: "true"      # ← sin Keycloak
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
       # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
     ports:
       - "8088:8088"
@@ -189,6 +187,12 @@ services:
         condition: service_healthy
       # keycloak:
       #   condition: service_started
+      eureka-server:
+        condition:
+          service_started
+      config-server:
+        condition:
+          service_healthy
     networks: [mfnet]
 
   # ✅ Solo si vas a usar rate limiting en el gateway; si no, comenta este bloque

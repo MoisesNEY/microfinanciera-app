@@ -1,68 +1,56 @@
-  server:
-    port: 8081
+server:
+  port: 8081
 
-  app:
-    security:
-      disabled: true # ← sin Keycloak
+APP_SECURITY_DISABLED: true
 
-  # oidc:
-  #   issuer-uri: http://keycloak-prod:8080/realms/mf 
-
-  spring:
-    application:
-      name: customer-microservice
-    datasource:
-      url: jdbc:postgresql://postgres_main:5432/ms_customer
-      username: root
-      password: root
-      driver-class-name: org.postgresql.Driver
-
-    liquibase:
-      enabled: true
-      changelog: "classpath:/db/changelog/changelog-master.yaml"
-
-    jpa:
+spring:
+  application:
+    name: customer-microservice
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    changelog: "classpath:/db/changelog/changelog-master.yaml"
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: none
-      show-sql: true
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  eureka:
-    client:
-      service-url:
-        defaultZone: http://eureka-server:8078/eureka
+# ==========================================
+# Perfil DEV
+# ==========================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms_customer
+    username: root
+    password: root
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8078/eureka
 
+# ==========================================
+# Perfil PROD
+# ==========================================
 ---
 spring:
   config:
     activate:
       on-profile: prod
-
-  server:
-    port: 8081
-
-  app:
-    security:
-      disabled: false
-    # oidc: # Descomentar y configurar si se usa OIDC en prod
-    #   issuer-uri: http://keycloak:8080/realms/mf # Ajusta esta URL para Keycloak en tu red Docker de prod
-
   datasource:
     url: jdbc:postgresql://postgres_main:5432/ms_customer
-    username: ${DB_USER:root}
-    password: ${DB_PASS:root}
-    driver-class-name: org.postgresql.Driver
+    username: root
+    password: root
 
-  liquibase:
-    enabled: true
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8078/eureka

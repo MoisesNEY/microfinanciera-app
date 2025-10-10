@@ -20,15 +20,15 @@ spring:
       routes:
         # Accounting Microservice
         - id: accounting_transactions
-          uri: lb://ACCOUNTING_MICROSERVICE
+          uri: lb://ACCOUNTING-MICROSERVICE
           predicates:
             - Path=/api/transactions/**
         - id: accounting_journal
-          uri: lb://ACCOUNTING_MICROSERVICE
+          uri: lb://ACCOUNTING-MICROSERVICE
           predicates:
             - Path=/api/journal-entries/**
         - id: accounting_chart
-          uri: lb://ACCOUNTING_MICROSERVICE
+          uri: lb://ACCOUNTING-MICROSERVICE
           predicates:
             - Path=/api/chart-of-accounts/**
 
@@ -69,3 +69,9 @@ spring:
           uri: lb://PAYMENT-MICROSERVICE
           predicates:
             - Path=/api/payments/**
+        
+        # Workers Microservice
+        - id: workers_workers
+          uri: lb://WORKERS-MICROSERVICE
+          predicates:
+            - Path=/workers/**

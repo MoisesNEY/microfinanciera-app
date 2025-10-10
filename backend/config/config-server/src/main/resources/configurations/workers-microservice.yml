@@ -1,11 +1,11 @@
 server:
-  port: 8083
+  port: 8088
 
 APP_SECURITY_DISABLED: true
 
 spring:
   application:
-    name: payment-microservice
+    name: workers-microservice
   datasource:
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -18,20 +18,25 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/mf
 
 springdoc:
   api-docs:
-    path: /v3/api-docs-payments
+    path: /v3/api-docs
     enabled: true
   swagger-ui:
-    path: /swagger-ui-payments.html
+    path: /swagger-ui.html
     enabled: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,env
+        include: health,info,metrics,env,loggers
   endpoint:
     health:
       show-details: ALWAYS
@@ -45,7 +50,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5433/ms_payment
+    url: jdbc:postgresql://localhost:5433/ms_workers
     username: root
     password: root
 
@@ -63,11 +68,16 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:postgresql://postgres_main:5432/ms_payment
+    url: jdbc:postgresql://postgres_main:5432/ms_workers
     username: root
     password: root
   jpa:
     show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/mf
 
 springdoc:
   api-docs:
