@@ -1,0 +1,17 @@
+docker exec -it mf_postgres_main psql -U root -d ms_payment
+Get
+http://localhost:8083/api/payments/loan/7f7e2aed-7bb0-415d-a2c3-fb63050dfe11
+
+Post
+http://localhost:8083/api/payments
+
+# {
+#   "loanId": "7f7e2aed-7bb0-415d-a2c3-fb63050dfe11",
+#   "paymentDate": "2025-10-11",
+#   "amountPaid": 200.75,
+#   "paymentMethod": "EFECTIVO",
+#   "transactionReference": "TX9876544",
+#   "cashierId": "a7b3b1fc-4a81-4d3f-826c-736dfd506d0d",
+#   "status": "PENDING"
+# }
+

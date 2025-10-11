@@ -1,7 +1,6 @@
 package com.microfinance.payment_microservice.dto;
 
 import org.springframework.stereotype.Component;
-
 import com.microfinance.payment_microservice.domain.Payment;
 import com.microfinance.payment_microservice.domain.PaymentStatus;
 
@@ -33,4 +32,3 @@ public class PaymentMapper {
         return paymentResponse;
     }
 }
-
