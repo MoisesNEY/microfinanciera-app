@@ -22,6 +22,10 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
+    }
+
     public List<Payment> getPaymentsByLoanId(UUID loanId) {
         return paymentRepository.findByLoanId(loanId);
     }

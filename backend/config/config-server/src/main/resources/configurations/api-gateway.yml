@@ -75,3 +75,11 @@ spring:
           uri: lb://WORKERS-MICROSERVICE
           predicates:
             - Path=/workers/**
+        
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
