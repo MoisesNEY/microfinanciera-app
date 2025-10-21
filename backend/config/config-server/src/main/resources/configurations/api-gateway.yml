@@ -9,6 +9,13 @@ eureka:
 spring:
   application:
     name: api-gateway
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8085/realms/microfinance-microservice-realm
+
   cloud:
     loadbalancer:
       ribbon:
@@ -23,10 +30,12 @@ spring:
           uri: lb://ACCOUNTING-MICROSERVICE
           predicates:
             - Path=/api/transactions/**
+
         - id: accounting_journal
           uri: lb://ACCOUNTING-MICROSERVICE
           predicates:
             - Path=/api/journal-entries/**
+
         - id: accounting_chart
           uri: lb://ACCOUNTING-MICROSERVICE
           predicates:
@@ -37,10 +46,12 @@ spring:
           uri: lb://CUSTOMER-MICROSERVICE
           predicates:
             - Path=/api/contact-info/**
+
         - id: customer_clients
           uri: lb://CUSTOMER-MICROSERVICE
           predicates:
             - Path=/api/clients/**
+
         - id: customer_address
           uri: lb://CUSTOMER-MICROSERVICE
           predicates:
@@ -51,14 +62,17 @@ spring:
           uri: lb://LOAN-MICROSERVICE
           predicates:
             - Path=/api/loan-applications/**
+
         - id: loan_loans
           uri: lb://LOAN-MICROSERVICE
           predicates:
             - Path=/api/loans/**
+
         - id: loan_products
           uri: lb://LOAN-MICROSERVICE
           predicates:
             - Path=/api/loan-products/**
+
         - id: loan_schedules
           uri: lb://LOAN-MICROSERVICE
           predicates:
@@ -75,3 +89,4 @@ spring:
           uri: lb://WORKERS-MICROSERVICE
           predicates:
             - Path=/workers/**
+

@@ -36,6 +36,10 @@ services:
       - "8078:8078"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8078/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     depends_on:
@@ -62,20 +66,32 @@ services:
     networks: [mfnet]
  
 
-  # 🔒 Desactívalo en el primer arranque (o déjalo si ya quieres JWT)
-  # keycloak:
-  #   image: quay.io/keycloak/keycloak:25.0
-  #   container_name: mf_keycloak
-  #   command: ["start-dev"]
-  #   environment:
-  #     KEYCLOAK_ADMIN: admin
-  #     KEYCLOAK_ADMIN_PASSWORD: admin
-  #   ports:
-  #     - "8085:8080"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   networks: [mfnet]
+  keycloak:
+    build: 
+      context: ..
+      dockerfile: backend/keycloak/Dockerfile
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres_main:5432/keycloak
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_URL: http://keycloak:8085
+      KC_HOSTNAME_ADMIN_URL: http://keycloak:8085
+      KC_HOSTNAME_STRICT: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_PORT: 8085
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+    - ../backend/keycloak:/opt/keycloak/data/import
+    command: start-dev --import-realm
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres_main:
+        condition: service_healthy
+    networks: [mfnet]
 
   customer-microservice:
     build:
