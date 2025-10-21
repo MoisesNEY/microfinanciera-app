@@ -83,3 +83,15 @@ spring:
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
+       # Agregar configuración Jackson también en el gateway
+  mvc:
+    format:
+      date: yyyy-MM-dd
+  jackson:
+    deserialization:
+      READ_ENUMS_USING_TO_STRING: true
+      READ_UNKNOWN_ENUM_VALUES_AS_NULL: true
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+    serialization:
+      WRITE_ENUMS_USING_TO_STRING: true
+      WRITE_DATES_AS_TIMESTAMPS: false
