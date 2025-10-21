@@ -30,38 +30,48 @@ public class ClientServiceImpl implements IClientService {
         return ClientMapper.mapper.toClientResponseDTO(client);
     }
 
-    // METODO PARA OBTENER UN CLIENTE POR ID
+    // METODO PARA OBTENER UN CLIENTE POR ID - CORREGIDO
     public ClientResponseDTO getClientById(UUID id) {
-        ClientEntity client = clientRepository.findByIdAndActive(id, true)
+        // ✅ CORRECTO: Busca por ID sin importar el estado active
+        ClientEntity client = clientRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
         ClientResponseDTO clientResponseDTO = ClientMapper.mapper.toClientResponseDTO(client);
-
         return clientResponseDTO;
     }
 
-    // METODO PARA OBTENER TODOS LOS CLIENTES ACTIVOS
+    // METODO PARA OBTENER TODOS LOS CLIENTES - CORREGIDO
     public List<ClientResponseDTO> getAllClients() {
-        List<ClientEntity> clients = clientRepository.findByActive(true);
+        System.out.println("=== getAllClients - Obteniendo TODOS los clientes ===");
+        
+        List<ClientEntity> clients = clientRepository.findAll();
+        
+        System.out.println("Total clientes encontrados: " + clients.size());
+        for (ClientEntity client : clients) {
+            System.out.println("   - " + client.getFirstName() + " " + client.getLastName() + 
+                              " | Active: " + client.isActive());
+        }
+        System.out.println("===FIN DEBUG ===");
+        
         List<ClientResponseDTO> clientsResponseDTOs = clients.stream().map(
             client -> ClientMapper.mapper.toClientResponseDTO(client)).collect(Collectors.toList());
 
         return clientsResponseDTOs;
     }
 
-    // METODO PARA DESACTIVAR UN CLIENTE
+    // METODO PARA DESACTIVAR UN CLIENTE - CORREGIDO
     public void deActivateClient(UUID id)
     {
-        ClientEntity client = clientRepository.findByIdAndActive(id, true)
+        ClientEntity client = clientRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Client not found"));
         client.setActive(false);
         clientRepository.save(client);
     }
 
-    // METODO PARA ACTUALIZAR UN CLIENTE (PARCIALMENTE)
+    // METODO PARA ACTUALIZAR UN CLIENTE (PARCIALMENTE) - CORREGIDO
     public ClientResponseDTO updateClient(UUID id, ClientUpdateDTO clientUpdateDTO)
     {
-        ClientEntity client = clientRepository.findByIdAndActive(id, true)
+        ClientEntity client = clientRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
         if (clientUpdateDTO.getFirstName() != null) {
@@ -102,11 +112,10 @@ public class ClientServiceImpl implements IClientService {
         return ClientMapper.mapper.toClientResponseDTO(client);
     }
 
-    // METODO PARA ACTUALIZAR UN CLIENTE (COMPLETAMENTE)
-
+    // METODO PARA ACTUALIZAR UN CLIENTE (COMPLETAMENTE) - CORREGIDO
     public ClientResponseDTO replaceClient(UUID id, ClientReplaceDTO clientReplaceDTO)
     {
-        ClientEntity clientEntity = clientRepository.findByIdAndActive(id, true)
+        ClientEntity clientEntity = clientRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
         clientEntity.setFirstName(clientReplaceDTO.getFirstName());

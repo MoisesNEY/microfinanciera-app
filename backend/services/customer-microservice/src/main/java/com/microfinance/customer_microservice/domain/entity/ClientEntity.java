@@ -2,6 +2,7 @@ package com.microfinance.customer_microservice.domain.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.microfinance.customer_microservice.domain.enums.DocumentType;
 import com.microfinance.customer_microservice.domain.enums.Gender;
@@ -11,17 +12,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.GeneratedValue;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
-
-import java.util.UUID;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,7 +29,6 @@ public class ClientEntity {
 
     @Id
     @GeneratedValue
-    @UuidGenerator
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -47,9 +41,9 @@ public class ClientEntity {
     @Column(name = "last_name", length = 100, nullable = false)
     private String lastName;
 
+    // ELIMINA @JdbcTypeCode - usa solo @Enumerated
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "id_document_type", nullable = false)
+    @Column(name = "id_document_type", nullable = false, length = 20)
     private DocumentType idDocumentType;
 
     @Column(name = "id_document_number", nullable = false, length = 50)
@@ -58,23 +52,23 @@ public class ClientEntity {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
+    // ELIMINA @JdbcTypeCode - usa solo @Enumerated
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "gender", nullable = true)
+    @Column(name = "gender", length = 15)
     private Gender gender;
 
     @Column(name = "nationality", length = 50, nullable = false)
     private String nationality;
 
-    @Enumerated(EnumType.STRING)    
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "marital_status", nullable = true)
+    // ELIMINA @JdbcTypeCode - usa solo @Enumerated
+    @Enumerated(EnumType.STRING)
+    @Column(name = "marital_status", length = 20)
     private Marital_Status maritalStatus;
 
-    @Column(name ="occupation", length = 100, nullable = true)
+    @Column(name = "occupation", length = 100)
     private String occupation;
 
-    @Column(name ="economic_activity", nullable = false)
+    @Column(name = "economic_activity", nullable = false)
     private String economicActivity;
 
     @Column(name = "is_active", nullable = false)
@@ -96,13 +90,4 @@ public class ClientEntity {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    /*
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AddressEntity> addresses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContactInfoEntity> contactInfoList = new ArrayList<>();
-     */
-
 }

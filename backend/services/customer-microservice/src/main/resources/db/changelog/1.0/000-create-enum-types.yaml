@@ -1,35 +1,40 @@
 databaseChangeLog:
   - changeSet:
-      id: create-clients-status-enums
+      id: create-enum-types
       author: moises
       changes:
-        # id_document_type allowed values
         - sql:
             dbms: postgresql
             sql: |
-              -- Se dejará como VARCHAR con CHECK al crear la tabla
-              -- Valores permitidos: 'CEDULA','RESIDENCIA','PASAPORTE'
+              CREATE TYPE document_type AS ENUM ('CEDULA', 'RESIDENCIA', 'PASAPORTE');
+        - sql:
+            dbms: postgresql
+            sql: |
+              CREATE TYPE gender_type AS ENUM ('MASCULINO', 'FEMENINO', 'OTRO');
+        - sql:
+            dbms: postgresql
+            sql: |
+              CREATE TYPE marital_status_type AS ENUM ('SOLTERO', 'CASADO', 'UNION_LIBRE', 'DIVORCIADO', 'VIUDO');
 
-        # gender allowed values
-        - sql:
-            dbms: postgresql
-            sql: |
-              -- Valores permitidos: 'MASCULINO','FEMENINO','OTRO'
-
-        # marital_status allowed values
-        - sql:
-            dbms: postgresql
-            sql: |
-              -- Valores permitidos: 'SOLTERO','CASADO','UNION_LIBRE','DIVORCIADO','VIUDO'
-
-        # address_type allowed values
-        - sql:
-            dbms: postgresql
-            sql: |
-              -- Valores permitidos: 'DOMICILIO','TRABAJO','NEGOCIO'
-
-        # contact_type allowed values
-        - sql:
-            dbms: postgresql
-            sql: |
-              -- Valores permitidos: 'TELEFONO_MOVIL','TELEFONO_FIJO','EMAIL'
+  - changeSet:
+      id: create-clients-table
+      author: moises
+      changes:
+        - createTable:
+            tableName: clients
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: client_code, type: VARCHAR(20), constraints: { nullable: false, unique: true } }
+              - column: { name: first_name, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: last_name, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: id_document_type, type: document_type, constraints: { nullable: false } }
+              - column: { name: id_document_number, type: VARCHAR(50), constraints: { nullable: false } }
+              - column: { name: date_of_birth, type: DATE, constraints: { nullable: false } }
+              - column: { name: gender, type: gender_type }
+              - column: { name: nationality, type: VARCHAR(50), constraints: { nullable: false } }
+              - column: { name: marital_status, type: marital_status_type }
+              - column: { name: occupation, type: VARCHAR(100) }
+              - column: { name: economic_activity, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: is_active, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }

@@ -25,6 +25,12 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
+    @GetMapping("/payments")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        List<Payment> payments = paymentService.getAllPayments();
+        return ResponseEntity.ok(payments);
+    }
+
     @PostMapping
     public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
         Payment savedPayment = paymentService.savePayment(payment);
