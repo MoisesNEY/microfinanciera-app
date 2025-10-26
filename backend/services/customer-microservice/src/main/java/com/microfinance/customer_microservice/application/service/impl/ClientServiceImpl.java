@@ -49,6 +49,28 @@ public class ClientServiceImpl implements IClientService {
         return clientsResponseDTOs;
     }
 
+
+    // METODO PARA OBTENER UN CLIENTE INACTIVO POR ID
+    public ClientResponseDTO getClientInactiveById(UUID id) {
+        ClientEntity client = clientRepository.findByIdAndActive(id, false)
+            .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        ClientResponseDTO clientResponseDTO = ClientMapper.mapper.toClientResponseDTO(client);
+
+        return clientResponseDTO;
+    }
+
+    // METODO PARA OBTENER TODOS LOS CLIENTES INACTIVO
+    public List<ClientResponseDTO> getAllClientsInactive() {
+        List<ClientEntity> clients = clientRepository.findByActive(false);
+        List<ClientResponseDTO> clientsResponseDTOs = clients.stream().map(
+            client -> ClientMapper.mapper.toClientResponseDTO(client)).collect(Collectors.toList());
+
+        return clientsResponseDTOs;
+    }
+
+
+
     // METODO PARA DESACTIVAR UN CLIENTE
     public void deActivateClient(UUID id)
     {
