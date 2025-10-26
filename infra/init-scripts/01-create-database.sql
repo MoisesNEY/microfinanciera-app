@@ -3,3 +3,4 @@
  CREATE DATABASE ms_payment;
  CREATE DATABASE ms_workers;
  CREATE DATABASE ms_customer;
+ CREATE DATABASE keycloak;

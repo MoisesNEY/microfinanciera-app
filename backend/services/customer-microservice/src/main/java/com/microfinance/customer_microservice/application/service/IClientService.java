@@ -11,6 +11,8 @@ public interface IClientService {
     ClientResponseDTO createClient(ClientCreateDTO clientCreateDTO);
     ClientResponseDTO getClientById(UUID id);
     List<ClientResponseDTO> getAllClients();
+    ClientResponseDTO getClientInactiveById(UUID id);
+    List<ClientResponseDTO> getAllClientsInactive();
     void deActivateClient(UUID id);
     ClientResponseDTO updateClient(UUID id, ClientUpdateDTO clientUpdateDTO);
     ClientResponseDTO replaceClient(UUID id, ClientReplaceDTO clientReplaceDTO);

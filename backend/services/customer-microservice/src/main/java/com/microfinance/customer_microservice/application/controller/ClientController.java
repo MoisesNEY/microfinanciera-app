@@ -50,6 +50,18 @@ public class ClientController {
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
+    @GetMapping("/inactive/{id}")
+    public ResponseEntity<ClientResponseDTO> getClientActiveById(@PathVariable UUID id) {
+        ClientResponseDTO client = clientService.getClientInactiveById(id);
+        return new ResponseEntity<>(client, HttpStatus.OK);
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<ClientResponseDTO>> getAllClientsActive() {
+        List<ClientResponseDTO> clients = clientService.getAllClientsInactive();
+        return new ResponseEntity<>(clients, HttpStatus.OK);
+    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, 
