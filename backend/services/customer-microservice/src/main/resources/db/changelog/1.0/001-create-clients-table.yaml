@@ -1,7 +1,43 @@
 databaseChangeLog:
   - changeSet:
+      id: create-enum-types
+      author: moises
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              DO $$ BEGIN
+                CREATE TYPE document_type AS ENUM ('CEDULA', 'RESIDENCIA', 'PASAPORTE');
+              EXCEPTION
+                WHEN duplicate_object THEN null;
+              END $$;
+        - sql:
+            dbms: postgresql
+            sql: |
+              DO $$ BEGIN
+                CREATE TYPE gender_type AS ENUM ('MASCULINO', 'FEMENINO', 'OTRO');
+              EXCEPTION
+                WHEN duplicate_object THEN null;
+              END $$;
+        - sql:
+            dbms: postgresql
+            sql: |
+              DO $$ BEGIN
+                CREATE TYPE marital_status_type AS ENUM ('SOLTERO', 'CASADO', 'UNION_LIBRE', 'DIVORCIADO', 'VIUDO');
+              EXCEPTION
+                WHEN duplicate_object THEN null;
+              END $$;
+
+  - changeSet:
       id: create-clients-table
       author: moises
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: clients
       changes:
         - createTable:
             tableName: clients
@@ -10,29 +46,14 @@ databaseChangeLog:
               - column: { name: client_code, type: VARCHAR(20), constraints: { nullable: false, unique: true } }
               - column: { name: first_name, type: VARCHAR(100), constraints: { nullable: false } }
               - column: { name: last_name, type: VARCHAR(100), constraints: { nullable: false } }
-              - column: { name: id_document_type, type: VARCHAR(20), constraints: { nullable: false } }
+              - column: { name: id_document_type, type: document_type, constraints: { nullable: false } }
               - column: { name: id_document_number, type: VARCHAR(50), constraints: { nullable: false } }
               - column: { name: date_of_birth, type: DATE, constraints: { nullable: false } }
-              - column: { name: gender, type: VARCHAR(15) }
+              - column: { name: gender, type: gender_type }
               - column: { name: nationality, type: VARCHAR(50), constraints: { nullable: false } }
-              - column: { name: marital_status, type: VARCHAR(20) }
+              - column: { name: marital_status, type: marital_status_type }
               - column: { name: occupation, type: VARCHAR(100) }
               - column: { name: economic_activity, type: VARCHAR(255), constraints: { nullable: false } }
               - column: { name: is_active, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
               - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
-        - sql:
-            dbms: postgresql
-            sql: |
-              ALTER TABLE clients
-              ADD CONSTRAINT chk_clients_id_document_type CHECK (id_document_type IN ('CEDULA','RESIDENCIA','PASAPORTE'));
-        - sql:
-            dbms: postgresql
-            sql: |
-              ALTER TABLE clients
-              ADD CONSTRAINT chk_clients_gender CHECK (gender IN ('MASCULINO','FEMENINO','OTRO'));
-        - sql:
-            dbms: postgresql
-            sql: |
-              ALTER TABLE clients
-              ADD CONSTRAINT chk_clients_marital_status CHECK (marital_status IN ('SOLTERO','CASADO','UNION_LIBRE','DIVORCIADO','VIUDO'));

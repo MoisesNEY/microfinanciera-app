@@ -1,14 +1,36 @@
 databaseChangeLog:
   - changeSet:
+      id: create-enum-address-type
+      author: moises
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              DO $$ BEGIN
+                CREATE TYPE address_type AS ENUM ('DOMICILIO', 'TRABAJO', 'NEGOCIO');
+              EXCEPTION
+                WHEN duplicate_object THEN null;
+              END $$;
+
+  - changeSet:
       id: create-addresses-table
       author: moises
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: addresses
+        - tableExists:
+            tableName: clients
       changes:
         - createTable:
             tableName: addresses
             columns:
               - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
               - column: { name: client_id, type: UUID, constraints: { nullable: false } }
-              - column: { name: address_type, type: VARCHAR(20), constraints: { nullable: false } }
+              - column: { name: address_type, type: address_type, constraints: { nullable: false } }
               - column: { name: department, type: VARCHAR(100), constraints: { nullable: false } }
               - column: { name: municipality, type: VARCHAR(100), constraints: { nullable: false } }
               - column: { name: street_address, type: TEXT, constraints: { nullable: false } }
@@ -19,8 +41,3 @@ databaseChangeLog:
             referencedTableName: clients
             referencedColumnNames: id
             constraintName: fk_addresses_client
-        - sql:
-            dbms: postgresql
-            sql: |
-              ALTER TABLE addresses
-              ADD CONSTRAINT chk_addresses_type CHECK (address_type IN ('DOMICILIO','TRABAJO','NEGOCIO'));

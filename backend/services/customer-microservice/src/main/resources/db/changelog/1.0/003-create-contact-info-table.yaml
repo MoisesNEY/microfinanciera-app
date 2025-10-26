@@ -1,14 +1,36 @@
 databaseChangeLog:
   - changeSet:
+      id: create-enum-contact-type
+      author: moises
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              DO $$ BEGIN
+                CREATE TYPE contact_type AS ENUM ('TELEFONO_MOVIL', 'TELEFONO_FIJO', 'EMAIL');
+              EXCEPTION
+                WHEN duplicate_object THEN null;
+              END $$;
+
+  - changeSet:
       id: create-contact-info-table
       author: moises
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: contact_info
+        - tableExists:
+            tableName: clients
       changes:
         - createTable:
             tableName: contact_info
             columns:
               - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
               - column: { name: client_id, type: UUID, constraints: { nullable: false } }
-              - column: { name: contact_type, type: VARCHAR(20), constraints: { nullable: false } }
+              - column: { name: contact_type, type: contact_type, constraints: { nullable: false } }
               - column: { name: contact_value, type: VARCHAR(100), constraints: { nullable: false } }
               - column: { name: is_primary, type: BOOLEAN, constraints: { nullable: false } }
         - addForeignKeyConstraint:
@@ -17,8 +39,3 @@ databaseChangeLog:
             referencedTableName: clients
             referencedColumnNames: id
             constraintName: fk_contact_info_client
-        - sql:
-            dbms: postgresql
-            sql: |
-              ALTER TABLE contact_info
-              ADD CONSTRAINT chk_contact_info_type CHECK (contact_type IN ('TELEFONO_MOVIL','TELEFONO_FIJO','EMAIL'));

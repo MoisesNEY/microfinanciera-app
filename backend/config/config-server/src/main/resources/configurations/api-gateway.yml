@@ -2,13 +2,15 @@ server:
   port: 8080
 
 eureka:
-    client:
-      service-url:
-        defaultZone: http://eureka-server:8078/eureka
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8078/eureka
 
 spring:
   application:
     name: api-gateway
+  main:
+    web-application-type: reactive  # ⚡️ CLAVE: Fuerza contexto Reactivo
 
   security:
     oauth2:
@@ -20,93 +22,114 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+    
     gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        # Accounting Microservice
-        - id: accounting_transactions
-          uri: lb://ACCOUNTING-MICROSERVICE
-          predicates:
-            - Path=/api/transactions/**
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          globalcors:
+            add-to-simple-url-handler-mapping: true  # ⚡️ CLAVE: Para rutas dinámicas
+            cors-configurations:
+              '[/**]':
+                allowed-origins:
+                  - "http://localhost:5173"
+                  - "http://127.0.0.1:5173"
+                  - "http://mf_frontend_dev:5173"
+                  - "http://keycloak:8085"
+                allowed-methods:
+                  - "GET"
+                  - "POST"
+                  - "PUT"
+                  - "DELETE"
+                  - "OPTIONS"
+                  - "PATCH"
+                allowed-headers:
+                  - "Authorization"
+                  - "Content-Type"
+                  - "Access-Control-Allow-Origin"
+                  - "Access-Control-Allow-Headers"
+                  - "X-Requested-With"
+                exposed-headers:
+                  - "Authorization"
+                  - "Content-Disposition"
+                allow-credentials: true
+                max-age: 3600
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+          routes:
+            # Accounting Microservice
+            - id: accounting_transactions
+              uri: lb://ACCOUNTING-MICROSERVICE
+              predicates:
+                - Path=/api/transactions/**
 
-        - id: accounting_journal
-          uri: lb://ACCOUNTING-MICROSERVICE
-          predicates:
-            - Path=/api/journal-entries/**
+            - id: accounting_journal
+              uri: lb://ACCOUNTING-MICROSERVICE
+              predicates:
+                - Path=/api/journal-entries/**
 
-        - id: accounting_chart
-          uri: lb://ACCOUNTING-MICROSERVICE
-          predicates:
-            - Path=/api/chart-of-accounts/**
+            - id: accounting_chart
+              uri: lb://ACCOUNTING-MICROSERVICE
+              predicates:
+                - Path=/api/chart-of-accounts/**
 
-        # Customer Microservice
-        - id: customer_contact
-          uri: lb://CUSTOMER-MICROSERVICE
-          predicates:
-            - Path=/api/contact-info/**
+            # Customer Microservice
+            - id: customer_contact
+              uri: lb://CUSTOMER-MICROSERVICE
+              predicates:
+                - Path=/api/contact-info/**
 
-        - id: customer_clients
-          uri: lb://CUSTOMER-MICROSERVICE
-          predicates:
-            - Path=/api/clients/**
+            - id: customer_clients
+              uri: lb://CUSTOMER-MICROSERVICE
+              predicates:
+                - Path=/api/clients/**
 
-        - id: customer_address
-          uri: lb://CUSTOMER-MICROSERVICE
-          predicates:
-            - Path=/api/address/**
+            - id: customer_address
+              uri: lb://CUSTOMER-MICROSERVICE
+              predicates:
+                - Path=/api/address/**
 
-        # Loan Microservice
-        - id: loan_applications
-          uri: lb://LOAN-MICROSERVICE
-          predicates:
-            - Path=/api/loan-applications/**
+            # Loan Microservice
+            - id: loan_applications
+              uri: lb://LOAN-MICROSERVICE
+              predicates:
+                - Path=/api/loan-applications/**
 
-        - id: loan_loans
-          uri: lb://LOAN-MICROSERVICE
-          predicates:
-            - Path=/api/loans/**
+            - id: loan_loans
+              uri: lb://LOAN-MICROSERVICE
+              predicates:
+                - Path=/api/loans/**
 
-        - id: loan_products
-          uri: lb://LOAN-MICROSERVICE
-          predicates:
-            - Path=/api/loan-products/**
+            - id: loan_products
+              uri: lb://LOAN-MICROSERVICE
+              predicates:
+                - Path=/api/loan-products/**
 
-        - id: loan_schedules
-          uri: lb://LOAN-MICROSERVICE
-          predicates:
-            - Path=/api/loan-schedules/**
+            - id: loan_schedules
+              uri: lb://LOAN-MICROSERVICE
+              predicates:
+                - Path=/api/loan-schedules/**
 
-        # Payment Microservice
-        - id: payment_payments
-          uri: lb://PAYMENT-MICROSERVICE
-          predicates:
-            - Path=/api/payments/**
-        
-        # Workers Microservice
-        - id: workers_workers
-          uri: lb://WORKERS-MICROSERVICE
-          predicates:
-            - Path=/workers/**
+            # Payment Microservice
+            - id: payment_payments
+              uri: lb://PAYMENT-MICROSERVICE
+              predicates:
+                - Path=/api/payments/**
 
-        
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:5173"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            allowCredentials: true
-       # Agregar configuración Jackson también en el gateway
-  mvc:
-    format:
-      date: yyyy-MM-dd
-  jackson:
-    deserialization:
-      READ_ENUMS_USING_TO_STRING: true
-      READ_UNKNOWN_ENUM_VALUES_AS_NULL: true
-      FAIL_ON_UNKNOWN_PROPERTIES: false
-    serialization:
-      WRITE_ENUMS_USING_TO_STRING: true
-      WRITE_DATES_AS_TIMESTAMPS: false
+            # Workers Microservice
+            - id: workers_workers
+              uri: lb://WORKERS-MICROSERVICE
+              predicates:
+                - Path=/workers/**
+
+jackson:
+  date-format: yyyy-MM-dd
+  deserialization:
+    READ_ENUMS_USING_TO_STRING: true
+    READ_UNKNOWN_ENUM_VALUES_AS_NULL: true
+    FAIL_ON_UNKNOWN_PROPERTIES: false
+  serialization:
+    WRITE_ENUMS_USING_TO_STRING: true
+    WRITE_DATES_AS_TIMESTAMPS: false
