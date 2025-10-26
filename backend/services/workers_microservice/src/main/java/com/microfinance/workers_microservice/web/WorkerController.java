@@ -27,7 +27,7 @@ import com.microfinance.workers_microservice.service.WorkerService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/workers")
+@RequestMapping("/api/workers")
 public class WorkerController {
     private final WorkerService service;
     
