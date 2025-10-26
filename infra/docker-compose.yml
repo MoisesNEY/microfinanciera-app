@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   postgres_main:
     image: postgres:16
@@ -12,7 +14,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d postgres"]  
+      test: ["CMD-SHELL", "pg_isready -U root -d postgres"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -26,6 +28,9 @@ services:
       - "8079:8079"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8079/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks: [mfnet]
 
   eureka-server:
@@ -39,15 +44,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 30
-      
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     depends_on:
       config-server:
-        condition:
-          service_healthy
+        condition: service_healthy
     networks: [mfnet]
-  
+
   api-gateway:
     build:
       context: ..
@@ -57,17 +60,14 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
     depends_on:
-      eureka-server:
-        condition:
-          service_healthy
       config-server:
-        condition:
-          service_healthy   
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     networks: [mfnet]
- 
 
   keycloak:
-    build: 
+    build:
       context: ..
       dockerfile: backend/keycloak/Dockerfile
     environment:
@@ -84,7 +84,7 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     volumes:
-    - ../backend/keycloak:/opt/keycloak/data/import
+      - ../backend/keycloak:/opt/keycloak/data/import
     command: start-dev --import-realm
     ports:
       - "8085:8085"
@@ -106,14 +106,10 @@ services:
     depends_on:
       postgres_main:
         condition: service_healthy
-      # keycloak:
-      #   condition: service_started
       eureka-server:
-        condition:
-          service_started
+        condition: service_started
       config-server:
-        condition:
-          service_healthy
+        condition: service_healthy
     networks: [mfnet]
 
   loan-microservice:
@@ -129,16 +125,11 @@ services:
     depends_on:
       postgres_main:
         condition: service_healthy
-      # keycloak:
-      #   condition: service_started
       eureka-server:
-        condition:
-          service_started
+        condition: service_started
       config-server:
-        condition:
-          service_healthy
+        condition: service_healthy
     networks: [mfnet]
-
 
   accounting-microservice:
     build:
@@ -153,16 +144,12 @@ services:
     depends_on:
       postgres_main:
         condition: service_healthy
-      # keycloak:
-      #   condition: service_started
       eureka-server:
-        condition:
-          service_started
+        condition: service_started
       config-server:
-        condition:
-          service_healthy
+        condition: service_healthy
     networks: [mfnet]
-  
+
   payment-microservice:
     build:
       context: ..
@@ -176,16 +163,11 @@ services:
     depends_on:
       postgres_main:
         condition: service_healthy
-      # keycloak:
-      #   condition: service_started
       eureka-server:
-        condition:
-          service_started
+        condition: service_started
       config-server:
-        condition:
-          service_healthy
+        condition: service_healthy
     networks: [mfnet]
-
 
   workers_microservice:
     build:
@@ -195,29 +177,38 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8079"
-      # OIDC_ISSUER_URI: http://keycloak:8080/realms/mf
     ports:
       - "8088:8088"
     depends_on:
       postgres_main:
         condition: service_healthy
-      # keycloak:
-      #   condition: service_started
       eureka-server:
-        condition:
-          service_started
+        condition: service_started
       config-server:
-        condition:
-          service_healthy
+        condition: service_healthy
     networks: [mfnet]
 
-  # ✅ Solo si vas a usar rate limiting en el gateway; si no, comenta este bloque
-  # redis:
-  #   image: redis:7
-  #   container_name: mf_redis
-  #   ports:
-  #     - "6379:6379"
-  #   networks: [mfnet]
+  frontend:
+    build:
+      context: ../../../frontend/react-frontend-microfinanciera
+      dockerfile: Dockerfile
+      target: dev
+    container_name: mf_frontend_dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../../../frontend/react-frontend-microfinanciera/src:/app/src
+      - ../../../frontend/react-frontend-microfinanciera/public:/app/public
+      - ../../../frontend/react-frontend-microfinanciera/index.html:/app/index.html
+      - ../../../frontend/react-frontend-microfinanciera/vite.config.ts:/app/vite.config.ts
+      - ../../../frontend/react-frontend-microfinanciera/tsconfig.json:/app/tsconfig.json
+      - ../../../frontend/react-frontend-microfinanciera/tailwind.config.ts:/app/tailwind.config.ts
+      - ../../../frontend/react-frontend-microfinanciera/postcss.config.js:/app/postcss.config.js
+    depends_on:
+      - api-gateway
+      - keycloak
+    networks:
+      - mfnet
 
 volumes:
   pgdata:
