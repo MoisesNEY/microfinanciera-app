@@ -1,32 +1,85 @@
 package com.microfinance.customer_microservice.application.service.impl;
+
 import com.microfinance.customer_microservice.application.dto.input.ClientCreateDTO;
 import com.microfinance.customer_microservice.application.dto.input.ClientReplaceDTO;
 import com.microfinance.customer_microservice.application.dto.input.ClientUpdateDTO;
+import com.microfinance.customer_microservice.application.dto.input.FullClientDTO;
+import com.microfinance.customer_microservice.application.dto.input.AddressCreateDTO;
+import com.microfinance.customer_microservice.application.dto.input.ContactInfoCreateDTO;
 import com.microfinance.customer_microservice.application.dto.mapper.ClientMapper;
+import com.microfinance.customer_microservice.application.dto.mapper.AddressMapper;
+import com.microfinance.customer_microservice.application.dto.mapper.ContactInfoMapper;
 import com.microfinance.customer_microservice.application.dto.output.ClientResponseDTO;
 import com.microfinance.customer_microservice.application.service.IClientService;
 import com.microfinance.customer_microservice.domain.entity.ClientEntity;
+import com.microfinance.customer_microservice.domain.entity.AddressEntity;
+import com.microfinance.customer_microservice.domain.entity.ContactInfoEntity;
 import com.microfinance.customer_microservice.infrastructure.repository.ClientRepository;
-import java.util.stream.Collectors;
+import com.microfinance.customer_microservice.infrastructure.repository.AddressRepository;
+import com.microfinance.customer_microservice.infrastructure.repository.ContactInfoRepository;
 
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ClientServiceImpl implements IClientService {
 
     private final ClientRepository clientRepository;
+    private final AddressRepository addressRepository;
+    private final ContactInfoRepository contactInfoRepository;
+    private final AddressMapper addressMapper;
+    private final ContactInfoMapper contactInfoMapper;
 
-    public ClientServiceImpl(ClientRepository clientRepository) {
+    public ClientServiceImpl(
+            ClientRepository clientRepository,
+            AddressRepository addressRepository,
+            ContactInfoRepository contactInfoRepository,
+            AddressMapper addressMapper,
+            ContactInfoMapper contactInfoMapper) {
         this.clientRepository = clientRepository;
+        this.addressRepository = addressRepository;
+        this.contactInfoRepository = contactInfoRepository;
+        this.addressMapper = addressMapper;
+        this.contactInfoMapper = contactInfoMapper;
     }
 
     // METODO PARA CREAR UN CLIENTE
     public ClientResponseDTO createClient(ClientCreateDTO clientCreateDTO) {
-        ClientEntity client =  ClientMapper.mapper.toClientEntity(clientCreateDTO); 
+        ClientEntity client = ClientMapper.mapper.toClientEntity(clientCreateDTO);
         client = clientRepository.save(client);
+        return ClientMapper.mapper.toClientResponseDTO(client);
+    }
+
+    // METODO PARA CREAR CLIENTE CON RELACIONES (DIRECCIONES Y CONTACTOS)
+    @Transactional
+    public ClientResponseDTO createClientWithRelations(FullClientDTO fullClientDTO) {
+        // 1️⃣ Crear cliente principal
+        ClientEntity client = ClientMapper.mapper.toClientEntity(fullClientDTO.getClient());
+        client = clientRepository.save(client);
+
+        // 2️⃣ Crear direcciones si existen
+        if (fullClientDTO.getAddresses() != null && !fullClientDTO.getAddresses().isEmpty()) {
+            for (AddressCreateDTO addressDTO : fullClientDTO.getAddresses()) {
+                AddressEntity address = addressMapper.toAddressEntity(addressDTO);
+                address.setClient(client); // Establecer la relación
+                addressRepository.save(address);
+            }
+        }
+
+        // 3️⃣ Crear contactos si existen
+        if (fullClientDTO.getContacts() != null && !fullClientDTO.getContacts().isEmpty()) {
+            for (ContactInfoCreateDTO contactDTO : fullClientDTO.getContacts()) {
+                ContactInfoEntity contact = contactInfoMapper.toContactInfoEntity(contactDTO);
+                contact.setClient(client); // Establecer la relación
+                contactInfoRepository.save(contact);
+            }
+        }
+
+        // 4️⃣ Retornar respuesta
         return ClientMapper.mapper.toClientResponseDTO(client);
     }
 
@@ -49,7 +102,6 @@ public class ClientServiceImpl implements IClientService {
         return clientsResponseDTOs;
     }
 
-
     // METODO PARA OBTENER UN CLIENTE INACTIVO POR ID
     public ClientResponseDTO getClientInactiveById(UUID id) {
         ClientEntity client = clientRepository.findByIdAndActive(id, false)
@@ -69,11 +121,8 @@ public class ClientServiceImpl implements IClientService {
         return clientsResponseDTOs;
     }
 
-
-
     // METODO PARA DESACTIVAR UN CLIENTE
-    public void deActivateClient(UUID id)
-    {
+    public void deActivateClient(UUID id) {
         ClientEntity client = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
         client.setActive(false);
@@ -81,8 +130,7 @@ public class ClientServiceImpl implements IClientService {
     }
 
     // METODO PARA ACTUALIZAR UN CLIENTE (PARCIALMENTE)
-    public ClientResponseDTO updateClient(UUID id, ClientUpdateDTO clientUpdateDTO)
-    {
+    public ClientResponseDTO updateClient(UUID id, ClientUpdateDTO clientUpdateDTO) {
         ClientEntity client = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
@@ -125,9 +173,7 @@ public class ClientServiceImpl implements IClientService {
     }
 
     // METODO PARA ACTUALIZAR UN CLIENTE (COMPLETAMENTE)
-
-    public ClientResponseDTO replaceClient(UUID id, ClientReplaceDTO clientReplaceDTO)
-    {
+    public ClientResponseDTO replaceClient(UUID id, ClientReplaceDTO clientReplaceDTO) {
         ClientEntity clientEntity = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 

@@ -48,7 +48,6 @@ public class ClientEntity {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "id_document_type", nullable = false)
     private DocumentType idDocumentType;
 
@@ -59,7 +58,6 @@ public class ClientEntity {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "gender", nullable = true)
     private Gender gender;
 
@@ -67,7 +65,6 @@ public class ClientEntity {
     private String nationality;
 
     @Enumerated(EnumType.STRING)    
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "marital_status", nullable = true)
     private Marital_Status maritalStatus;
 

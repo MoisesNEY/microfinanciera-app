@@ -1,4 +1,5 @@
 package com.microfinance.customer_microservice.application.controller;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.microfinance.customer_microservice.application.dto.input.ClientCreateDTO;
 import com.microfinance.customer_microservice.application.dto.input.ClientReplaceDTO;
 import com.microfinance.customer_microservice.application.dto.input.ClientUpdateDTO;
+import com.microfinance.customer_microservice.application.dto.input.FullClientDTO;
 import com.microfinance.customer_microservice.application.dto.output.ClientResponseDTO;
 import com.microfinance.customer_microservice.application.service.IClientService;
 import org.springframework.http.HttpStatus;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 import java.util.List;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -38,6 +39,13 @@ public class ClientController {
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
+    @PostMapping("/full")
+    public ResponseEntity<ClientResponseDTO> createClientWithRelations(
+            @Valid @RequestBody FullClientDTO fullClientDTO) {
+        ClientResponseDTO createdClient = clientService.createClientWithRelations(fullClientDTO);
+        return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> getClientById(@PathVariable UUID id) {
         ClientResponseDTO client = clientService.getClientById(id);
@@ -45,10 +53,16 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
+public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
+    try {
         List<ClientResponseDTO> clients = clientService.getAllClients();
         return new ResponseEntity<>(clients, HttpStatus.OK);
+    } catch (Exception e) {
+        e.printStackTrace(); // 🧩 Esto imprimirá la traza exacta en los logs de Docker
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
+
 
     @GetMapping("/inactive/{id}")
     public ResponseEntity<ClientResponseDTO> getClientActiveById(@PathVariable UUID id) {
@@ -61,7 +75,6 @@ public class ClientController {
         List<ClientResponseDTO> clients = clientService.getAllClientsInactive();
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
-
 
     @PatchMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, 
@@ -82,5 +95,4 @@ public class ClientController {
         clientService.deActivateClient(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

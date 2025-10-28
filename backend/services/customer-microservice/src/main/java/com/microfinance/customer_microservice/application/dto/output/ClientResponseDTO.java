@@ -26,7 +26,7 @@ public class ClientResponseDTO {
     private Marital_Status maritalStatus;
     private String  occupation;
     private String  economicActivity;
-    private boolean isActive;
+    private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
