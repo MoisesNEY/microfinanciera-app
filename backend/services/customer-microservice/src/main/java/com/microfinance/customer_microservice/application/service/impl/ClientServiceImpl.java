@@ -10,6 +10,8 @@ import com.microfinance.customer_microservice.application.dto.mapper.ClientMappe
 import com.microfinance.customer_microservice.application.dto.mapper.AddressMapper;
 import com.microfinance.customer_microservice.application.dto.mapper.ContactInfoMapper;
 import com.microfinance.customer_microservice.application.dto.output.ClientResponseDTO;
+import com.microfinance.customer_microservice.application.dto.output.AddressResponseDTO;
+import com.microfinance.customer_microservice.application.dto.output.ContactInfoResponseDTO;
 import com.microfinance.customer_microservice.application.service.IClientService;
 import com.microfinance.customer_microservice.domain.entity.ClientEntity;
 import com.microfinance.customer_microservice.domain.entity.AddressEntity;
@@ -88,7 +90,22 @@ public class ClientServiceImpl implements IClientService {
         ClientEntity client = clientRepository.findByIdAndActive(id, true)
             .orElseThrow(() -> new RuntimeException("Client not found"));
 
+        // Obtener direcciones del cliente
+        List<AddressEntity> addressEntities = addressRepository.findByClientId(id);
+        List<AddressResponseDTO> addresses = addressEntities.stream()
+            .map(addressMapper::toAddressResponseDTO)
+            .collect(Collectors.toList());
+
+        // Obtener contactos del cliente
+        List<ContactInfoEntity> contactEntities = contactInfoRepository.findByClientId(id);
+        List<ContactInfoResponseDTO> contacts = contactEntities.stream()
+            .map(contactInfoMapper::toContactInfoResponseDTO)
+            .collect(Collectors.toList());
+
+        // Crear respuesta con direcciones y contactos
         ClientResponseDTO clientResponseDTO = ClientMapper.mapper.toClientResponseDTO(client);
+        clientResponseDTO.setAddresses(addresses);
+        clientResponseDTO.setContactInfoList(contacts);
 
         return clientResponseDTO;
     }

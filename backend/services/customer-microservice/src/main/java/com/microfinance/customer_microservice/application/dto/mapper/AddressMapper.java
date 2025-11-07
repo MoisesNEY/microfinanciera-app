@@ -20,7 +20,7 @@ public abstract class AddressMapper {
     @Autowired
     protected ClientRepository clientRepository;
 
-    @Mapping(source = "client", target = "clientId" , qualifiedByName = "ClientEntityToUUID")
+    @Mapping(source = "client", target = "clientId", qualifiedByName = "ClientEntityToUUID")
     public abstract AddressResponseDTO toAddressResponseDTO(AddressEntity addressEntity);
 
     @Mapping(source = "clientId", target = "client", qualifiedByName = "UUIDToClientEntity")

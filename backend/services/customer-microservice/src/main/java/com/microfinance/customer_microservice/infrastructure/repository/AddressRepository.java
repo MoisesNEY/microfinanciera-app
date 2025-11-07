@@ -1,10 +1,13 @@
 package com.microfinance.customer_microservice.infrastructure.repository;
 
-import java.util.UUID;
-
+import com.microfinance.customer_microservice.domain.entity.AddressEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.microfinance.customer_microservice.domain.entity.AddressEntity;
+import java.util.List;
+import java.util.UUID;
 
 public interface AddressRepository extends JpaRepository<AddressEntity, UUID> {
+    
+    // Método para encontrar todas las direcciones por ID de cliente
+    List<AddressEntity> findByClientId(UUID clientId);
 }
