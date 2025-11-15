@@ -47,9 +47,49 @@
   "failureFactor" : 30,
   "roles" : {
     "realm" : [ {
+      "id" : "e3633ef0-aada-41ce-a058-412a1f287415",
+      "name" : "supervisor_creditos",
+      "description" : "Supervisa préstamos, pagos y contabilidad.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
       "id" : "42c97dab-0295-47ff-bcda-64ebed331e24",
       "name" : "uma_authorization",
       "description" : "${role_uma_authorization}",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "5cfb4f72-b3f0-4cff-bb2a-4780900a7777",
+      "name" : "asesor_credito",
+      "description" : "Registra clientes y procesa solicitudes.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "de45beb2-cfb3-4826-b35b-f9ad6b9748bf",
+      "name" : "cliente",
+      "description" : "Usuario externo (persona natural).",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "4d5dfce8-52f3-48a6-a3a2-cbf6ab5b68d7",
+      "name" : "cobrador",
+      "description" : "Gestiona cobros en campo.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "b42c7b9b-58d7-4984-81f8-cebec7c1b06b",
+      "name" : "admin_general",
+      "description" : "Control total del sistema.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
@@ -62,9 +102,17 @@
       "composites" : {
         "realm" : [ "offline_access", "uma_authorization" ],
         "client" : {
-          "account" : [ "view-profile", "manage-account" ]
+          "account" : [ "manage-account", "view-profile" ]
         }
       },
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "359482ab-d282-49f3-9a4f-64a0b9bb5d36",
+      "name" : "contador",
+      "description" : "Control contable y reportes financieros.",
+      "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
       "attributes" : { }
@@ -72,6 +120,14 @@
       "id" : "c418afc7-7240-4697-8e17-896c576c878d",
       "name" : "offline_access",
       "description" : "${role_offline-access}",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "5453bc6b-1e52-45eb-b7c9-3f4848da4a8b",
+      "name" : "cajero",
+      "description" : "Registra y valida pagos.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
@@ -223,7 +279,7 @@
         "composite" : true,
         "composites" : {
           "client" : {
-            "realm-management" : [ "query-groups", "impersonation", "view-identity-providers", "query-clients", "view-events", "manage-events", "view-authorization", "manage-clients", "query-realms", "manage-identity-providers", "manage-authorization", "query-users", "view-clients", "manage-users", "view-users", "view-realm", "create-client", "manage-realm" ]
+            "realm-management" : [ "impersonation", "query-groups", "view-identity-providers", "query-clients", "view-events", "manage-events", "view-authorization", "manage-clients", "query-realms", "manage-identity-providers", "manage-authorization", "query-users", "manage-users", "view-clients", "view-users", "view-realm", "create-client", "manage-realm" ]
           }
         },
         "clientRole" : true,
@@ -333,6 +389,23 @@
         "containerId" : "4a900d4a-322a-4cfc-b8d7-96a7aa73bffd",
         "attributes" : { }
       } ],
+      "frontend-client" : [ {
+        "id" : "df2030e4-4b79-430f-950d-33da06093404",
+        "name" : "ROLE_USER",
+        "description" : "Usuario normal de la app",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "7c0468e7-ef68-44d5-8885-2604c6b25647",
+        "attributes" : { }
+      }, {
+        "id" : "17601e49-edb5-4778-9e70-e1ba0878a69a",
+        "name" : "ROLE_ADMIN",
+        "description" : "Acceso administrativo (ver métricas, modificar)",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "7c0468e7-ef68-44d5-8885-2604c6b25647",
+        "attributes" : { }
+      } ],
       "spring-cloud-gateway-client" : [ ]
     }
   },
@@ -377,6 +450,224 @@
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister" : false,
   "webAuthnPolicyPasswordlessAcceptableAaguids" : [ ],
   "webAuthnPolicyPasswordlessExtraOrigins" : [ ],
+  "users" : [ {
+    "id" : "a351e2f6-0f63-4717-b59e-b9c9cc4ce19d",
+    "username" : "admin",
+    "firstName" : "Eduardo",
+    "lastName" : "González",
+    "email" : "eduar2.agm2020@gmail.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527178852,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "a86e683b-66b3-4a21-a73f-7c30f5495851",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527192654,
+      "secretData" : "{\"value\":\"jdLb7X2b0Cyn4P+udInFgO1f1x3y2Tb75hH7IRt5mg8=\",\"salt\":\"zMf8oG4znITG/95hLPwseQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "admin_general", "default-roles-microfinance-microservice-realm" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_ADMIN" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "38ff3d10-2baa-437d-ac23-1ddd7663d2da",
+    "username" : "carlos",
+    "firstName" : "Carlos",
+    "lastName" : "Gomez",
+    "email" : "carlos@microfinanciera.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527407244,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "51cf1ca9-b5da-4d92-8727-204705655571",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527415814,
+      "secretData" : "{\"value\":\"0rTkNThUn2tekPjRJJtLGR72BN5pQFP2ho84Xp0skt0=\",\"salt\":\"ndYZDJSi+xGKtN/C7b2n+w==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm", "contador" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "214e6170-f184-43fd-aeb4-265119a62eae",
+    "username" : "eduardo",
+    "firstName" : "Eduardo",
+    "lastName" : "González",
+    "email" : "eduar2.agm2000@gmail.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527514593,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "f6e1fcf6-0e4b-4126-9c13-70e00f55407b",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527523595,
+      "secretData" : "{\"value\":\"oz8HkYnBI3TUyiPwmtYjraI8j5pgJgeyyrH95N4CnzY=\",\"salt\":\"1vmOwd8jmfUAZ2DWP37rmw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "cliente", "default-roles-microfinance-microservice-realm" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "53e63e18-33ab-40d1-a923-621331307455",
+    "username" : "juan",
+    "firstName" : "Juan",
+    "lastName" : "Perez",
+    "email" : "juan@microfinanciera.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527361103,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "37f0ecf9-ba83-4df7-9c48-9a00a1951538",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527369310,
+      "secretData" : "{\"value\":\"Kn8HDcb/MPb9FYJ+SdHmlxekub42N9Z1sAfWl1V4R7c=\",\"salt\":\"hbJpu+ckUHacKm0lwMfVlw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm", "cajero" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "806f41f6-7e15-4570-8b47-59fb496b777c",
+    "username" : "maria",
+    "firstName" : "Maria",
+    "lastName" : "Lopez",
+    "email" : "maria@microfinanciera.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527315577,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "93e08180-b1d9-401b-a4ae-100161ebc5d1",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527325407,
+      "secretData" : "{\"value\":\"hqDP7GoamxPRjMvp5D1W9eHnkpIC4lD5Z3QaSqj6qL4=\",\"salt\":\"9+AUs07kYiJDyIu4jBPHFw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "asesor_credito", "default-roles-microfinance-microservice-realm" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "00712652-b93a-49dc-a095-14182bcf5a0f",
+    "username" : "myuser",
+    "email" : "myuser@microfinance.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1760722601751,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "adc0cddb-3aa7-4e70-8b43-c7bee42a5627",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1760722632993,
+      "secretData" : "{\"value\":\"jZZfxJWZ12bR3yqnnyvuUO+HIbWzp3HDP+cSVaBSHH4=\",\"salt\":\"/aUExxpTU4m2w423z08GEQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "6c7f7b85-97ba-4f41-bc7e-175469b0ee77",
+    "username" : "ricardo",
+    "firstName" : "Ricardo",
+    "lastName" : "Martinez",
+    "email" : "ricardo@microfinanciera.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527461044,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "216e086a-65a7-48e6-88fe-ba7000d43563",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527469723,
+      "secretData" : "{\"value\":\"mhOr630hI4r2NNzFtNipKCZp3z9VYY8f1DK5CGY6wu4=\",\"salt\":\"yttuHnRN/Fo4Yd1mDUPPMQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "cobrador", "default-roles-microfinance-microservice-realm" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "25e2d2a2-a53b-40ef-b7d1-2ccb357caa1d",
+    "username" : "service-account-spring-cloud-gateway-client",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1760722185510,
+    "totp" : false,
+    "serviceAccountClientId" : "spring-cloud-gateway-client",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "db09caf8-3549-4671-9331-74311e5763c5",
+    "username" : "sofia",
+    "firstName" : "Sofia",
+    "lastName" : "Sanchez",
+    "email" : "sofia@microfinanciera.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1761527265313,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "9d8576c4-2e17-4c68-927f-7a891e55dba6",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761527274204,
+      "secretData" : "{\"value\":\"pt7rLdj1djtVtUuXEHel6q05EJbtYU87h3lboIVQyIM=\",\"salt\":\"9fl7TramzGNdCcUlVvQjUw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "supervisor_creditos", "default-roles-microfinance-microservice-realm" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_ADMIN" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ],
   "scopeMappings" : [ {
     "clientScope" : "offline_access",
     "roles" : [ "offline_access" ]
@@ -480,7 +771,8 @@
     "protocol" : "openid-connect",
     "attributes" : {
       "realm_client" : "false",
-      "client.use.lightweight.access.token.enabled" : "true"
+      "client.use.lightweight.access.token.enabled" : "true",
+      "post.logout.redirect.uris" : "+"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : true,
@@ -508,11 +800,68 @@
     "frontchannelLogout" : false,
     "protocol" : "openid-connect",
     "attributes" : {
-      "realm_client" : "true"
+      "realm_client" : "true",
+      "post.logout.redirect.uris" : "+"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : false,
     "nodeReRegistrationTimeout" : 0,
+    "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "offline_access", "organization", "microprofile-jwt" ]
+  }, {
+    "id" : "7c0468e7-ef68-44d5-8885-2604c6b25647",
+    "clientId" : "frontend-client",
+    "name" : "React Frontend",
+    "description" : "Cliente público para la app React",
+    "rootUrl" : "http://localhost:5173",
+    "adminUrl" : "http://localhost:5173",
+    "baseUrl" : "http://localhost:5173",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : true,
+    "clientAuthenticatorType" : "client-secret",
+    "redirectUris" : [ "http://localhost:5173/*" ],
+    "webOrigins" : [ "http://localhost:5173" ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : true,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : false,
+    "serviceAccountsEnabled" : false,
+    "publicClient" : true,
+    "frontchannelLogout" : true,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "request.object.signature.alg" : "any",
+      "post.logout.redirect.uris" : "http://localhost:5173/*",
+      "frontchannel.logout.session.required" : "true",
+      "oauth2.device.authorization.grant.enabled" : "false",
+      "backchannel.logout.revoke.offline.tokens" : "false",
+      "use.refresh.tokens" : "true",
+      "realm_client" : "false",
+      "oidc.ciba.grant.enabled" : "false",
+      "backchannel.logout.session.required" : "true",
+      "client_credentials.use_refresh_token" : "false",
+      "require.pushed.authorization.requests" : "false",
+      "request.object.encryption.enc" : "any",
+      "pkce.code.challenge.method" : "S256",
+      "dpop.bound.access.tokens" : "false",
+      "id.token.as.detached.signature" : "false",
+      "request.object.encryption.alg" : "any",
+      "client.introspection.response.allow.jwt.claim.enabled" : "false",
+      "standard.token.exchange.enabled" : "false",
+      "client.use.lightweight.access.token.enabled" : "false",
+      "request.object.required" : "not required",
+      "access.token.header.type.rfc9068" : "false",
+      "tls.client.certificate.bound.access.tokens" : "false",
+      "acr.loa.map" : "{}",
+      "display.on.consent.screen" : "false",
+      "token.response.type.bearer.lower-case" : "false"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
     "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "organization", "microprofile-jwt" ]
   }, {
@@ -536,7 +885,8 @@
     "frontchannelLogout" : false,
     "protocol" : "openid-connect",
     "attributes" : {
-      "realm_client" : "true"
+      "realm_client" : "true",
+      "post.logout.redirect.uris" : "+"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : false,
@@ -618,30 +968,31 @@
     "frontchannelLogout" : true,
     "protocol" : "openid-connect",
     "attributes" : {
-      "id.token.as.detached.signature" : "false",
-      "client.secret.creation.time" : "1760722185",
       "request.object.signature.alg" : "any",
-      "request.object.encryption.alg" : "any",
-      "client.introspection.response.allow.jwt.claim.enabled" : "false",
-      "standard.token.exchange.enabled" : "false",
       "frontchannel.logout.session.required" : "true",
+      "post.logout.redirect.uris" : "+",
       "oauth2.device.authorization.grant.enabled" : "false",
       "backchannel.logout.revoke.offline.tokens" : "false",
       "use.refresh.tokens" : "true",
       "realm_client" : "false",
       "oidc.ciba.grant.enabled" : "false",
-      "client.use.lightweight.access.token.enabled" : "false",
       "backchannel.logout.session.required" : "true",
       "client_credentials.use_refresh_token" : "false",
+      "require.pushed.authorization.requests" : "false",
+      "request.object.encryption.enc" : "any",
+      "dpop.bound.access.tokens" : "false",
+      "id.token.as.detached.signature" : "false",
+      "client.secret.creation.time" : "1760722185",
+      "request.object.encryption.alg" : "any",
+      "client.introspection.response.allow.jwt.claim.enabled" : "false",
+      "standard.token.exchange.enabled" : "false",
+      "client.use.lightweight.access.token.enabled" : "false",
       "request.object.required" : "not required",
       "access.token.header.type.rfc9068" : "false",
       "acr.loa.map" : "{}",
-      "require.pushed.authorization.requests" : "false",
       "tls.client.certificate.bound.access.tokens" : "false",
       "display.on.consent.screen" : "false",
-      "request.object.encryption.enc" : "any",
-      "token.response.type.bearer.lower-case" : "false",
-      "dpop.bound.access.tokens" : "false"
+      "token.response.type.bearer.lower-case" : "false"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : true,
@@ -745,8 +1096,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "client_id",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "client_id",
         "jsonType.label" : "String"
@@ -759,8 +1111,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "clientHost",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "clientHost",
         "jsonType.label" : "String"
@@ -773,8 +1126,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "clientAddress",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "clientAddress",
         "jsonType.label" : "String"
@@ -1016,6 +1370,7 @@
       "config" : {
         "introspection.token.claim" : "true",
         "multivalued" : "true",
+        "userinfo.token.claim" : "true",
         "user.attribute" : "foo",
         "id.token.claim" : "true",
         "access.token.claim" : "true",
@@ -1065,8 +1420,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "AUTH_TIME",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "auth_time",
         "jsonType.label" : "long"
@@ -1130,12 +1486,13 @@
       "protocolMapper" : "oidc-organization-membership-mapper",
       "consentRequired" : false,
       "config" : {
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "multivalued" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "organization",
-        "jsonType.label" : "String",
-        "multivalued" : "true"
+        "jsonType.label" : "String"
       }
     } ]
   }, {
@@ -1221,7 +1578,8 @@
       "config" : {
         "id.token.claim" : "true",
         "introspection.token.claim" : "true",
-        "access.token.claim" : "true"
+        "access.token.claim" : "true",
+        "userinfo.token.claim" : "true"
       }
     } ]
   }, {
@@ -1320,7 +1678,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-property-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "oidc-full-name-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "saml-user-attribute-mapper", "oidc-usermodel-attribute-mapper" ]
       }
     }, {
       "id" : "bcde7666-5d08-4086-b594-1b0a7028f3a9",
@@ -1338,7 +1696,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-full-name-mapper", "oidc-address-mapper", "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "saml-user-property-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-full-name-mapper", "oidc-address-mapper", "saml-user-attribute-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "37b308b0-ff58-46d3-aa0b-69e042a4be15",
@@ -2112,12 +2470,16 @@
     "cibaExpiresIn" : "120",
     "cibaAuthRequestedUserHint" : "login_hint",
     "oauth2DeviceCodeLifespan" : "600",
+    "clientOfflineSessionMaxLifespan" : "0",
     "oauth2DevicePollingInterval" : "5",
+    "clientSessionIdleTimeout" : "0",
     "parRequestUriLifespan" : "60",
+    "clientSessionMaxLifespan" : "0",
+    "clientOfflineSessionIdleTimeout" : "0",
     "cibaInterval" : "5",
     "realmReusableOtpCode" : "false"
   },
-  "keycloakVersion" : "26.4.1",
+  "keycloakVersion" : "26.4.5",
   "userManagedAccessAllowed" : false,
   "organizationsEnabled" : false,
   "verifiableCredentialsEnabled" : false,
