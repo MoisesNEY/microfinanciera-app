@@ -1,25 +1,31 @@
 #!/bin/bash
 set -e
 
-export REALM_NAME="microfinance-microservice-realm"
-export EXPORT_DIR="/opt/keycloak/data/import"
+export DATA_DIR="/opt/keycloak/data"
+
+echo "📥 Importando realm antes de iniciar Keycloak..."
+
+# Import único, directo desde /data
+/opt/keycloak/bin/kc.sh import \
+    --dir "$DATA_DIR" \
+    --override true || true
+
+echo "✅ Import completado."
 
 cleanup() {
-    echo "🔄 Exportando cambios de Keycloak…"
+    echo "💾 Exportando cambios al mismo directorio..."
     /opt/keycloak/bin/kc.sh export \
-        --realm "$REALM_NAME" \
-        --dir "$EXPORT_DIR" \
+        --dir "$DATA_DIR" \
         --users realm_file \
-        --optimized || true \
-        --overwrite || true
-    echo "✅ Exportación completa."
+        --optimized || true
+    echo "✨ Export completado (mismo archivo actualizado)."
 }
 
 trap cleanup SIGTERM
 
-echo "🚀 Iniciando Keycloak…"
-/opt/keycloak/bin/kc.sh start-dev --import-realm &
-KC_PID=$!
+echo "🚀 Iniciando Keycloak..."
+/opt/keycloak/bin/kc.sh start-dev &
 
+KC_PID=$!
 wait $KC_PID
 cleanup

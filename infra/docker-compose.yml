@@ -82,9 +82,9 @@ services:
       KC_HTTP_PORT: 8085
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      KC_PRODUCTION: "true"
+      KC_PRODUCTION: "false"
     volumes:
-      - ../backend/keycloak:/opt/keycloak/data/import
+      - ../backend/keycloak/data:/opt/keycloak/data
     ports:
       - "8085:8085"
     depends_on:

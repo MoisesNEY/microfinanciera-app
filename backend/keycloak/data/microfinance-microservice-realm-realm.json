@@ -102,7 +102,7 @@
       "composites" : {
         "realm" : [ "offline_access", "uma_authorization" ],
         "client" : {
-          "account" : [ "manage-account", "view-profile" ]
+          "account" : [ "view-profile", "manage-account" ]
         }
       },
       "clientRole" : false,
@@ -279,7 +279,7 @@
         "composite" : true,
         "composites" : {
           "client" : {
-            "realm-management" : [ "impersonation", "query-groups", "view-identity-providers", "query-clients", "view-events", "manage-events", "view-authorization", "manage-clients", "query-realms", "manage-identity-providers", "manage-authorization", "query-users", "manage-users", "view-clients", "view-users", "view-realm", "create-client", "manage-realm" ]
+            "realm-management" : [ "query-groups", "impersonation", "view-identity-providers", "query-clients", "view-events", "manage-events", "view-authorization", "manage-clients", "query-realms", "manage-identity-providers", "manage-authorization", "query-users", "view-clients", "manage-users", "view-users", "view-realm", "create-client", "manage-realm" ]
           }
         },
         "clientRole" : true,

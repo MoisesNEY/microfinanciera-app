@@ -13,9 +13,7 @@ RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysi
 
 RUN /opt/keycloak/bin/kc.sh build
 
-# Imagen final
 FROM quay.io/keycloak/keycloak:latest
-
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
 COPY backend/keycloak/entrypoint.sh /opt/keycloak/entrypoint.sh
