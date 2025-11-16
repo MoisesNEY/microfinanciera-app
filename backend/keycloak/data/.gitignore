@@ -1,0 +1,4 @@
+tmp/
+kc-gzip-cache/
+*.tmp
+*.gz
