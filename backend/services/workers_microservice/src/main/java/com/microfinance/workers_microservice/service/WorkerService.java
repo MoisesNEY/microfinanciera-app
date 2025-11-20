@@ -68,12 +68,20 @@ public class WorkerService {
   }
 
   @Transactional(readOnly = true)
-  public WorkerResponse get(UUID id){
-    return repo.findById(id).map(this::toResponse)
-      .orElseThrow(() -> new EntityNotFoundException("worker no encontrado"));
+  public WorkerResponse get(UUID id, WorkerStatus status) {
+      if (status != null) {
+          return repo.findByIdAndStatus(id, status)
+                  .map(this::toResponse)
+                  .orElseThrow(() -> new EntityNotFoundException("worker no encontrado con ese status"));
+      } else {
+          return repo.findById(id)
+                  .map(this::toResponse)
+                  .orElseThrow(() -> new EntityNotFoundException("worker no encontrado"));
+      }
   }
 
-  /* =========================
+
+    /* =========================
      UPDATE (PUT) - reemplazo completo
      ========================= */
   @Transactional
@@ -106,7 +114,8 @@ public class WorkerService {
             w.getId().toString(),
             r.email(),
             r.firstName(),
-            r.lastName()
+            r.lastName(),
+            r.status() == WorkerStatus.ACTIVE
     );
 
     // Dispara @PreUpdate y valida constraints ya mismo
@@ -194,7 +203,15 @@ public class WorkerService {
   if (p.has("lastName") && !p.get("lastName").isNull()) {
       keycloakPayload.put("lastName", w.getLastName());
   }
-  if (!keycloakPayload.isEmpty()) {
+  if (p.has("status"))
+  {
+      WorkerStatus status = WorkerStatus.valueOf(p.get("status").asText());
+      w.setStatus(status);
+      keycloakPayload.put("enabled", status == WorkerStatus.ACTIVE);
+  }
+
+  if (!keycloakPayload.isEmpty())
+  {
       keycloakService.updateUserWithUserTokenDynamic(
               bearerToken,
               w.getId().toString(),
@@ -204,13 +221,22 @@ public class WorkerService {
   return toResponse(w);
 }
 
-  @Transactional
-  public void delete(UUID id){
-    if (!repo.existsById(id)) throw new EntityNotFoundException("worker no encontrado");
-    repo.deleteById(id);
-  }
+    @Transactional
+    public void delete(UUID id, String bearerToken){
+        var w = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("worker no encontrado"));
+        w.setStatus(WorkerStatus.INACTIVE);
+        repo.saveAndFlush(w);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("enabled", false);
+        keycloakService.updateUserWithUserTokenDynamic(
+                bearerToken,
+                w.getId().toString(),
+                payload
+        );
+    }
 
-  private WorkerResponse toResponse(Worker w){
+
+    private WorkerResponse toResponse(Worker w){
     return new WorkerResponse(
       w.getId(), w.getFirstName(), w.getLastName(), w.getUsername(), w.getDocument(), w.getPhone(), w.getEmail(),
       w.getPosition(), w.getDepartment(), w.getHireDate(), w.getStatus(), w.getCreatedAt(), w.getUpdatedAt()

@@ -38,8 +38,8 @@ public class WorkerController {
     }
 
     @GetMapping("/{id}")
-    public WorkerResponse get(@PathVariable UUID id) { 
-        return service.get(id); 
+    public WorkerResponse get(@PathVariable UUID id, @RequestParam(required = false) WorkerStatus status ) {
+        return service.get(id, status);
     }
 
     @PutMapping("/{id}")
@@ -60,7 +60,8 @@ public class WorkerController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  Código 204 para eliminación
-    public void delete(@PathVariable UUID id) { 
-        service.delete(id); 
+    public void delete(@PathVariable UUID id,
+                        @RequestHeader("Authorization") String bearerToken) {
+        service.delete(id, bearerToken);
     }
 }

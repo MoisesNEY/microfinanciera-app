@@ -70,12 +70,16 @@ public class KeycloakService {
             String keycloakId,
             String email,
             String firstName,
-            String lastName
+            String lastName,
+            Boolean enabled
     ) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("email", email);
         payload.put("firstName", firstName);
         payload.put("lastName", lastName);
+        if (enabled != null) {
+            payload.put("enabled", enabled);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
