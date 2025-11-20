@@ -23,8 +23,8 @@ public class WorkerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //  Código 201 para creación
-    public WorkerResponse create(@Valid @RequestBody WorkerCreateRequest req) { 
-        return service.create(req); 
+    public WorkerResponse create(@Valid @RequestBody WorkerCreateRequest req, @RequestHeader("Authorization") String bearerToken) {
+        return service.create(req, bearerToken);
     }
 
     @GetMapping
@@ -38,27 +38,30 @@ public class WorkerController {
     }
 
     @GetMapping("/{id}")
-    public WorkerResponse get(@PathVariable UUID id) { 
-        return service.get(id); 
+    public WorkerResponse get(@PathVariable UUID id, @RequestParam(required = false) WorkerStatus status ) {
+        return service.get(id, status);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<WorkerResponse> update(@PathVariable UUID id,
-                                               @Valid @RequestBody WorkerUpdateRequest req) {
-    return ResponseEntity.ok(service.update(id, req));
+                                               @Valid @RequestBody WorkerUpdateRequest req,
+                                               @RequestHeader("Authorization") String bearerToken) {
+    return ResponseEntity.ok(service.update(id, req, bearerToken));
     }
 
     // Opcional: PATCH para actualizaciones parciales
     @PatchMapping("/{id}")
     public ResponseEntity<WorkerResponse> patch(@PathVariable UUID id,
-                                            @RequestBody JsonNode body) {
-    return ResponseEntity.ok(service.patch(id, body));
+                                            @RequestBody JsonNode body,
+                                            @RequestHeader("Authorization") String bearerToken) {
+    return ResponseEntity.ok(service.patch(id, body, bearerToken));
     }
 
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) //  Código 204 para eliminación
-    public void delete(@PathVariable UUID id) { 
-        service.delete(id); 
+    public void delete(@PathVariable UUID id,
+                        @RequestHeader("Authorization") String bearerToken) {
+        service.delete(id, bearerToken);
     }
 }

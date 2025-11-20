@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface WorkerRepository extends JpaRepository<Worker, UUID> {
   Optional<Worker> findByEmail(String email);
   Optional<Worker> findByDocument(String document);
+  Optional<Worker> findByUsername(String username);
   Page<Worker> findByStatus(WorkerStatus status, Pageable pageable);
+  Optional<Worker> findByIdAndStatus(UUID id, WorkerStatus status);
   Page<Worker> findByPositionIgnoreCase(String position, Pageable pageable);
 }

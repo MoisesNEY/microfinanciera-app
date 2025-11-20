@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public record WorkerPatchRequest(
   String firstName,
   String lastName,
+  String username,
   String document,
   String email,
   String phone,

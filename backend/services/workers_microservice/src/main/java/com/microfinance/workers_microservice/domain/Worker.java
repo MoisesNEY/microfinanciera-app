@@ -20,7 +20,7 @@ import java.util.UUID;
 })
 public class Worker {
 
-  @Id @GeneratedValue @UuidGenerator
+  @Id
   private UUID id;
 
   @NotBlank @Size(max=120)
@@ -30,6 +30,10 @@ public class Worker {
   @NotBlank @Size(max=120)
   @Column(name="last_name", nullable=false, length=120)
   private String lastName;
+
+  @NotBlank
+  @Column(nullable=false, length=80, unique=true)
+  private String username;
 
   @NotBlank @Size(max=50)
   @Column(nullable=false, length=50)
