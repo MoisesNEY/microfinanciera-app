@@ -23,8 +23,8 @@ public class WorkerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //  Código 201 para creación
-    public WorkerResponse create(@Valid @RequestBody WorkerCreateRequest req) { 
-        return service.create(req); 
+    public WorkerResponse create(@Valid @RequestBody WorkerCreateRequest req, @RequestHeader("Authorization") String bearerToken) {
+        return service.create(req, bearerToken);
     }
 
     @GetMapping
@@ -44,15 +44,17 @@ public class WorkerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<WorkerResponse> update(@PathVariable UUID id,
-                                               @Valid @RequestBody WorkerUpdateRequest req) {
-    return ResponseEntity.ok(service.update(id, req));
+                                               @Valid @RequestBody WorkerUpdateRequest req,
+                                               @RequestHeader("Authorization") String bearerToken) {
+    return ResponseEntity.ok(service.update(id, req, bearerToken));
     }
 
     // Opcional: PATCH para actualizaciones parciales
     @PatchMapping("/{id}")
     public ResponseEntity<WorkerResponse> patch(@PathVariable UUID id,
-                                            @RequestBody JsonNode body) {
-    return ResponseEntity.ok(service.patch(id, body));
+                                            @RequestBody JsonNode body,
+                                            @RequestHeader("Authorization") String bearerToken) {
+    return ResponseEntity.ok(service.patch(id, body, bearerToken));
     }
 
 
