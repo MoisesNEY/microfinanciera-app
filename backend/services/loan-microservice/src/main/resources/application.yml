@@ -1,3 +1,13 @@
 spring:
   application:
     name: loan-microservice
+
+# Configuracion para emitir asiento contable al accounting-microservice
+accounting:
+  service:
+    url: http://api-gateway:8080
+  accounts:
+    cash: 1001           # ID cuenta caja/banco
+    loanReceivable: 1201 # ID cuenta por cobrar prestamos
+    interestIncome: 4101 # ID ingreso por intereses
+    moratoryIncome: 4102 # ID ingreso por mora

@@ -24,12 +24,14 @@ public class LoanPaymentService {
     private final LoanPaymentRepository repo;
     private final LoanRepository loanRepo;
     private final LoanScheduleRepository scheduleRepo;
+    private final AccountingClient accountingClient;
     private static final MathContext MC = new MathContext(12, RoundingMode.HALF_UP);
 
-    public LoanPaymentService(LoanPaymentRepository repo, LoanRepository loanRepo, LoanScheduleRepository scheduleRepo) {
+    public LoanPaymentService(LoanPaymentRepository repo, LoanRepository loanRepo, LoanScheduleRepository scheduleRepo, AccountingClient accountingClient) {
         this.repo = repo;
         this.loanRepo = loanRepo;
         this.scheduleRepo = scheduleRepo;
+        this.accountingClient = accountingClient;
     }
 
     public List<LoanPayment> all() {
@@ -47,7 +49,7 @@ public class LoanPaymentService {
     @Transactional
     public LoanPayment create(LoanPaymentDTOs.Create dto) {
         Loan loan = loanRepo.findById(dto.loanId()).orElseThrow();
-        applyPayment(loan, dto); // Nuevo: aplicar pago a cuotas con mora sobre capital vencido
+        AppliedBreakdown breakdown = applyPayment(loan, dto); // Nuevo: aplicar pago a cuotas con mora sobre capital vencido
         LoanPayment p = new LoanPayment();
         p.setLoanId(dto.loanId());
         p.setInstallmentId(dto.installmentId());
@@ -55,7 +57,18 @@ public class LoanPaymentService {
         p.setAmount(dto.amount());
         p.setMethod(dto.method());
         p.setReference(dto.reference());
-        return repo.save(p);
+        LoanPayment saved = repo.save(p);
+        accountingClient.sendPaymentApplied(
+            saved.getId(),
+            loan.getId(),
+            breakdown.capital(),
+            breakdown.interest(),
+            breakdown.moratory(),
+            breakdown.total(),
+            dto.paymentDate(),
+            "Pago de prestamo " + loan.getId()
+        );
+        return saved;
     }
 
     public LoanPayment update(UUID id, LoanPaymentDTOs.Create dto) {
@@ -73,9 +86,9 @@ public class LoanPaymentService {
         repo.deleteById(id);
     }
 
-    private void applyPayment(Loan loan, LoanPaymentDTOs.Create dto) {
+    private AppliedBreakdown applyPayment(Loan loan, LoanPaymentDTOs.Create dto) {
         List<LoanSchedule> schedules = scheduleRepo.findByLoanIdOrderByInstallmentNo(dto.loanId());
-        if (schedules.isEmpty()) return;
+        if (schedules.isEmpty()) return new AppliedBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
         // Si se envia una cuota especifica, la procesamos primero
         if (dto.installmentId() != null) {
@@ -85,6 +98,9 @@ public class LoanPaymentService {
 
         BigDecimal remaining = dto.amount();
         LocalDate paymentDate = dto.paymentDate();
+        BigDecimal totalMora = BigDecimal.ZERO;
+        BigDecimal totalInterest = BigDecimal.ZERO;
+        BigDecimal totalCapital = BigDecimal.ZERO;
 
         for (LoanSchedule s : schedules) {
             if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
@@ -101,16 +117,19 @@ public class LoanPaymentService {
             BigDecimal payMora = min(remaining, mora);
             s.setInterestPaid(s.getInterestPaid().add(payMora, MC));
             remaining = remaining.subtract(payMora, MC);
+            totalMora = totalMora.add(payMora, MC);
 
             // 2) Pagar interes corriente
             BigDecimal payInterest = min(remaining, interestOutstanding);
             s.setInterestPaid(s.getInterestPaid().add(payInterest, MC));
             remaining = remaining.subtract(payInterest, MC);
+            totalInterest = totalInterest.add(payInterest, MC);
 
             // 3) Pagar capital
             BigDecimal payPrincipal = min(remaining, principalOutstanding);
             s.setPrincipalPaid(s.getPrincipalPaid().add(payPrincipal, MC));
             remaining = remaining.subtract(payPrincipal, MC);
+            totalCapital = totalCapital.add(payPrincipal, MC);
 
             BigDecimal totalPaid = s.getPrincipalPaid().add(s.getInterestPaid(), MC);
             s.setTotalPaid(totalPaid);
@@ -130,6 +149,8 @@ public class LoanPaymentService {
         }
 
         refreshLoanStatus(loan);
+        BigDecimal totalApplied = totalMora.add(totalInterest, MC).add(totalCapital, MC);
+        return new AppliedBreakdown(totalCapital, totalInterest, totalMora, totalApplied);
     }
 
     private BigDecimal calculateMora(Loan loan, LoanSchedule schedule, LocalDate paymentDate, BigDecimal principalOutstanding) {
@@ -165,5 +186,11 @@ public class LoanPaymentService {
 
     private BigDecimal min(BigDecimal a, BigDecimal b) {
         return a.compareTo(b) <= 0 ? a : b;
+    }
+
+    private record AppliedBreakdown(BigDecimal capital, BigDecimal interest, BigDecimal moratory, BigDecimal total) {
+        AppliedBreakdown(BigDecimal capital, BigDecimal interest, BigDecimal moratory) {
+            this(capital, interest, moratory, capital.add(interest).add(moratory));
+        }
     }
 }

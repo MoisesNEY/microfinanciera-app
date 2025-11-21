@@ -20,8 +20,8 @@ public class PaymentResponse {
     public PaymentResponse() {}
 
     public PaymentResponse(UUID id, UUID loanId, LocalDate paymentDate, BigDecimal amountPaid,
-                           PaymentMethod paymentMethod, String transactionReference, UUID cashierId,
-                           PaymentStatus status) {
+                        PaymentMethod paymentMethod, String transactionReference, UUID cashierId,
+                        PaymentStatus status) {
         this.id = id;
         this.loanId = loanId;
         this.paymentDate = paymentDate;

@@ -16,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JournalEntryController {
 
- private final JournalEntryService journalEntryService;
+private final JournalEntryService journalEntryService;
 
     @GetMapping
     public ResponseEntity<List<JournalEntryDTO>> getAll() {

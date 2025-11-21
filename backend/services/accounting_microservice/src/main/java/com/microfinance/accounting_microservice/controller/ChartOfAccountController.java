@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChartOfAccountController {
 
- private final ChartOfAccountService chartOfAccountService;
+private final ChartOfAccountService chartOfAccountService;
 
     @GetMapping
     public ResponseEntity<List<ChartOfAccountDTO>> getAll() {

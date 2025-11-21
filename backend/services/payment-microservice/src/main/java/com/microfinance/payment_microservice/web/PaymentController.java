@@ -3,16 +3,18 @@ package com.microfinance.payment_microservice.web;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.microfinance.payment_microservice.domain.Payment;
+import com.microfinance.payment_microservice.dto.PaymentRequest;
+import com.microfinance.payment_microservice.dto.PaymentResponse;
 import com.microfinance.payment_microservice.service.PaymentService;
 
 @RestController
@@ -20,26 +22,42 @@ import com.microfinance.payment_microservice.service.PaymentService;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @Autowired
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/payments")
-    public ResponseEntity<List<Payment>> getAllPayments() {
-        List<Payment> payments = paymentService.getAllPayments();
+    @GetMapping
+    public ResponseEntity<List<PaymentResponse>> getAllPayments() {
+        List<PaymentResponse> payments = paymentService.getAllPayments();
         return ResponseEntity.ok(payments);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable UUID id) {
+        return ResponseEntity.ok(paymentService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
-        Payment savedPayment = paymentService.savePayment(payment);
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest request) {
+        PaymentResponse savedPayment = paymentService.createAndApply(request);
         return ResponseEntity.ok(savedPayment);
+    }
+    
+    @PostMapping("/{id}")
+    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable UUID id, @RequestBody PaymentRequest request) {
+        PaymentResponse updated = paymentService.update(id, request);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/loan/{loanId}")
-    public ResponseEntity<List<Payment>> getPaymentsByLoanId(@PathVariable UUID loanId) {
-        List<Payment> payments = paymentService.getPaymentsByLoanId(loanId);
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByLoanId(@PathVariable UUID loanId) {
+        List<PaymentResponse> payments = paymentService.getPaymentsByLoanId(loanId);
         return ResponseEntity.ok(payments);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePayment(@PathVariable UUID id) {
+        paymentService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

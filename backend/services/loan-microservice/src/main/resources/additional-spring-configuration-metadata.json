@@ -1,0 +1,30 @@
+{
+  "properties": [
+    {
+      "name": "accounting.service.url",
+      "type": "java.lang.String",
+      "description": "URL del accounting-microservice (gateway o directo)",
+      "defaultValue": "http://api-gateway:8080"
+    },
+    {
+      "name": "accounting.accounts.cash",
+      "type": "java.lang.Integer",
+      "description": "Cuenta contable de caja/banco para registrar pagos"
+    },
+    {
+      "name": "accounting.accounts.loanReceivable",
+      "type": "java.lang.Integer",
+      "description": "Cuenta contable de préstamos por cobrar"
+    },
+    {
+      "name": "accounting.accounts.interestIncome",
+      "type": "java.lang.Integer",
+      "description": "Cuenta contable de ingresos por intereses"
+    },
+    {
+      "name": "accounting.accounts.moratoryIncome",
+      "type": "java.lang.Integer",
+      "description": "Cuenta contable de ingresos por mora"
+    }
+  ]
+}

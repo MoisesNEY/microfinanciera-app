@@ -17,7 +17,7 @@ public class PaymentRequest {
     public PaymentRequest() {}
 
     public PaymentRequest(UUID loanId, LocalDate paymentDate, BigDecimal amountPaid, PaymentMethod paymentMethod,
-                          String transactionReference, UUID cashierId) {
+                        String transactionReference, UUID cashierId) {
         this.loanId = loanId;
         this.paymentDate = paymentDate;
         this.amountPaid = amountPaid;
