@@ -1,7 +1,11 @@
 package com.microfinance.loan_microservice.web;
 
 import com.microfinance.loan_microservice.domain.Loan;
+import com.microfinance.loan_microservice.domain.LoanPayment;
+import com.microfinance.loan_microservice.domain.LoanSchedule;
 import com.microfinance.loan_microservice.dto.LoanDTOs;
+import com.microfinance.loan_microservice.service.LoanPaymentService;
+import com.microfinance.loan_microservice.service.LoanScheduleService;
 import com.microfinance.loan_microservice.service.LoanService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,9 +18,13 @@ import java.util.UUID;
 @RequestMapping("/api/loans")
 public class LoanController {
     private final LoanService service;
+    private final LoanScheduleService scheduleService;
+    private final LoanPaymentService paymentService;
 
-    public LoanController(LoanService service) {
+    public LoanController(LoanService service, LoanScheduleService scheduleService, LoanPaymentService paymentService) {
         this.service = service;
+        this.scheduleService = scheduleService; // Nuevo: inyectar servicio de cuotas
+        this.paymentService = paymentService; // Nuevo: inyectar servicio de pagos
     }
 
     @GetMapping
@@ -32,17 +40,31 @@ public class LoanController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Loan create(@Valid @RequestBody LoanDTOs.Create dto) {
-        return service.create(dto);
+        Loan loan = service.create(dto);
+        scheduleService.generateForLoan(loan); // Nuevo: generar cronograma con interés sobre saldo
+        return loan;
     }
 
     @PutMapping("/{id}")
     public Loan update(@PathVariable UUID id, @Valid @RequestBody LoanDTOs.Create dto) {
-        return service.update(id, dto);
+        Loan loan = service.update(id, dto);
+        scheduleService.generateForLoan(loan); // Nuevo: regenerar cronograma si cambian condiciones
+        return loan;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+    }
+
+    @GetMapping("/{id}/schedules")
+    public List<LoanSchedule> schedules(@PathVariable UUID id) {
+        return scheduleService.byLoan(id); // Nuevo: listar cuotas por préstamo
+    }
+
+    @GetMapping("/{id}/payments")
+    public List<LoanPayment> payments(@PathVariable UUID id) {
+        return paymentService.byLoan(id); // Nuevo: listar pagos por préstamo
     }
 }

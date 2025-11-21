@@ -26,7 +26,7 @@ public class LoanApplicationService {
 
     public LoanApplication create(LoanApplicationDTOs.Create dto) {
         LoanApplication app = new LoanApplication();
-        app.setClientId(dto.clientId());
+        app.setCustomerId(dto.customerId()); // Nuevo: ref a cliente externo
         app.setLoanProductId(dto.loanProductId());
         app.setRequestedAmount(dto.requestedAmount());
         app.setTermMonths(dto.termMonths());
@@ -39,7 +39,7 @@ public class LoanApplicationService {
 
     public LoanApplication update(UUID id, LoanApplicationDTOs.Create dto) {
         LoanApplication app = one(id);
-        app.setClientId(dto.clientId());
+        app.setCustomerId(dto.customerId()); // Nuevo: ref a cliente externo
         app.setLoanProductId(dto.loanProductId());
         app.setRequestedAmount(dto.requestedAmount());
         app.setTermMonths(dto.termMonths());

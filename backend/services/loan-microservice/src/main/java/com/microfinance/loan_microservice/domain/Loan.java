@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -19,10 +20,22 @@ public class Loan {
   private UUID id;
 
   @PrePersist
-  public void prePersist() { if (id == null) id = UUID.randomUUID(); }
+  public void prePersist() {
+    if (id == null) id = UUID.randomUUID();
+    if (createdAt == null) createdAt = LocalDateTime.now();
+    updatedAt = createdAt;
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    updatedAt = LocalDateTime.now();
+  }
 
   @Column(nullable = false)
   private UUID applicationId;
+
+  @Column(nullable = false)
+  private UUID customerId; // Nuevo: referencia al microservicio de clientes, sin datos personales
 
   @Column(nullable = false, unique = true, length = 20)
   private String loanCode;
@@ -32,6 +45,16 @@ public class Loan {
 
   @Column(nullable = false, precision = 5, scale = 2)
   private BigDecimal interestRate;
+
+  @Column(nullable = false, precision = 5, scale = 2)
+  private BigDecimal moratoryRate; // Nuevo: tasa de mora limitada al 25% de la corriente
+
+  @Column(nullable = false)
+  private Integer termMonths; // Nuevo: plazo en meses para cálculo de cuotas
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private PaymentFrequency paymentFrequency; // Nuevo: frecuencia de pago (mensual/quincenal/semanal)
 
   @Column(nullable = false)
   private LocalDate disbursementDate;
@@ -44,4 +67,10 @@ public class Loan {
 
   @Column(nullable = false, length = 100)
   private String sectorEconomico;
+
+  @Column(nullable = false)
+  private LocalDateTime createdAt; // Nuevo: trazabilidad legal
+
+  @Column(nullable = false)
+  private LocalDateTime updatedAt; // Nuevo: trazabilidad legal
 }

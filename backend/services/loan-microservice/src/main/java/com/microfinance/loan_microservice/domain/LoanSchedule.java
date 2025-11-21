@@ -25,6 +25,9 @@ public class LoanSchedule {
   private UUID loanId;
 
   @Column(nullable = false)
+  private Integer installmentNo; // Nuevo: número de cuota para orden legal
+
+  @Column(nullable = false)
   private LocalDate dueDate;
 
   @Column(nullable = false, precision = 18, scale = 2)
@@ -35,6 +38,18 @@ public class LoanSchedule {
 
   @Column(nullable = false, precision = 18, scale = 2)
   private BigDecimal totalDue;
+
+  @Column(nullable = false, precision = 18, scale = 2)
+  @Builder.Default
+  private BigDecimal principalPaid = BigDecimal.ZERO; // Nuevo: abono a capital
+
+  @Column(nullable = false, precision = 18, scale = 2)
+  @Builder.Default
+  private BigDecimal interestPaid = BigDecimal.ZERO; // Nuevo: abono a interés
+
+  @Column(nullable = false, precision = 18, scale = 2)
+  @Builder.Default
+  private BigDecimal totalPaid = BigDecimal.ZERO; // Nuevo: total pagado por cuota
 
   @Column(nullable = false, length = 15) // PENDIENTE/PAGADA/ATRASADA
   private String status;

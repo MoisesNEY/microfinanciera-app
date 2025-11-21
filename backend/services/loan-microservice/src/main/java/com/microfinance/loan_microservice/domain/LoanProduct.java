@@ -35,9 +35,17 @@ public class LoanProduct {
   @Column(nullable = false, precision = 5, scale = 2)
   private BigDecimal interestRate;
 
+  @Column(nullable = false, precision = 5, scale = 2)
+  private BigDecimal moratoryRate; // Nuevo: tasa de mora con tope 25% de corriente
+
   @Column(nullable = false)
   private Integer termMonths;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private PaymentFrequency paymentFrequency; // Nuevo: frecuencia permitida
+
   @Column(nullable = false)
+  @Builder.Default
   private Boolean isActive = true;
 }

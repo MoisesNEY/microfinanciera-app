@@ -20,7 +20,10 @@ public class LoanScheduleController {
     }
 
     @GetMapping
-    public List<LoanSchedule> all() {
+    public List<LoanSchedule> all(@RequestParam(value = "loanId", required = false) UUID loanId) {
+        if (loanId != null) {
+            return service.byLoan(loanId); // Nuevo: filtro de cuotas por préstamo
+        }
         return service.all();
     }
 

@@ -15,13 +15,21 @@ databaseChangeLog:
               - column: { name: min_amount, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: max_amount, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: interest_rate, type: "decimal(5,2)", constraints: { nullable: false } }
+              - column: { name: moratory_rate, type: "decimal(5,2)", constraints: { nullable: false } } # Nuevo: tasa de mora
               - column: { name: term_months, type: integer, constraints: { nullable: false } }
+              - column: { name: payment_frequency, type: "varchar(20)", constraints: { nullable: false } } # Nuevo: frecuencia
               - column: { name: is_active, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
         - createIndex:
             tableName: loan_products
             indexName: idx_loan_products_active
             columns:
               - column: { name: is_active }
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE loan_products
+              ADD CONSTRAINT chk_loan_products_mora
+              CHECK (moratory_rate <= (interest_rate * 0.25));
 
   # =========================
   # loan_applications
@@ -34,7 +42,7 @@ databaseChangeLog:
             tableName: loan_applications
             columns:
               - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
-              - column: { name: client_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: customer_id, type: uuid, constraints: { nullable: false } } # Nuevo: rename cliente a customer_id
               - column: { name: loan_product_id, type: uuid, constraints: { nullable: false } }
               - column: { name: requested_amount, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: term_months, type: integer, constraints: { nullable: false } }
@@ -52,7 +60,7 @@ databaseChangeLog:
             tableName: loan_applications
             indexName: idx_loan_app_client
             columns:
-              - column: { name: client_id }
+              - column: { name: customer_id }
         - createIndex:
             tableName: loan_applications
             indexName: idx_loan_app_product
@@ -71,19 +79,31 @@ databaseChangeLog:
             columns:
               - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
               - column: { name: application_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: customer_id, type: uuid, constraints: { nullable: false } } # Nuevo: referencia al cliente externo
               - column: { name: loan_code, type: "varchar(20)", constraints: { nullable: false, unique: true } }
               - column: { name: principal_amount, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: interest_rate, type: "decimal(5,2)", constraints: { nullable: false } }
+              - column: { name: moratory_rate, type: "decimal(5,2)", constraints: { nullable: false } } # Nuevo: mora max 25%
+              - column: { name: term_months, type: integer, constraints: { nullable: false } } # Nuevo: plazo
+              - column: { name: payment_frequency, type: "varchar(20)", constraints: { nullable: false } } # Nuevo: frecuencia
               - column: { name: disbursement_date, type: date, constraints: { nullable: false } }
               - column: { name: maturity_date, type: date, constraints: { nullable: false } }
               - column: { name: status, type: "varchar(15)", constraints: { nullable: false } }
               - column: { name: sector_economico, type: "varchar(100)", constraints: { nullable: false } }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } } # Nuevo: trazabilidad
+              - column: { name: updated_at, type: timestamp, constraints: { nullable: false } } # Nuevo: trazabilidad
         - sql:
             dbms: postgresql
             sql: |
               ALTER TABLE loans
               ADD CONSTRAINT chk_loans_status
               CHECK (status IN ('ACTIVO','PAGADO','EN_MORA','CANCELADO'));
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE loans
+              ADD CONSTRAINT chk_loans_mora
+              CHECK (moratory_rate <= (interest_rate * 0.25));
         - addForeignKeyConstraint:
             baseTableName: loans
             baseColumnNames: application_id
@@ -96,6 +116,16 @@ databaseChangeLog:
             indexName: idx_loans_app
             columns:
               - column: { name: application_id }
+        - createIndex:
+            tableName: loans
+            indexName: idx_loans_customer
+            columns:
+              - column: { name: customer_id }
+        - createIndex:
+            tableName: loans
+            indexName: idx_loans_status
+            columns:
+              - column: { name: status }
 
   # =========================
   # loan_schedules
@@ -109,10 +139,14 @@ databaseChangeLog:
             columns:
               - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
               - column: { name: loan_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: installment_no, type: integer, constraints: { nullable: false } } # Nuevo: número de cuota
               - column: { name: due_date, type: date, constraints: { nullable: false } }
               - column: { name: principal_due, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: interest_due, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: total_due, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: principal_paid, type: "decimal(18,2)", defaultValueNumeric: 0, constraints: { nullable: false } } # Nuevo: capital pagado
+              - column: { name: interest_paid, type: "decimal(18,2)", defaultValueNumeric: 0, constraints: { nullable: false } } # Nuevo: interés pagado
+              - column: { name: total_paid, type: "decimal(18,2)", defaultValueNumeric: 0, constraints: { nullable: false } } # Nuevo: total pagado
               - column: { name: status, type: "varchar(15)", constraints: { nullable: false } }
         - sql:
           dbms: postgresql
@@ -137,3 +171,50 @@ databaseChangeLog:
             indexName: idx_schedules_status
             columns:
               - column: { name: status }
+        - createIndex:
+            tableName: loan_schedules
+            indexName: idx_schedules_installment
+            columns:
+              - column: { name: installment_no }
+
+  # =========================
+  # loan_payments
+  # =========================
+  - changeSet:
+      id: 005-loan-payments
+      author: equipo
+      changes:
+        - createTable:
+            tableName: loan_payments
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: loan_id, type: uuid, constraints: { nullable: false } } # Nuevo: FK préstamo
+              - column: { name: installment_id, type: uuid } # Nuevo: FK opcional a cuota
+              - column: { name: payment_date, type: date, constraints: { nullable: false } }
+              - column: { name: amount, type: "decimal(18,2)", constraints: { nullable: false } }
+              - column: { name: method, type: "varchar(30)", constraints: { nullable: false } }
+              - column: { name: reference, type: "varchar(100)" }
+        - addForeignKeyConstraint:
+            baseTableName: loan_payments
+            baseColumnNames: loan_id
+            referencedTableName: loans
+            referencedColumnNames: id
+            constraintName: fk_payments_loan
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: loan_payments
+            baseColumnNames: installment_id
+            referencedTableName: loan_schedules
+            referencedColumnNames: id
+            constraintName: fk_payments_installment
+            onDelete: SET NULL
+        - createIndex:
+            tableName: loan_payments
+            indexName: idx_payments_loan
+            columns:
+              - column: { name: loan_id }
+        - createIndex:
+            tableName: loan_payments
+            indexName: idx_payments_installment
+            columns:
+              - column: { name: installment_id }

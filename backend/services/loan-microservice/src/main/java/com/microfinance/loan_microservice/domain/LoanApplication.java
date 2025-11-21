@@ -22,10 +22,10 @@ public class LoanApplication {
   public void prePersist() { if (id == null) id = UUID.randomUUID(); }
 
   @Column(nullable = false)
-  private UUID clientId;        // lógico a ms_clientes
+  private UUID customerId;        // Nuevo: referencia al microservicio de clientes
 
   @Column(nullable = false)
-  private UUID loanProductId;   // FK lógica a loan_products
+  private UUID loanProductId;   // FK logica a loan_products
 
   @Column(nullable = false, precision = 18, scale = 2)
   private BigDecimal requestedAmount;
@@ -42,5 +42,5 @@ public class LoanApplication {
   private LocalDate approvedDate;
 
   @Column(nullable = false)
-  private UUID officerId;       // lógico a ms_workers
+  private UUID officerId;       // logica a ms_workers
 }

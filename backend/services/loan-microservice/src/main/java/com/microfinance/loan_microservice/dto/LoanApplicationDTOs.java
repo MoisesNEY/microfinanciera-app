@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public class LoanApplicationDTOs {
   public record Create(
-      @NotNull UUID clientId,
+      @NotNull UUID customerId, // Nuevo: referencia al customer-microservice
       @NotNull UUID loanProductId,
       @NotNull @DecimalMin("0.01") BigDecimal requestedAmount,
       @NotNull @Min(1) Integer termMonths,
       @NotBlank String status,
       @NotNull LocalDate applicationDate,
-      LocalDate approvedDate,  
+      LocalDate approvedDate,
       @NotNull UUID officerId
   ) {}
   
