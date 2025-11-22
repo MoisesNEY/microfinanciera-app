@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${APP_SECURITY_DISABLED:true}") // true por defecto
+    @Value("${APP_SECURITY_DISABLED:false}") // true por defecto
     private boolean securityDisabled;
 
     @Bean

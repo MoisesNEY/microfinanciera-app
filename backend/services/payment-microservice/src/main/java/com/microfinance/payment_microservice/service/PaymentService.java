@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.AbstractOAuth2Token;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +35,7 @@ public class PaymentService {
     public PaymentResponse createAndApply(PaymentRequest request) {
         Payment payment = mapper.toPayment(request);
         try {
-            loanPaymentClient.applyPayment(payment); // Nuevo: delegar logica de mora/interes/capital a loan-ms
+            loanPaymentClient.applyPayment(payment, currentBearerToken()); // Nuevo: delegar logica de mora/interes/capital a loan-ms
             payment.setStatus(PaymentStatus.COMPLETED);
         } catch (Exception ex) {
             payment.setStatus(PaymentStatus.FAILED);
@@ -75,5 +79,26 @@ public class PaymentService {
             throw new IllegalArgumentException("Payment not found");
         }
         paymentRepository.deleteById(id);
+    }
+
+    /**
+     * Extracts the current request's bearer token so we can propagate it to downstream services.
+     */
+    private String currentBearerToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return null;
+        }
+        if (auth instanceof JwtAuthenticationToken jwt) {
+            return jwt.getToken().getTokenValue();
+        }
+        Object credentials = auth.getCredentials();
+        if (credentials instanceof AbstractOAuth2Token token) {
+            return token.getTokenValue();
+        }
+        if (credentials instanceof String tokenValue) {
+            return tokenValue.startsWith("Bearer ") ? tokenValue.substring(7) : tokenValue;
+        }
+        return null;
     }
 }

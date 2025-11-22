@@ -31,7 +31,8 @@ public class AccountingClient {
                                 BigDecimal moratory,
                                 BigDecimal total,
                                 LocalDate paymentDate,
-                                String description) {
+                                String description,
+                                String bearerToken) {
         var accounts = props.getAccounts();
         if (accounts.getCash() == null || accounts.getLoanReceivable() == null
             || accounts.getInterestIncome() == null || accounts.getMoratoryIncome() == null) {
@@ -55,6 +56,9 @@ public class AccountingClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        if (bearerToken != null && !bearerToken.isBlank()) {
+            headers.setBearerAuth(bearerToken);
+        }
 
         restTemplate.postForEntity(props.getService().getUrl() + "/api/accounting/payment-applied", new HttpEntity<>(body, headers), Void.class);
     }

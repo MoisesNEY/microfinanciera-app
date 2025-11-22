@@ -18,12 +18,12 @@ public class LoanPaymentClient {
   private final String loanServiceUrl;
 
   public LoanPaymentClient(RestTemplate restTemplate,
-                          @Value("${loan.service.url:http://loan-microservice:8082}") String loanServiceUrl) {
+                @Value("${loan.service.url:http://api-gateway:8080}") String loanServiceUrl) {
     this.restTemplate = restTemplate;
     this.loanServiceUrl = loanServiceUrl;
   }
 
-  public void applyPayment(Payment payment) {
+  public void applyPayment(Payment payment, String bearerToken) {
     String url = loanServiceUrl + "/api/loan-payments";
     Map<String, Object> body = new HashMap<>();
     body.put("loanId", payment.getLoanId());
@@ -35,6 +35,9 @@ public class LoanPaymentClient {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
+    if (bearerToken != null && !bearerToken.isBlank()) {
+      headers.setBearerAuth(bearerToken);
+    }
 
     HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
     restTemplate.postForEntity(url, request, Void.class);

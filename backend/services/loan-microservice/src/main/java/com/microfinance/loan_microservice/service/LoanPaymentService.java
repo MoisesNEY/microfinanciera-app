@@ -7,6 +7,10 @@ import com.microfinance.loan_microservice.dto.LoanPaymentDTOs;
 import com.microfinance.loan_microservice.repository.LoanPaymentRepository;
 import com.microfinance.loan_microservice.repository.LoanRepository;
 import com.microfinance.loan_microservice.repository.LoanScheduleRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.AbstractOAuth2Token;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +70,8 @@ public class LoanPaymentService {
             breakdown.moratory(),
             breakdown.total(),
             dto.paymentDate(),
-            "Pago de prestamo " + loan.getId()
+            "Pago de prestamo " + loan.getId(),
+            currentBearerToken()
         );
         return saved;
     }
@@ -192,5 +197,26 @@ public class LoanPaymentService {
         AppliedBreakdown(BigDecimal capital, BigDecimal interest, BigDecimal moratory) {
             this(capital, interest, moratory, capital.add(interest).add(moratory));
         }
+    }
+
+    /**
+     * Extracts the current request's bearer token so we can propagate it to downstream services.
+     */
+    private String currentBearerToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return null;
+        }
+        if (auth instanceof JwtAuthenticationToken jwt) {
+            return jwt.getToken().getTokenValue();
+        }
+        Object credentials = auth.getCredentials();
+        if (credentials instanceof AbstractOAuth2Token token) {
+            return token.getTokenValue();
+        }
+        if (credentials instanceof String tokenValue) {
+            return tokenValue.startsWith("Bearer ") ? tokenValue.substring(7) : tokenValue;
+        }
+        return null;
     }
 }

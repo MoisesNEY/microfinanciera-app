@@ -19,6 +19,13 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/mf
+
+
 springdoc:
   api-docs:
     path: /v3/api-docs-payments
@@ -68,6 +75,11 @@ spring:
     password: root
   jpa:
     show-sql: false
+security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/mf
 
 springdoc:
   api-docs:

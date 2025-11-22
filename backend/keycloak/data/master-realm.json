@@ -78,7 +78,8 @@
       "composites" : {
         "realm" : [ "create-realm" ],
         "client" : {
-          "master-realm" : [ "view-clients", "view-identity-providers", "manage-events", "manage-realm", "view-realm", "query-clients", "view-events", "impersonation", "create-client", "query-realms", "manage-users", "manage-identity-providers", "manage-authorization", "manage-clients", "view-authorization", "query-users", "view-users", "query-groups" ]
+          "microfinance-microservice-realm-realm" : [ "manage-identity-providers", "create-client", "view-authorization", "manage-users", "manage-clients", "query-groups", "impersonation", "query-clients", "query-users", "manage-events", "view-realm", "view-users", "query-realms", "view-clients", "view-events", "manage-authorization", "manage-realm", "view-identity-providers" ],
+          "master-realm" : [ "view-identity-providers", "view-realm", "view-events", "impersonation", "query-realms", "manage-users", "view-users", "view-clients", "manage-events", "manage-realm", "query-clients", "create-client", "manage-identity-providers", "manage-authorization", "manage-clients", "view-authorization", "query-users", "query-groups" ]
         }
       },
       "clientRole" : false,
@@ -104,6 +105,161 @@
     "client" : {
       "security-admin-console" : [ ],
       "admin-cli" : [ ],
+      "microfinance-microservice-realm-realm" : [ {
+        "id" : "06dc1070-c9ec-43d4-84bd-e87c7c9d4010",
+        "name" : "manage-identity-providers",
+        "description" : "${role_manage-identity-providers}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "73664039-9ce8-4e77-8d15-0ba2328ba87a",
+        "name" : "query-users",
+        "description" : "${role_query-users}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "872ed1af-fc0f-4634-8ea5-e9d6a9e05b40",
+        "name" : "create-client",
+        "description" : "${role_create-client}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "9887dbdf-143f-4df0-bd16-1cbd3abd1a42",
+        "name" : "manage-events",
+        "description" : "${role_manage-events}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "fa3097cf-ebc3-4a07-ad31-ee13d2313766",
+        "name" : "view-authorization",
+        "description" : "${role_view-authorization}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "913bdbc0-8cd4-4c96-9895-0b58a521e703",
+        "name" : "view-realm",
+        "description" : "${role_view-realm}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "8150acde-1915-42d1-9f8c-de0a35770474",
+        "name" : "manage-users",
+        "description" : "${role_manage-users}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "e22b336d-0273-47a9-9b16-78958d194756",
+        "name" : "view-users",
+        "description" : "${role_view-users}",
+        "composite" : true,
+        "composites" : {
+          "client" : {
+            "microfinance-microservice-realm-realm" : [ "query-users", "query-groups" ]
+          }
+        },
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "730593ba-ac0a-418f-9435-60989423b393",
+        "name" : "query-realms",
+        "description" : "${role_query-realms}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "8d21df63-3b06-4fc2-878b-7dcd7dd5620e",
+        "name" : "manage-clients",
+        "description" : "${role_manage-clients}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "83a9c761-5b8d-400c-881d-284b8121b51b",
+        "name" : "view-clients",
+        "description" : "${role_view-clients}",
+        "composite" : true,
+        "composites" : {
+          "client" : {
+            "microfinance-microservice-realm-realm" : [ "query-clients" ]
+          }
+        },
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "d7a267cb-e101-472f-90d4-73ff4929f4fd",
+        "name" : "query-groups",
+        "description" : "${role_query-groups}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "55f6721b-7d08-4489-803e-732767e13b1e",
+        "name" : "impersonation",
+        "description" : "${role_impersonation}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "3d91b3b3-5f9e-4001-8a80-479dbe6bf52e",
+        "name" : "view-events",
+        "description" : "${role_view-events}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "fb3e5a2c-dbed-4dad-b5f1-c204a1c8ac38",
+        "name" : "manage-authorization",
+        "description" : "${role_manage-authorization}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "746845a5-315c-42b3-a1f6-6649eb163a5f",
+        "name" : "manage-realm",
+        "description" : "${role_manage-realm}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "f364dd08-b0b7-430b-809a-6f49b4a48e15",
+        "name" : "query-clients",
+        "description" : "${role_query-clients}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      }, {
+        "id" : "de8743c4-16bd-47af-9b3c-c4b9229708fb",
+        "name" : "view-identity-providers",
+        "description" : "${role_view-identity-providers}",
+        "composite" : false,
+        "clientRole" : true,
+        "containerId" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+        "attributes" : { }
+      } ],
       "account-console" : [ ],
       "broker" : [ {
         "id" : "352b8b6b-a517-4a83-943b-38ef18227ef7",
@@ -513,7 +669,8 @@
     "protocol" : "openid-connect",
     "attributes" : {
       "realm_client" : "false",
-      "client.use.lightweight.access.token.enabled" : "true"
+      "client.use.lightweight.access.token.enabled" : "true",
+      "post.logout.redirect.uris" : "+"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : true,
@@ -541,7 +698,8 @@
     "frontchannelLogout" : false,
     "protocol" : "openid-connect",
     "attributes" : {
-      "realm_client" : "true"
+      "realm_client" : "true",
+      "post.logout.redirect.uris" : "+"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : false,
@@ -567,14 +725,43 @@
     "serviceAccountsEnabled" : false,
     "publicClient" : false,
     "frontchannelLogout" : false,
+    "protocol" : "openid-connect",
     "attributes" : {
-      "realm_client" : "true"
+      "realm_client" : "true",
+      "post.logout.redirect.uris" : "+"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : false,
     "nodeReRegistrationTimeout" : 0,
     "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "organization", "microprofile-jwt" ]
+  }, {
+    "id" : "b948cf0f-7041-4e57-9ff2-80fe8639a9cc",
+    "clientId" : "microfinance-microservice-realm-realm",
+    "name" : "microfinance-microservice-realm Realm",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "redirectUris" : [ ],
+    "webOrigins" : [ ],
+    "notBefore" : 0,
+    "bearerOnly" : true,
+    "consentRequired" : false,
+    "standardFlowEnabled" : true,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : false,
+    "serviceAccountsEnabled" : false,
+    "publicClient" : false,
+    "frontchannelLogout" : false,
+    "attributes" : {
+      "realm_client" : "true"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : false,
+    "nodeReRegistrationTimeout" : 0,
+    "defaultClientScopes" : [ ],
+    "optionalClientScopes" : [ ]
   }, {
     "id" : "d55312f7-c004-49d5-9dce-a16ed92a84e3",
     "clientId" : "security-admin-console",
@@ -753,8 +940,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "clientHost",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "clientHost",
         "jsonType.label" : "String"
@@ -767,8 +955,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "client_id",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "client_id",
         "jsonType.label" : "String"
@@ -781,8 +970,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "clientAddress",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "clientAddress",
         "jsonType.label" : "String"
@@ -815,8 +1005,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "AUTH_TIME",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "auth_time",
         "jsonType.label" : "long"
@@ -1128,7 +1319,8 @@
       "config" : {
         "id.token.claim" : "true",
         "introspection.token.claim" : "true",
-        "access.token.claim" : "true"
+        "access.token.claim" : "true",
+        "userinfo.token.claim" : "true"
       }
     } ]
   }, {
@@ -1178,12 +1370,13 @@
       "protocolMapper" : "oidc-organization-membership-mapper",
       "consentRequired" : false,
       "config" : {
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "multivalued" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "organization",
-        "jsonType.label" : "String",
-        "multivalued" : "true"
+        "jsonType.label" : "String"
       }
     } ]
   }, {
@@ -1204,6 +1397,7 @@
       "config" : {
         "introspection.token.claim" : "true",
         "multivalued" : "true",
+        "userinfo.token.claim" : "true",
         "user.attribute" : "foo",
         "id.token.claim" : "true",
         "access.token.claim" : "true",
@@ -1279,7 +1473,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "oidc-address-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "saml-role-list-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper" ]
       }
     }, {
       "id" : "0082cd9f-4a25-443c-8458-03e1cef8caee",
@@ -1306,7 +1500,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "oidc-address-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "saml-user-property-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "d7659b67-3716-4d08-8ad8-31902e489064",
@@ -2023,7 +2217,13 @@
     "cibaBackchannelTokenDeliveryMode" : "poll",
     "cibaExpiresIn" : "120",
     "cibaAuthRequestedUserHint" : "login_hint",
+    "oauth2DeviceCodeLifespan" : "600",
+    "clientOfflineSessionMaxLifespan" : "0",
+    "oauth2DevicePollingInterval" : "5",
+    "clientSessionIdleTimeout" : "0",
     "parRequestUriLifespan" : "60",
+    "clientSessionMaxLifespan" : "0",
+    "clientOfflineSessionIdleTimeout" : "0",
     "cibaInterval" : "5",
     "realmReusableOtpCode" : "false"
   },
