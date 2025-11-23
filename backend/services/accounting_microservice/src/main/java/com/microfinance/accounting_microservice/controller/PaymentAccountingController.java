@@ -38,8 +38,8 @@ public class PaymentAccountingController {
             PaymentAppliedEvent event = objectMapper.readValue(requestBody, PaymentAppliedEvent.class);
             log.info("Successfully deserialized payment: {}", event.getPaymentId());
 
-            paymentAccountingService.recordPayment(event);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            var transaction = paymentAccountingService.recordPayment(event);
+            return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
         } catch (Exception e) {
             log.error("Error processing payment applied request: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

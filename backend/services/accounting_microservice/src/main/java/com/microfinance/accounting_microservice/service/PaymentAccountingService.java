@@ -22,7 +22,7 @@ public class PaymentAccountingService {
     private final JournalEntryRepository journalEntryRepository;
 
     @Transactional
-    public void recordPayment(PaymentAppliedEvent event) {
+    public Transaction recordPayment(PaymentAppliedEvent event) {
         LocalDateTime entryDate = event.getPaymentDate() != null ? event.getPaymentDate() : LocalDateTime.now();
 
         // 1) Registrar la transaccion principal
@@ -34,7 +34,7 @@ public class PaymentAccountingService {
                 .transactionDate(entryDate)
                 .description(event.getDescription())
                 .build();
-        transactionRepository.save(tx);
+        Transaction savedTx = transactionRepository.save(tx);
 
         // 2) Partidas dobles: Debito a caja/banco, credito a cuentas por cobrar y a ingresos
         BigDecimal total = defaultZero(event.getTotalAmount());
@@ -45,7 +45,7 @@ public class PaymentAccountingService {
         // Debito caja/banco por el total recibido
         journalEntryRepository.save(JournalEntry.builder()
                 .id(UUID.randomUUID())
-                .transactionId(tx.getId())
+                .transactionId(savedTx.getId())
                 .accountId(event.getCashAccountId())
                 .debitAmount(total)
                 .creditAmount(BigDecimal.ZERO)
@@ -56,7 +56,7 @@ public class PaymentAccountingService {
         if (capital.compareTo(BigDecimal.ZERO) > 0) {
             journalEntryRepository.save(JournalEntry.builder()
                     .id(UUID.randomUUID())
-                    .transactionId(tx.getId())
+                    .transactionId(savedTx.getId())
                     .accountId(event.getLoanReceivableAccountId())
                     .debitAmount(BigDecimal.ZERO)
                     .creditAmount(capital)
@@ -68,7 +68,7 @@ public class PaymentAccountingService {
         if (interest.compareTo(BigDecimal.ZERO) > 0) {
             journalEntryRepository.save(JournalEntry.builder()
                     .id(UUID.randomUUID())
-                    .transactionId(tx.getId())
+                    .transactionId(savedTx.getId())
                     .accountId(event.getInterestIncomeAccountId())
                     .debitAmount(BigDecimal.ZERO)
                     .creditAmount(interest)
@@ -80,13 +80,15 @@ public class PaymentAccountingService {
         if (moratory.compareTo(BigDecimal.ZERO) > 0) {
             journalEntryRepository.save(JournalEntry.builder()
                     .id(UUID.randomUUID())
-                    .transactionId(tx.getId())
+                    .transactionId(savedTx.getId())
                     .accountId(event.getMoratoryIncomeAccountId())
                     .debitAmount(BigDecimal.ZERO)
                     .creditAmount(moratory)
                     .entryDate(entryDate)
                     .build());
         }
+
+        return savedTx;
     }
 
     private BigDecimal defaultZero(BigDecimal val) {
