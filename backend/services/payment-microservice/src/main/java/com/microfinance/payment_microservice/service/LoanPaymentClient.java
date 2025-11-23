@@ -36,9 +36,9 @@ public class LoanPaymentClient {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     if (bearerToken != null && !bearerToken.isBlank()) {
-      headers.setBearerAuth(bearerToken);
+      String tokenSolo = bearerToken.replaceFirst("(?i)^Bearer ", "");
+      headers.setBearerAuth(tokenSolo);
     }
-
     HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
     restTemplate.postForEntity(url, request, Void.class);
   }

@@ -32,10 +32,10 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentResponse createAndApply(PaymentRequest request) {
+    public PaymentResponse createAndApply(PaymentRequest request, String bearerToken) {
         Payment payment = mapper.toPayment(request);
         try {
-            loanPaymentClient.applyPayment(payment, currentBearerToken()); // Nuevo: delegar logica de mora/interes/capital a loan-ms
+            loanPaymentClient.applyPayment(payment, bearerToken); // Nuevo: delegar logica de mora/interes/capital a loan-ms
             payment.setStatus(PaymentStatus.COMPLETED);
         } catch (Exception ex) {
             payment.setStatus(PaymentStatus.FAILED);
@@ -79,26 +79,5 @@ public class PaymentService {
             throw new IllegalArgumentException("Payment not found");
         }
         paymentRepository.deleteById(id);
-    }
-
-    /**
-     * Extracts the current request's bearer token so we can propagate it to downstream services.
-     */
-    private String currentBearerToken() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
-            return null;
-        }
-        if (auth instanceof JwtAuthenticationToken jwt) {
-            return jwt.getToken().getTokenValue();
-        }
-        Object credentials = auth.getCredentials();
-        if (credentials instanceof AbstractOAuth2Token token) {
-            return token.getTokenValue();
-        }
-        if (credentials instanceof String tokenValue) {
-            return tokenValue.startsWith("Bearer ") ? tokenValue.substring(7) : tokenValue;
-        }
-        return null;
     }
 }

@@ -6,21 +6,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${APP_SECURITY_DISABLED:false}") // true por defecto
+    @Value("${APP_SECURITY_DISABLED:false}") // false por defecto
     private boolean securityDisabled;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        // Desactivar CSRF siempre
-        http.csrf(csrf -> csrf.disable())
-            .httpBasic(basic -> basic.disable()); // ← esto evita el login básico por defecto
+        // Desactivar CSRF, basic auth y forzar stateless para REST
+        http.csrf(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         if (securityDisabled) {
             // Todos los endpoints accesibles sin login

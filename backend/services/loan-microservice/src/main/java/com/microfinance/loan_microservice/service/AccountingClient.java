@@ -57,7 +57,8 @@ public class AccountingClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         if (bearerToken != null && !bearerToken.isBlank()) {
-            headers.setBearerAuth(bearerToken);
+            String tokenSolo = bearerToken.replaceFirst("(?i)^Bearer ", "");
+            headers.setBearerAuth(tokenSolo);
         }
 
         restTemplate.postForEntity(props.getService().getUrl() + "/api/accounting/payment-applied", new HttpEntity<>(body, headers), Void.class);

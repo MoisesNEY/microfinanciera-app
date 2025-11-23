@@ -34,8 +34,8 @@ public class LoanPaymentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LoanPayment create(@Valid @RequestBody LoanPaymentDTOs.Create dto) {
-        return service.create(dto);
+    public LoanPayment create(@Valid @RequestBody LoanPaymentDTOs.Create dto, @RequestHeader("Authorization") String bearerToken) {
+        return service.create(dto, bearerToken);
     }
 
     @PutMapping("/{id}")

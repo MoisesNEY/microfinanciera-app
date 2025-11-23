@@ -51,7 +51,8 @@ public class LoanPaymentService {
     }
 
     @Transactional
-    public LoanPayment create(LoanPaymentDTOs.Create dto) {
+    public LoanPayment create(LoanPaymentDTOs.Create dto, String bearerToken) {
+        String tokenSolo = bearerToken.replaceFirst("(?i)^Bearer ", "");
         Loan loan = loanRepo.findById(dto.loanId()).orElseThrow();
         AppliedBreakdown breakdown = applyPayment(loan, dto); // Nuevo: aplicar pago a cuotas con mora sobre capital vencido
         LoanPayment p = new LoanPayment();
@@ -71,7 +72,7 @@ public class LoanPaymentService {
             breakdown.total(),
             dto.paymentDate(),
             "Pago de prestamo " + loan.getId(),
-            currentBearerToken()
+            tokenSolo
         );
         return saved;
     }
@@ -197,26 +198,5 @@ public class LoanPaymentService {
         AppliedBreakdown(BigDecimal capital, BigDecimal interest, BigDecimal moratory) {
             this(capital, interest, moratory, capital.add(interest).add(moratory));
         }
-    }
-
-    /**
-     * Extracts the current request's bearer token so we can propagate it to downstream services.
-     */
-    private String currentBearerToken() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
-            return null;
-        }
-        if (auth instanceof JwtAuthenticationToken jwt) {
-            return jwt.getToken().getTokenValue();
-        }
-        Object credentials = auth.getCredentials();
-        if (credentials instanceof AbstractOAuth2Token token) {
-            return token.getTokenValue();
-        }
-        if (credentials instanceof String tokenValue) {
-            return tokenValue.startsWith("Bearer ") ? tokenValue.substring(7) : tokenValue;
-        }
-        return null;
     }
 }

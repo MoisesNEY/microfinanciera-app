@@ -74,6 +74,12 @@ spring:
               uri: lb://ACCOUNTING-MICROSERVICE
               predicates:
                 - Path=/api/chart-of-accounts/**
+                
+            # NUEVA RUTA PARA payment-applied
+            - id: accounting_payment_applied
+              uri: lb://ACCOUNTING-MICROSERVICE
+              predicates:
+                - Path=/api/accounting/**
 
             # Customer Microservice
             - id: customer_contact
@@ -111,6 +117,11 @@ spring:
               uri: lb://LOAN-MICROSERVICE
               predicates:
                 - Path=/api/loan-schedules/**
+            # Loan Payments
+            - id: loan_payments
+              uri: lb://LOAN-MICROSERVICE
+              predicates:
+                - Path=/api/loan-payments/**
 
             # Payment Microservice
             - id: payment_payments
