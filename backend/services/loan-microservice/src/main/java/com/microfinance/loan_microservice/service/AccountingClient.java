@@ -34,11 +34,7 @@ public class AccountingClient {
                                 String description,
                                 String bearerToken) {
         var accounts = props.getAccounts();
-        if (accounts.getCash() == null || accounts.getLoanReceivable() == null
-            || accounts.getInterestIncome() == null || accounts.getMoratoryIncome() == null) {
-            // Config incompleta: no enviamos nada
-            return;
-        }
+        validateAccountsConfigured(accounts);
 
         Map<String, Object> body = new HashMap<>();
         body.put("paymentId", paymentId);
@@ -62,5 +58,23 @@ public class AccountingClient {
         }
 
         restTemplate.postForEntity(props.getService().getUrl() + "/api/accounting/payment-applied", new HttpEntity<>(body, headers), Void.class);
+    }
+
+    private void validateAccountsConfigured(AccountingProperties.Accounts accounts) {
+        if (accounts == null) {
+            throw new IllegalStateException("Config accounting.accounts no está definida");
+        }
+        if (accounts.getCash() == null || accounts.getCash() <= 0) {
+            throw new IllegalStateException("Config accounting.accounts.cash es requerida y debe ser > 0");
+        }
+        if (accounts.getLoanReceivable() == null || accounts.getLoanReceivable() <= 0) {
+            throw new IllegalStateException("Config accounting.accounts.loanReceivable es requerida y debe ser > 0");
+        }
+        if (accounts.getInterestIncome() == null || accounts.getInterestIncome() <= 0) {
+            throw new IllegalStateException("Config accounting.accounts.interestIncome es requerida y debe ser > 0");
+        }
+        if (accounts.getMoratoryIncome() == null || accounts.getMoratoryIncome() <= 0) {
+            throw new IllegalStateException("Config accounting.accounts.moratoryIncome es requerida y debe ser > 0");
+        }
     }
 }

@@ -1,3 +1,15 @@
 spring:
   application:
     name: accounting-microservice
+  jackson:
+    deserialization:
+      fail-on-null-for-primitives: false
+      fail-on-unknown-properties: false
+      accept-empty-string-as-null-object: true
+      read-unknown-enum-values-as-null: true
+      accept-float-as-int: true
+      use-big-decimal-for-floats: true
+    parser:
+      allow-numeric-leading-zeros: true
+      allow-unquoted-field-names: true
+      allow-single-quotes: true
