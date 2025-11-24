@@ -7,10 +7,6 @@ import com.microfinance.loan_microservice.dto.LoanPaymentDTOs;
 import com.microfinance.loan_microservice.repository.LoanPaymentRepository;
 import com.microfinance.loan_microservice.repository.LoanRepository;
 import com.microfinance.loan_microservice.repository.LoanScheduleRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.AbstractOAuth2Token;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
