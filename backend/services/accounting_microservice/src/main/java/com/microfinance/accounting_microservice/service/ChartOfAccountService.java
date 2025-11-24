@@ -22,6 +22,7 @@ public class ChartOfAccountService {
                 .accountName(dto.getAccountName())
                 .accountType(AccountType.valueOf(dto.getAccountType()))
                 .parentAccountId(dto.getParentAccountId())
+                .deleted(false)
                 .build();
 
         ChartOfAccount saved = chartOfAccountRepository.save(account);
@@ -30,19 +31,19 @@ public class ChartOfAccountService {
     }
 
     public List<ChartOfAccountDTO> findAll() {
-        return chartOfAccountRepository.findAll().stream()
+        return chartOfAccountRepository.findAllByDeletedFalse().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     public ChartOfAccountDTO findById(Integer id) {
-        ChartOfAccount account = chartOfAccountRepository.findById(id)
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
         return toDTO(account);
     }
 
     public ChartOfAccountDTO update(Integer id, ChartOfAccountDTO dto) {
-        ChartOfAccount account = chartOfAccountRepository.findById(id)
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
         
         account.setAccountCode(dto.getAccountCode());
@@ -55,9 +56,10 @@ public class ChartOfAccountService {
     }
 
     public void delete(Integer id) {
-        ChartOfAccount account = chartOfAccountRepository.findById(id)
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
-        chartOfAccountRepository.delete(account);
+        account.setDeleted(true);
+        chartOfAccountRepository.save(account);
     }
 
     private ChartOfAccountDTO toDTO(ChartOfAccount account) {

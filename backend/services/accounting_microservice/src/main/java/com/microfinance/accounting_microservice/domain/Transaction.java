@@ -35,4 +35,8 @@ public class Transaction {
     private LocalDateTime transactionDate;
 
     private String description;
+
+    @Builder.Default
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 }

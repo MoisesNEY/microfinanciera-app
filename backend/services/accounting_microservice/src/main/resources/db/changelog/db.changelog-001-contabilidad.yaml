@@ -114,3 +114,23 @@ databaseChangeLog:
             indexName: idx_journal_entries_date
             columns:
               - column: { name: entry_date }
+
+  # =========================
+  # soft delete flags
+  # =========================
+  - changeSet:
+      id: 005-soft-delete-flags
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: transactions
+            columns:
+              - column: { name: deleted, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+        - addColumn:
+            tableName: chart_of_accounts
+            columns:
+              - column: { name: deleted, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+        - addColumn:
+            tableName: journal_entries
+            columns:
+              - column: { name: deleted, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }

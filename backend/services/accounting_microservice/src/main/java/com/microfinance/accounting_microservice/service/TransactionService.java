@@ -26,6 +26,7 @@ public class TransactionService {
                 .amount(dto.getAmount())
                 .transactionDate(dto.getTransactionDate())
                 .description(dto.getDescription())
+                .deleted(false)
                 .build();
 
         Transaction saved = transactionRepository.save(transaction);
@@ -33,19 +34,19 @@ public class TransactionService {
     }
 
     public List<TransactionResponseDTO> findAll() {
-        return transactionRepository.findAll().stream()
+        return transactionRepository.findAllByDeletedFalse().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     public TransactionResponseDTO findById(UUID id) {
-        Transaction transaction = transactionRepository.findById(id)
+        Transaction transaction = transactionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
         return toDTO(transaction);
     }
 
     public TransactionResponseDTO update(UUID id, TransactionRequestDTO dto) {
-        Transaction transaction = transactionRepository.findById(id)
+        Transaction transaction = transactionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
         
         transaction.setTransactionType(TransactionType.valueOf(dto.getTransactionType()));
@@ -59,9 +60,10 @@ public class TransactionService {
     }
 
     public void delete(UUID id) {
-        Transaction transaction = transactionRepository.findById(id)
+        Transaction transaction = transactionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
-        transactionRepository.delete(transaction);
+        transaction.setDeleted(true);
+        transactionRepository.save(transaction);
     }
 
     private TransactionResponseDTO toDTO(Transaction transaction) {

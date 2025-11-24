@@ -26,6 +26,9 @@ public class ChartOfAccount {
     private AccountType accountType;
 
     @Column(name = "parent_account_id")
-
     private Integer parentAccountId;
+
+    @Builder.Default
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 }

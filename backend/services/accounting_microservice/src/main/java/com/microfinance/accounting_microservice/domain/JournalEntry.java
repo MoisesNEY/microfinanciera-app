@@ -33,4 +33,8 @@ public class JournalEntry {
 
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDate;
+
+    @Builder.Default
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 }
