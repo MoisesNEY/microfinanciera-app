@@ -6,6 +6,7 @@ import com.microfinance.loan_microservice.repository.LoanRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,8 +63,18 @@ public class LoanService {
     }
 
     public void delete(UUID id) {
-        repo.deleteById(id);
-    }
+    // Buscar el préstamo activo
+    Loan loan = repo.findById(id)
+            .filter(l -> !l.isDeleted()) // Solo considerar los no eliminados
+            .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
+
+    // Marcar como eliminado
+    loan.setDeleted(true);
+    loan.setDeletedAt(LocalDateTime.now());
+
+    // Guardar el cambio
+    repo.save(loan);
+}
 
     private void validateMoratoryRate(BigDecimal interestRate, BigDecimal moratoryRate) {
         if (interestRate == null || moratoryRate == null) return;

@@ -11,3 +11,4 @@ accounting:
     loanReceivable: 1201 # ID cuenta por cobrar prestamos
     interestIncome: 4101 # ID ingreso por intereses
     moratoryIncome: 4102 # ID ingreso por mora
+

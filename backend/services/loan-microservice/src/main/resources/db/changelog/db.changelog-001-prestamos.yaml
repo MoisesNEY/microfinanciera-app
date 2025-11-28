@@ -218,3 +218,25 @@ databaseChangeLog:
             indexName: idx_payments_installment
             columns:
               - column: { name: installment_id }
+
+# =========================
+# soft delete flags
+# =========================
+- changeSet:
+    id: 006-soft-delete-loans
+    author: equipo
+    changes:
+      - addColumn:
+          tableName: loans
+          columns:
+            - column:
+                name: deleted
+                type: boolean
+                defaultValueBoolean: false
+                constraints:
+                  nullable: false
+            - column:
+                name: deleted_at
+                type: timestamp
+                constraints:
+                  nullable: true

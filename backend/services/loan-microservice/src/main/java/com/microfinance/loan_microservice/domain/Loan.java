@@ -73,4 +73,10 @@ public class Loan {
 
   @Column(nullable = false)
   private LocalDateTime updatedAt; // Nuevo: trazabilidad legal
+
+  @Builder.Default
+  @Column(nullable = false)
+  private boolean deleted = false;
+  private LocalDateTime deletedAt;
+
 }
