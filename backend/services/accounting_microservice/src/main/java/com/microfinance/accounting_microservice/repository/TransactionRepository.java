@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    List<Transaction> findAllByDeletedFalse();
-    Optional<Transaction> findByIdAndDeletedFalse(UUID id);
+    List<Transaction> findAllByDeleted(Boolean deleted);
+    Optional<Transaction> findByIdAndDeleted(UUID id, Boolean deleted);
 }

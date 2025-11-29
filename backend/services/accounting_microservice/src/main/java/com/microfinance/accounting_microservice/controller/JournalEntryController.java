@@ -19,8 +19,9 @@ public class JournalEntryController {
 private final JournalEntryService journalEntryService;
 
     @GetMapping
-    public ResponseEntity<List<JournalEntryDTO>> getAll() {
-        return ResponseEntity.ok(journalEntryService.findAll());
+    public ResponseEntity<List<JournalEntryDTO>> getAll(
+            @RequestParam(value = "deleted", defaultValue = "false") boolean deleted) {
+        return ResponseEntity.ok(journalEntryService.findAll(deleted));
     }
 
     @GetMapping("/{id}")
@@ -29,9 +30,8 @@ private final JournalEntryService journalEntryService;
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<JournalEntryDTO> create(@Valid @RequestBody JournalEntryDTO dto) {
-        return ResponseEntity.ok(journalEntryService.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(journalEntryService.create(dto));
     }
 
     @PutMapping("/{id}")
@@ -42,9 +42,14 @@ private final JournalEntryService journalEntryService;
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         journalEntryService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<Void> activate(@PathVariable UUID id) {
+        journalEntryService.activate(id);
+        return ResponseEntity.ok().build();
     }
 }

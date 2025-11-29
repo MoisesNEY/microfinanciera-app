@@ -29,12 +29,12 @@ public class LoanController {
 
     @GetMapping
     public List<Loan> all() {
-        return service.all();
+        return service.all(false);
     }
 
     @GetMapping("/{id}")
     public Loan one(@PathVariable UUID id) {
-        return service.one(id);
+        return service.one(id, false);
     }
 
     @PostMapping
@@ -57,6 +57,13 @@ public class LoanController {
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
+
+    @PostMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void activate(@PathVariable UUID id) {
+        service.Activate(id);
+    }
+
 
     @GetMapping("/{id}/schedules")
     public List<LoanSchedule> schedules(@PathVariable UUID id) {

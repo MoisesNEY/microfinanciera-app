@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -43,4 +44,9 @@ public class LoanApplication {
 
   @Column(nullable = false)
   private UUID officerId;       // logica a ms_workers
+
+  @Builder.Default
+  @Column(nullable = false)
+  private boolean deleted = false;
+  private LocalDateTime deletedAt;
 }

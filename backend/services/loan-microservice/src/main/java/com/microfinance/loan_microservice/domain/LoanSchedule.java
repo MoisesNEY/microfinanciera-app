@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -53,4 +54,10 @@ public class LoanSchedule {
 
   @Column(nullable = false, length = 15) // PENDIENTE/PAGADA/ATRASADA
   private String status;
+
+  @Builder.Default
+  @Column(nullable = false)
+  private boolean deleted = false;
+  private LocalDateTime deletedAt;
+
 }

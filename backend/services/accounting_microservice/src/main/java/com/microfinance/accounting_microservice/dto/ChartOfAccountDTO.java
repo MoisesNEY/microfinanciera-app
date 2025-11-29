@@ -3,11 +3,13 @@ package com.microfinance.accounting_microservice.dto;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class ChartOfAccountDTO {
-    private Integer id;
+    private UUID id;
     private String accountCode;
     private String accountName;
     private String accountType;
-    private Integer parentAccountId;
+    private UUID parentAccountId;
 }

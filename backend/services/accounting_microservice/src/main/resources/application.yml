@@ -13,3 +13,8 @@ spring:
       allow-numeric-leading-zeros: true
       allow-unquoted-field-names: true
       allow-single-quotes: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+

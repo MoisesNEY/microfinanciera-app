@@ -20,8 +20,9 @@ public class TransactionController {
 private final TransactionService transactionService;
 
     @GetMapping
-    public ResponseEntity<List<TransactionResponseDTO>> getAll() {
-        return ResponseEntity.ok(transactionService.findAll());
+    public ResponseEntity<List<TransactionResponseDTO>> getAll(
+            @RequestParam(value = "deleted", defaultValue = "false") boolean deleted) {
+        return ResponseEntity.ok(transactionService.findAll(deleted));
     }
 
     @GetMapping("/{id}")
@@ -30,9 +31,8 @@ private final TransactionService transactionService;
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<TransactionResponseDTO> create(@Valid @RequestBody TransactionRequestDTO dto) {
-        return ResponseEntity.ok(transactionService.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.create(dto));
     }
 
     @PutMapping("/{id}")
@@ -43,9 +43,16 @@ private final TransactionService transactionService;
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         transactionService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<Void> activate(@PathVariable UUID id) {
+        transactionService.activate(id);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

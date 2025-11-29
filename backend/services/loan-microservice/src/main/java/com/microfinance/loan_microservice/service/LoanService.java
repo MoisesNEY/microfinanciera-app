@@ -18,12 +18,13 @@ public class LoanService {
         this.repo = repo;
     }
 
-    public List<Loan> all() {
-        return repo.findAll();
+    public List<Loan> all(Boolean deleted) {
+        return repo.findAllByDeleted(deleted);
     }
 
-    public Loan one(UUID id) {
-        return repo.findById(id).orElseThrow();
+    public Loan one(UUID id, Boolean deleted) {
+        return repo.findByIdAndDeleted(id, deleted)
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
     }
 
     public Loan create(LoanDTOs.Create dto) {
@@ -46,7 +47,7 @@ public class LoanService {
 
     public Loan update(UUID id, LoanDTOs.Create dto) {
         validateMoratoryRate(dto.interestRate(), dto.moratoryRate()); // Nuevo: validar tope 25% mora
-        Loan l = one(id);
+        Loan l = one(id, false); // one() ya valida que no esté eliminado
         l.setApplicationId(dto.applicationId());
         l.setCustomerId(dto.customerId());
         l.setLoanCode(dto.loanCode());
@@ -63,18 +64,38 @@ public class LoanService {
     }
 
     public void delete(UUID id) {
-    // Buscar el préstamo activo
-    Loan loan = repo.findById(id)
-            .filter(l -> !l.isDeleted()) // Solo considerar los no eliminados
-            .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
+        // Buscar el préstamo activo
+        Loan loan = repo.findByIdAndDeleted(id, false)
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
 
-    // Marcar como eliminado
-    loan.setDeleted(true);
-    loan.setDeletedAt(LocalDateTime.now());
+        // Validar que no esté ya eliminado
+        if (loan.isDeleted()) {
+            throw new IllegalStateException("El préstamo con id " + id + " ya está inactivo");
+        }
 
-    // Guardar el cambio
-    repo.save(loan);
-}
+        // Marcar como eliminado
+        loan.setDeleted(true);
+        loan.setDeletedAt(LocalDateTime.now());
+
+        // Guardar el cambio
+        repo.save(loan);
+    }
+
+    public void Activate(UUID id) {
+        // Buscar el préstamo eliminado
+        Loan loan = repo.findByIdAndDeleted(id, true)
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
+        // Validar que esté ya eliminado
+        if (loan.isDeleted() == false) {
+            throw new IllegalStateException("El préstamo con id " + id + " ya está activo");
+        }
+
+        // Marcar como eliminado
+        loan.setDeleted(false);
+
+        // Guardar el cambio
+        repo.save(loan);
+    }
 
     private void validateMoratoryRate(BigDecimal interestRate, BigDecimal moratoryRate) {
         if (interestRate == null || moratoryRate == null) return;

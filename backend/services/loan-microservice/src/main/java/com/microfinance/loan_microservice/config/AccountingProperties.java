@@ -1,5 +1,7 @@
 package com.microfinance.loan_microservice.config;
 
+import java.util.UUID;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "accounting")
@@ -40,40 +42,40 @@ public class AccountingProperties {
     }
 
     public static class Accounts {
-        private Integer cash;
-        private Integer loanReceivable;
-        private Integer interestIncome;
-        private Integer moratoryIncome;
+        private UUID cash;
+        private UUID loanReceivable;
+        private UUID interestIncome;
+        private UUID moratoryIncome;
 
-        public Integer getCash() {
+        public UUID getCash() {
             return cash;
         }
 
-        public void setCash(Integer cash) {
+        public void setCash(UUID cash) {
             this.cash = cash;
         }
 
-        public Integer getLoanReceivable() {
+        public UUID getLoanReceivable() {
             return loanReceivable;
         }
 
-        public void setLoanReceivable(Integer loanReceivable) {
+        public void setLoanReceivable(UUID loanReceivable) {
             this.loanReceivable = loanReceivable;
         }
 
-        public Integer getInterestIncome() {
+        public UUID getInterestIncome() {
             return interestIncome;
         }
 
-        public void setInterestIncome(Integer interestIncome) {
+        public void setInterestIncome(UUID interestIncome) {
             this.interestIncome = interestIncome;
         }
 
-        public Integer getMoratoryIncome() {
+        public UUID getMoratoryIncome() {
             return moratoryIncome;
         }
 
-        public void setMoratoryIncome(Integer moratoryIncome) {
+        public void setMoratoryIncome(UUID moratoryIncome) {
             this.moratoryIncome = moratoryIncome;
         }
     }

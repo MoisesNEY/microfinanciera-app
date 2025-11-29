@@ -2,6 +2,7 @@ package com.microfinance.accounting_microservice.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "chart_of_accounts")
@@ -11,8 +12,14 @@ import lombok.*;
 @Builder
 public class ChartOfAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private UUID id;
+
+    @PrePersist
+    public void ensureId() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+    }
 
     @Column(name = "account_code", nullable = false, length = 20)
     private String accountCode;
@@ -26,7 +33,7 @@ public class ChartOfAccount {
     private AccountType accountType;
 
     @Column(name = "parent_account_id")
-    private Integer parentAccountId;
+    private UUID parentAccountId;
 
     @Builder.Default
     @Column(name = "deleted", nullable = false)

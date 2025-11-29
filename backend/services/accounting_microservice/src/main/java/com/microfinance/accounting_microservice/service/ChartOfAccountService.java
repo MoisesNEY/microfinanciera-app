@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +19,7 @@ public class ChartOfAccountService {
 
     public ChartOfAccountDTO create(ChartOfAccountDTO dto) {
         ChartOfAccount account = ChartOfAccount.builder()
+                .id(UUID.randomUUID())
                 .accountCode(dto.getAccountCode())
                 .accountName(dto.getAccountName())
                 .accountType(AccountType.valueOf(dto.getAccountType()))
@@ -30,20 +32,20 @@ public class ChartOfAccountService {
         return toDTO(saved);
     }
 
-    public List<ChartOfAccountDTO> findAll() {
-        return chartOfAccountRepository.findAllByDeletedFalse().stream()
+    public List<ChartOfAccountDTO> findAll(Boolean deleted) {
+        return chartOfAccountRepository.findAllByDeleted(deleted).stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public ChartOfAccountDTO findById(Integer id) {
-        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeletedFalse(id)
+    public ChartOfAccountDTO findById(UUID id) {
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
         return toDTO(account);
     }
 
-    public ChartOfAccountDTO update(Integer id, ChartOfAccountDTO dto) {
-        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeletedFalse(id)
+    public ChartOfAccountDTO update(UUID id, ChartOfAccountDTO dto) {
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
         
         account.setAccountCode(dto.getAccountCode());
@@ -55,10 +57,27 @@ public class ChartOfAccountService {
         return toDTO(updated);
     }
 
-    public void delete(Integer id) {
-        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeletedFalse(id)
+    public void delete(UUID id) {
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+
+        if (account.isDeleted()) {
+            throw new IllegalStateException("La cuenta con id " + id + " ya está inactiva");
+        }
+
         account.setDeleted(true);
+        chartOfAccountRepository.save(account);
+    }
+
+    public void activate(UUID id) {
+        ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, true)
+                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+
+        if (!account.isDeleted()) {
+            throw new IllegalStateException("El id " + id + " ya está activo");
+        }
+
+        account.setDeleted(false);
         chartOfAccountRepository.save(account);
     }
 

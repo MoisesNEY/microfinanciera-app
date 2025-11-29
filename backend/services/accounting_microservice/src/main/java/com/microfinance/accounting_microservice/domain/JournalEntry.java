@@ -23,7 +23,7 @@ public class JournalEntry {
     private UUID transactionId;
 
     @Column(name = "account_id", nullable = false)
-    private Integer accountId;
+    private UUID accountId;
 
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal debitAmount;

@@ -219,24 +219,124 @@ databaseChangeLog:
             columns:
               - column: { name: installment_id }
 
-# =========================
-# soft delete flags
-# =========================
-- changeSet:
-    id: 006-soft-delete-loans
-    author: equipo
-    changes:
-      - addColumn:
-          tableName: loans
-          columns:
-            - column:
-                name: deleted
-                type: boolean
-                defaultValueBoolean: false
-                constraints:
-                  nullable: false
-            - column:
-                name: deleted_at
-                type: timestamp
-                constraints:
-                  nullable: true
+  # =========================
+  # soft delete flags
+  # =========================
+  - changeSet:
+      id: 006-soft-delete-loans
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: loans
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: loans
+            indexName: idx_loans_deleted
+            columns:
+              - column: { name: deleted }
+
+  - changeSet:
+      id: 007-soft-delete-loan-applications
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: loan_applications
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: loan_applications
+            indexName: idx_loan_applications_deleted
+            columns:
+              - column: { name: deleted }
+
+  - changeSet:
+      id: 008-soft-delete-loan-products
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: loan_products
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: loan_products
+            indexName: idx_loan_products_deleted
+            columns:
+              - column: { name: deleted }
+
+  - changeSet:
+      id: 009-soft-delete-loan-schedules
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: loan_schedules
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: loan_schedules
+            indexName: idx_loan_schedules_deleted
+            columns:
+              - column: { name: deleted }
+  - changeSet:
+      id: 010-soft-delete-loan-payments
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: loan_payments
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: loan_payments
+            indexName: idx_loan_payments_deleted
+            columns:
+              - column: { name: deleted }

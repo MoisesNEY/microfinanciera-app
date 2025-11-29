@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -34,22 +35,24 @@ public class LoanPaymentService {
         this.accountingClient = accountingClient;
     }
 
-    public List<LoanPayment> all() {
-        return repo.findAll();
+    public List<LoanPayment> all(Boolean deleted) {
+        return repo.findAllByDeleted(deleted);
     }
 
     public List<LoanPayment> byLoan(UUID loanId) {
         return repo.findByLoanIdOrderByPaymentDateAsc(loanId); // Nuevo: pagos por prestamo ordenados
     }
 
-    public LoanPayment one(UUID id) {
-        return repo.findById(id).orElseThrow();
+    public LoanPayment one(UUID id, Boolean deleted) {
+        return repo.findByIdAndDeleted(id, deleted)
+                .orElseThrow(() -> new RuntimeException("LoanPayment not found with id: " + id));
     }
 
     @Transactional
     public LoanPayment create(LoanPaymentDTOs.Create dto, String bearerToken) {
         String tokenSolo = bearerToken.replaceFirst("(?i)^Bearer ", "");
-        Loan loan = loanRepo.findById(dto.loanId()).orElseThrow();
+        Loan loan = loanRepo.findByIdAndDeleted(dto.loanId(), false)
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + dto.loanId()));
         AppliedBreakdown breakdown = applyPayment(loan, dto); // Nuevo: aplicar pago a cuotas con mora sobre capital vencido
         LoanPayment p = new LoanPayment();
         p.setLoanId(dto.loanId());
@@ -74,7 +77,7 @@ public class LoanPaymentService {
     }
 
     public LoanPayment update(UUID id, LoanPaymentDTOs.Create dto) {
-        LoanPayment p = one(id);
+        LoanPayment p = one(id, false);
         p.setLoanId(dto.loanId());
         p.setInstallmentId(dto.installmentId());
         p.setPaymentDate(dto.paymentDate());
@@ -85,7 +88,32 @@ public class LoanPaymentService {
     }
 
     public void delete(UUID id) {
-        repo.deleteById(id);
+        // Buscar el LoanPayment activo
+        LoanPayment p = repo.findByIdAndDeleted(id, false)
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
+        // Validar que no esté ya eliminado
+        if (p.isDeleted()) {
+            throw new IllegalStateException("El préstamo con id " + id + " ya está inactivo");
+        }
+        // Marcar como eliminado
+        p.setDeleted(true);
+        p.setDeletedAt(LocalDateTime.now());
+        // Guardar el cambio
+        repo.save(p);
+    }
+
+    public void Activate(UUID id) {
+        // Buscar el préstamo eliminado
+        LoanPayment p = repo.findByIdAndDeleted(id, true)
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + id));
+        // Validar que esté ya eliminado
+        if (p.isDeleted() == false) {
+            throw new IllegalStateException("El préstamo con id " + id + " ya está activo");
+        }
+        // Marcar como eliminado
+        p.setDeleted(false);
+        // Guardar el cambio
+        repo.save(p);
     }
 
     private AppliedBreakdown applyPayment(Loan loan, LoanPaymentDTOs.Create dto) {

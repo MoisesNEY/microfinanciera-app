@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -38,4 +39,9 @@ public class LoanPayment {
 
   @Column(length = 100)
   private String reference; // Nuevo: referencia o comprobante
+
+  @Builder.Default
+  @Column(nullable = false)
+  private boolean deleted = false;
+  private LocalDateTime deletedAt;
 }

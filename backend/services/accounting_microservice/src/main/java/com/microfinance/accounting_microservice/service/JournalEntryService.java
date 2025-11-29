@@ -31,20 +31,20 @@ public class JournalEntryService {
         return toDTO(saved);
     }
 
-    public List<JournalEntryDTO> findAll() {
-        return journalEntryRepository.findAllByDeletedFalse().stream()
+    public List<JournalEntryDTO> findAll(Boolean deleted) {
+        return journalEntryRepository.findAllByDeleted(deleted).stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     public JournalEntryDTO findById(UUID id) {
-        JournalEntry entry = journalEntryRepository.findByIdAndDeletedFalse(id)
+        JournalEntry entry = journalEntryRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
         return toDTO(entry);
     }
 
     public JournalEntryDTO update(UUID id, JournalEntryDTO dto) {
-        JournalEntry entry = journalEntryRepository.findByIdAndDeletedFalse(id)
+        JournalEntry entry = journalEntryRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
         
         entry.setTransactionId(dto.getTransactionId());
@@ -58,9 +58,26 @@ public class JournalEntryService {
     }
 
     public void delete(UUID id) {
-        JournalEntry entry = journalEntryRepository.findByIdAndDeletedFalse(id)
+        JournalEntry entry = journalEntryRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
+
+        if (entry.isDeleted()) {
+            throw new IllegalStateException("El asiento con id " + id + " ya está inactivo");
+        }
+
         entry.setDeleted(true);
+        journalEntryRepository.save(entry);
+    }
+
+    public void activate(UUID id) {
+        JournalEntry entry = journalEntryRepository.findByIdAndDeleted(id, true)
+                .orElseThrow(() -> new RuntimeException("Journal entry not found with id: " + id));
+
+        if (!entry.isDeleted()) {
+            throw new IllegalStateException("El asiento con id " + id + " ya está activo");
+        }
+
+        entry.setDeleted(false);
         journalEntryRepository.save(entry);
     }
 

@@ -10,7 +10,7 @@ import java.util.UUID;
 public class JournalEntryDTO {
     private UUID id;
     private UUID transactionId;
-    private Integer accountId;
+    private UUID accountId;
     private BigDecimal debitAmount;
     private BigDecimal creditAmount;
     private LocalDateTime entryDate;

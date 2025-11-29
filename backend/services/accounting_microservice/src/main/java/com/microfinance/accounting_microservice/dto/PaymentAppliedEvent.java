@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,27 +48,64 @@ public class PaymentAppliedEvent {
 
     private String description;
 
-    @JsonDeserialize(using = FlexibleIntegerDeserializer.class)
-    private Integer cashAccountId;
+    @JsonDeserialize(using = FlexibleUUIDDeserializer.class)
+    private UUID cashAccountId;
 
-    @JsonDeserialize(using = FlexibleIntegerDeserializer.class)
-    private Integer loanReceivableAccountId;
+    @JsonDeserialize(using = FlexibleUUIDDeserializer.class)
+    private UUID loanReceivableAccountId;
 
-    @JsonDeserialize(using = FlexibleIntegerDeserializer.class)
-    private Integer interestIncomeAccountId;
+    @JsonDeserialize(using = FlexibleUUIDDeserializer.class)
+    private UUID interestIncomeAccountId;
 
-    @JsonDeserialize(using = FlexibleIntegerDeserializer.class)
-    private Integer moratoryIncomeAccountId;
+    @JsonDeserialize(using = FlexibleUUIDDeserializer.class)
+    private UUID moratoryIncomeAccountId;
 
     public static class FlexibleUUIDDeserializer extends JsonDeserializer<UUID> {
         @Override
         public UUID deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
-                String value = p.getValueAsString();
-                return value != null && !value.isEmpty() ? UUID.fromString(value) : null;
+                // Lee el valor como árbol para manejar diferentes tipos
+                JsonNode node = p.readValueAsTree();
+                
+                if (node.isNumber()) {
+                    // Si viene como número (1, 2, 3, 4)
+                    long numericValue = node.asLong();
+                    System.out.println("DEBUG: Converting numeric value " + numericValue + " to UUID");
+                    return numericValueToUUID(numericValue);
+                } else if (node.isTextual()) {
+                    String value = node.asText();
+                    if (value != null && !value.trim().isEmpty()) {
+                        // Si ya es un UUID válido
+                        if (value.contains("-") && value.length() == 36) {
+                            return UUID.fromString(value);
+                        } else {
+                            // Si es un número como string ("1", "2")
+                            try {
+                                long numericValue = Long.parseLong(value);
+                                System.out.println("DEBUG: Converting string numeric value " + numericValue + " to UUID");
+                                return numericValueToUUID(numericValue);
+                            } catch (NumberFormatException e) {
+                                // Si no es número, intentar como UUID
+                                return UUID.fromString(value);
+                            }
+                        }
+                    }
+                }
+                System.out.println("DEBUG: Failed to deserialize UUID from: " + node);
+                return null;
             } catch (Exception e) {
+                System.out.println("DEBUG: Error in FlexibleUUIDDeserializer: " + e.getMessage());
                 return null;
             }
+        }
+        
+        private UUID numericValueToUUID(long value) {
+            // Convierte:
+            // 1 -> "00000000-0000-0000-0000-000000000001"
+            // 2 -> "00000000-0000-0000-0000-000000000002" 
+            // 3 -> "00000000-0000-0000-0000-000000000003"
+            // 4 -> "00000000-0000-0000-0000-000000000004"
+            return new UUID(0, value);
         }
     }
 
@@ -89,25 +125,12 @@ public class PaymentAppliedEvent {
         }
     }
 
-    public static class FlexibleIntegerDeserializer extends JsonDeserializer<Integer> {
-        @Override
-        public Integer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            try {
-                if (p.getCurrentToken().isNumeric()) {
-                    return p.getIntValue();
-                } else {
-                    String value = p.getValueAsString();
-                    return value != null && !value.isEmpty() ? Integer.parseInt(value) : 0;
-                }
-            } catch (Exception e) {
-                return 0;
-            }
-            }
-        }
+    // Elimina FlexibleIntegerDeserializer ya que no lo necesitas más
+    // public static class FlexibleIntegerDeserializer extends JsonDeserializer<Integer> { ... }
 
-        public static class FlexibleLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
-            @Override
-            public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public static class FlexibleLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+        @Override
+        public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
                 switch (p.getCurrentToken()) {
                     case VALUE_NUMBER_INT:

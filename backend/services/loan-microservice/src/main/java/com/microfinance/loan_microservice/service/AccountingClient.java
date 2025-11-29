@@ -64,17 +64,17 @@ public class AccountingClient {
         if (accounts == null) {
             throw new IllegalStateException("Config accounting.accounts no está definida");
         }
-        if (accounts.getCash() == null || accounts.getCash() <= 0) {
-            throw new IllegalStateException("Config accounting.accounts.cash es requerida y debe ser > 0");
+        if (accounts.getCash() == null) {
+            throw new IllegalStateException("Config accounting.accounts.cash es requerida");
         }
-        if (accounts.getLoanReceivable() == null || accounts.getLoanReceivable() <= 0) {
-            throw new IllegalStateException("Config accounting.accounts.loanReceivable es requerida y debe ser > 0");
+        if (accounts.getLoanReceivable() == null) {
+            throw new IllegalStateException("Config accounting.accounts.loanReceivable es requerida");
         }
-        if (accounts.getInterestIncome() == null || accounts.getInterestIncome() <= 0) {
-            throw new IllegalStateException("Config accounting.accounts.interestIncome es requerida y debe ser > 0");
+        if (accounts.getInterestIncome() == null) {
+            throw new IllegalStateException("Config accounting.accounts.interestIncome es requerida");
         }
-        if (accounts.getMoratoryIncome() == null || accounts.getMoratoryIncome() <= 0) {
-            throw new IllegalStateException("Config accounting.accounts.moratoryIncome es requerida y debe ser > 0");
+        if (accounts.getMoratoryIncome() == null ){
+            throw new IllegalStateException("Config accounting.accounts.moratoryIncome es requerida");
         }
     }
 }

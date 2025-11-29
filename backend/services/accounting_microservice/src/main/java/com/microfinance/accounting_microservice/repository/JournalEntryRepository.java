@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JournalEntryRepository extends JpaRepository<JournalEntry, UUID> {
-    List<JournalEntry> findAllByDeletedFalse();
-    Optional<JournalEntry> findByIdAndDeletedFalse(UUID id);
+    List<JournalEntry> findAllByDeleted(Boolean deleted);
+    Optional<JournalEntry> findByIdAndDeleted(UUID id, Boolean deleted);
 }
 

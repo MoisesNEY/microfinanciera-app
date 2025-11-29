@@ -3,6 +3,7 @@ package com.microfinance.loan_microservice.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -48,4 +49,9 @@ public class LoanProduct {
   @Column(nullable = false)
   @Builder.Default
   private Boolean isActive = true;
+
+  @Builder.Default
+  @Column(nullable = false)
+  private boolean deleted = false;
+  private LocalDateTime deletedAt;
 }

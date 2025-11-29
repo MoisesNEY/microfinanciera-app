@@ -21,12 +21,12 @@ public class LoanProductController {
 
     @GetMapping
     public List<LoanProduct> all() {
-        return service.all();
+        return service.all(false);
     }
 
     @GetMapping("/{id}")
     public LoanProduct one(@PathVariable UUID id) {
-        return service.one(id);
+        return service.one(id,false);
     }
 
     @PostMapping
@@ -44,5 +44,11 @@ public class LoanProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+    }
+
+    @PostMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void activate(@PathVariable UUID id) {
+        service.Activate(id);
     }
 }

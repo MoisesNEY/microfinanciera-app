@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface LoanRepository extends JpaRepository<Loan, UUID> {
-    List<Loan> findAllByDeletedFalse();
-    Optional<Loan> findByIdAndDeletedFalse(UUID id);
+    List<Loan> findAllByDeleted(Boolean deleted);
+    Optional<Loan> findByIdAndDeleted(UUID id, Boolean deleted);
 }

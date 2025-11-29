@@ -29,6 +29,18 @@ public class GlobalExceptionHandler {
         .body(Map.of("error","CONFLICT","message", ex.getMessage()));
   }
 
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<Map<String,Object>> runtime(RuntimeException ex){
+    // Si el mensaje indica "not found", devolver 404
+    if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(Map.of("error","NOT_FOUND","message", ex.getMessage()));
+    }
+    // Caso contrario, devolver 500
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(Map.of("error","INTERNAL_ERROR","message", ex.getMessage()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String,Object>> generic(Exception ex){
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
