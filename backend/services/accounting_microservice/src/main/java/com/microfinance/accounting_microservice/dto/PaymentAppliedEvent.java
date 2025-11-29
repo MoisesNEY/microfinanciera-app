@@ -60,32 +60,28 @@ public class PaymentAppliedEvent {
     @JsonDeserialize(using = FlexibleUUIDDeserializer.class)
     private UUID moratoryIncomeAccountId;
 
-    public static class FlexibleUUIDDeserializer extends JsonDeserializer<UUID> {
+    // Make deserializers package-private (remove 'public')
+    static class FlexibleUUIDDeserializer extends JsonDeserializer<UUID> {
         @Override
         public UUID deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
-                // Lee el valor como árbol para manejar diferentes tipos
                 JsonNode node = p.readValueAsTree();
                 
                 if (node.isNumber()) {
-                    // Si viene como número (1, 2, 3, 4)
                     long numericValue = node.asLong();
                     System.out.println("DEBUG: Converting numeric value " + numericValue + " to UUID");
                     return numericValueToUUID(numericValue);
                 } else if (node.isTextual()) {
                     String value = node.asText();
                     if (value != null && !value.trim().isEmpty()) {
-                        // Si ya es un UUID válido
                         if (value.contains("-") && value.length() == 36) {
                             return UUID.fromString(value);
                         } else {
-                            // Si es un número como string ("1", "2")
                             try {
                                 long numericValue = Long.parseLong(value);
                                 System.out.println("DEBUG: Converting string numeric value " + numericValue + " to UUID");
                                 return numericValueToUUID(numericValue);
                             } catch (NumberFormatException e) {
-                                // Si no es número, intentar como UUID
                                 return UUID.fromString(value);
                             }
                         }
@@ -100,16 +96,11 @@ public class PaymentAppliedEvent {
         }
         
         private UUID numericValueToUUID(long value) {
-            // Convierte:
-            // 1 -> "00000000-0000-0000-0000-000000000001"
-            // 2 -> "00000000-0000-0000-0000-000000000002" 
-            // 3 -> "00000000-0000-0000-0000-000000000003"
-            // 4 -> "00000000-0000-0000-0000-000000000004"
             return new UUID(0, value);
         }
     }
 
-    public static class FlexibleBigDecimalDeserializer extends JsonDeserializer<BigDecimal> {
+    static class FlexibleBigDecimalDeserializer extends JsonDeserializer<BigDecimal> {
         @Override
         public BigDecimal deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
@@ -125,10 +116,7 @@ public class PaymentAppliedEvent {
         }
     }
 
-    // Elimina FlexibleIntegerDeserializer ya que no lo necesitas más
-    // public static class FlexibleIntegerDeserializer extends JsonDeserializer<Integer> { ... }
-
-    public static class FlexibleLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+    static class FlexibleLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
         @Override
         public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
