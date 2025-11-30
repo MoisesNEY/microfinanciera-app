@@ -45,3 +45,14 @@ databaseChangeLog:
                   type: VARCHAR(20)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: "3"
+      author: oswaldo
+      changes:
+        - addColumn:
+            tableName: payments
+            columns:
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true

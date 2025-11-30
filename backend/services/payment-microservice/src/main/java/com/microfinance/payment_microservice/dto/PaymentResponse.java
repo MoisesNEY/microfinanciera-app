@@ -16,12 +16,13 @@ public class PaymentResponse {
     private String transactionReference;
     private UUID cashierId;
     private PaymentStatus status;
+    private boolean active; 
 
     public PaymentResponse() {}
 
     public PaymentResponse(UUID id, UUID loanId, LocalDate paymentDate, BigDecimal amountPaid,
-                        PaymentMethod paymentMethod, String transactionReference, UUID cashierId,
-                        PaymentStatus status) {
+                           PaymentMethod paymentMethod, String transactionReference, UUID cashierId,
+                           PaymentStatus status, boolean active) {
         this.id = id;
         this.loanId = loanId;
         this.paymentDate = paymentDate;
@@ -30,6 +31,7 @@ public class PaymentResponse {
         this.transactionReference = transactionReference;
         this.cashierId = cashierId;
         this.status = status;
+        this.active = active;
     }
 
     public UUID getId() { return id; }
@@ -55,4 +57,7 @@ public class PaymentResponse {
 
     public PaymentStatus getStatus() { return status; }
     public void setStatus(PaymentStatus status) { this.status = status; }
+
+    public boolean isActive() { return active; } 
+    public void setActive(boolean active) { this.active = active; } 
 }

@@ -42,8 +42,25 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
     // Constructor vacío
     public Payment() {}
+
+    // Constructor completo
+    public Payment(UUID loanId, LocalDate paymentDate, BigDecimal amountPaid, 
+                  PaymentMethod paymentMethod, String transactionReference, 
+                  UUID cashierId, PaymentStatus status) {
+        this.loanId = loanId;
+        this.paymentDate = paymentDate;
+        this.amountPaid = amountPaid;
+        this.paymentMethod = paymentMethod;
+        this.transactionReference = transactionReference;
+        this.cashierId = cashierId;
+        this.status = status;
+        this.active = true;
+    }
 
     // Getters y Setters
     public UUID getId() { return id; }
@@ -69,4 +86,7 @@ public class Payment {
 
     public PaymentStatus getStatus() { return status; }
     public void setStatus(PaymentStatus status) { this.status = status; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

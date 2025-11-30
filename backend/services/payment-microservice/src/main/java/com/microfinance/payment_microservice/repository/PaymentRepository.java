@@ -9,4 +9,10 @@ import com.microfinance.payment_microservice.domain.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByLoanId(UUID loanId);
+    
+    List<Payment> findByActiveTrue();
+    
+    List<Payment> findByActiveFalse();
+    
+    List<Payment> findByLoanIdAndActiveTrue(UUID loanId);
 }

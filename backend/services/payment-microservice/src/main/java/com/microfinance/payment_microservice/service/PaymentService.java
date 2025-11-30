@@ -4,10 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.AbstractOAuth2Token;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +43,7 @@ public class PaymentService {
     }
 
     public List<PaymentResponse> getAllPayments() {
-        return paymentRepository.findAll().stream().map(mapper::toPaymentResponse).toList();
+        return paymentRepository.findByActiveTrue().stream().map(mapper::toPaymentResponse).toList();
     }
 
     public PaymentResponse getById(UUID id) {
@@ -71,13 +67,31 @@ public class PaymentService {
     }
 
     public List<PaymentResponse> getPaymentsByLoanId(UUID loanId) {
-        return paymentRepository.findByLoanId(loanId).stream().map(mapper::toPaymentResponse).toList();
+        return paymentRepository.findByLoanIdAndActiveTrue(loanId).stream().map(mapper::toPaymentResponse).toList();
     }
 
+    @Transactional
     public void delete(UUID id) {
-        if (!paymentRepository.existsById(id)) {
-            throw new IllegalArgumentException("Payment not found");
-        }
-        paymentRepository.deleteById(id);
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+        payment.setActive(false);
+        paymentRepository.save(payment);
+    }
+
+    // Nuevos métodos para activar/desactivar pagos
+    @Transactional
+    public PaymentResponse setActive(UUID id, boolean active) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+        payment.setActive(active);
+        Payment savedPayment = paymentRepository.save(payment);
+        return mapper.toPaymentResponse(savedPayment);
+    }
+
+    public List<PaymentResponse> getInactivePayments() {
+        return paymentRepository.findByActiveFalse()
+                .stream()
+                .map(mapper::toPaymentResponse)
+                .toList();
     }
 }

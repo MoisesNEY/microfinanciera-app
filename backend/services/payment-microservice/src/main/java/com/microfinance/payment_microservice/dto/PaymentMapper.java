@@ -29,6 +29,7 @@ public class PaymentMapper {
         paymentResponse.setTransactionReference(payment.getTransactionReference());
         paymentResponse.setCashierId(payment.getCashierId());
         paymentResponse.setStatus(payment.getStatus());
+        paymentResponse.setActive(payment.isActive());
         return paymentResponse;
     }
 }
