@@ -6,9 +6,14 @@ spring:
 accounting:
   service:
     url: http://api-gateway:8080
-  #accounts:
-    #cash:           # ID cuenta caja/banco 
-    #loanReceivable: 1201 # ID cuenta por cobrar prestamos
-    #interestIncome: 4101 # ID ingreso por intereses
-    #moratoryIncome: 4102 # ID ingreso por mora 
+  accounts:
+    # Nombres lógicos de cuentas - se consultan al accounting-microservice para obtener UUIDs
+    # Estos nombres son independientes de los códigos numéricos y pueden variar por empresa/ambiente
+    cash: "CASH_ACCOUNT"                    # Nombre lógico cuenta caja/banco
+    loanReceivable: "LOAN_RECEIVABLE_ACCOUNT" # Nombre lógico cuenta por cobrar prestamos
+    interestIncome: "INTEREST_INCOME_ACCOUNT" # Nombre lógico ingreso por intereses
+    moratoryIncome: "MORATORY_INCOME_ACCOUNT"  # Nombre lógico ingreso por mora 
 
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true

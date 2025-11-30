@@ -10,6 +10,7 @@ public class ChartOfAccountDTO {
     private UUID id;
     private String accountCode;
     private String accountName;
+    private String logicalName;
     private String accountType;
     private UUID parentAccountId;
 }

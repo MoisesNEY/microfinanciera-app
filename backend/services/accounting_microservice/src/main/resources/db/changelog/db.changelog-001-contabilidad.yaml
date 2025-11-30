@@ -134,3 +134,27 @@ databaseChangeLog:
             tableName: journal_entries
             columns:
               - column: { name: deleted, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+
+  # =========================
+  # logical_name for chart_of_accounts
+  # =========================
+  - changeSet:
+      id: 006-add-logical-name
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: chart_of_accounts
+            columns:
+              - column: { name: logical_name, type: "varchar(50)" }
+        - createIndex:
+            tableName: chart_of_accounts
+            indexName: idx_chart_accounts_logical_name
+            columns:
+              - column: { name: logical_name }
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- Crear constraint único solo para valores no nulos
+              CREATE UNIQUE INDEX idx_chart_accounts_logical_name_unique 
+              ON chart_of_accounts(logical_name) 
+              WHERE logical_name IS NOT NULL;

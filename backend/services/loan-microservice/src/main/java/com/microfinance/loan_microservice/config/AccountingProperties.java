@@ -1,7 +1,5 @@
 package com.microfinance.loan_microservice.config;
 
-import java.util.UUID;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "accounting")
@@ -42,40 +40,63 @@ public class AccountingProperties {
     }
 
     public static class Accounts {
-        private UUID cash;
-        private UUID loanReceivable;
-        private UUID interestIncome;
-        private UUID moratoryIncome;
+        /**
+         * Nombre lógico de la cuenta de caja/banco (ej: "CASH_ACCOUNT").
+         * Se consulta al accounting-microservice para obtener el UUID.
+         * El nombre lógico es independiente del código numérico y puede variar por empresa/ambiente.
+         */
+        private String cash;
+        
+        /**
+         * Nombre lógico de la cuenta de préstamos por cobrar (ej: "LOAN_RECEIVABLE_ACCOUNT").
+         * Se consulta al accounting-microservice para obtener el UUID.
+         * El nombre lógico es independiente del código numérico y puede variar por empresa/ambiente.
+         */
+        private String loanReceivable;
+        
+        /**
+         * Nombre lógico de la cuenta de ingresos por intereses (ej: "INTEREST_INCOME_ACCOUNT").
+         * Se consulta al accounting-microservice para obtener el UUID.
+         * El nombre lógico es independiente del código numérico y puede variar por empresa/ambiente.
+         */
+        private String interestIncome;
+        
+        /**
+         * Nombre lógico de la cuenta de ingresos por mora (ej: "MORATORY_INCOME_ACCOUNT").
+         * Se consulta al accounting-microservice para obtener el UUID.
+         * El nombre lógico es independiente del código numérico y puede variar por empresa/ambiente.
+         */
+        private String moratoryIncome;
 
-        public UUID getCash() {
+        public String getCash() {
             return cash;
         }
 
-        public void setCash(UUID cash) {
+        public void setCash(String cash) {
             this.cash = cash;
         }
 
-        public UUID getLoanReceivable() {
+        public String getLoanReceivable() {
             return loanReceivable;
         }
 
-        public void setLoanReceivable(UUID loanReceivable) {
+        public void setLoanReceivable(String loanReceivable) {
             this.loanReceivable = loanReceivable;
         }
 
-        public UUID getInterestIncome() {
+        public String getInterestIncome() {
             return interestIncome;
         }
 
-        public void setInterestIncome(UUID interestIncome) {
+        public void setInterestIncome(String interestIncome) {
             this.interestIncome = interestIncome;
         }
 
-        public UUID getMoratoryIncome() {
+        public String getMoratoryIncome() {
             return moratoryIncome;
         }
 
-        public void setMoratoryIncome(UUID moratoryIncome) {
+        public void setMoratoryIncome(String moratoryIncome) {
             this.moratoryIncome = moratoryIncome;
         }
     }

@@ -27,6 +27,14 @@ public class ChartOfAccount {
     @Column(name = "account_name", nullable = false, length = 100)
     private String accountName;
 
+    /**
+     * Nombre lógico de la cuenta (ej: "CASH_ACCOUNT", "LOAN_RECEIVABLE_ACCOUNT").
+     * Permite identificar cuentas por concepto en lugar de código numérico.
+     * Es opcional y único cuando no es nulo (mediante índice único parcial en BD).
+     */
+    @Column(name = "logical_name", length = 50)
+    private String logicalName;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
     // QUITAR: , columnDefinition = "account_type_enum"

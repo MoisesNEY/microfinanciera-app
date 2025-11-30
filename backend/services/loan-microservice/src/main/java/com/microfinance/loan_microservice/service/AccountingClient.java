@@ -18,10 +18,12 @@ public class AccountingClient {
 
     private final RestTemplate restTemplate;
     private final AccountingProperties props;
+    private final AccountLookupService accountLookupService;
 
-    public AccountingClient(RestTemplate restTemplate, AccountingProperties props) {
+    public AccountingClient(RestTemplate restTemplate, AccountingProperties props, AccountLookupService accountLookupService) {
         this.restTemplate = restTemplate;
         this.props = props;
+        this.accountLookupService = accountLookupService;
     }
 
     public void sendPaymentApplied(UUID paymentId,
@@ -36,6 +38,12 @@ public class AccountingClient {
         var accounts = props.getAccounts();
         validateAccountsConfigured(accounts);
 
+        // Resolver códigos/nombres de cuentas a UUIDs consultando al accounting-microservice
+        UUID cashAccountId = accountLookupService.lookupAccountId(accounts.getCash(), bearerToken);
+        UUID loanReceivableAccountId = accountLookupService.lookupAccountId(accounts.getLoanReceivable(), bearerToken);
+        UUID interestIncomeAccountId = accountLookupService.lookupAccountId(accounts.getInterestIncome(), bearerToken);
+        UUID moratoryIncomeAccountId = accountLookupService.lookupAccountId(accounts.getMoratoryIncome(), bearerToken);
+
         Map<String, Object> body = new HashMap<>();
         body.put("paymentId", paymentId);
         body.put("loanId", loanId);
@@ -45,10 +53,10 @@ public class AccountingClient {
         body.put("totalAmount", total);
         body.put("paymentDate", paymentDate);
         body.put("description", description);
-        body.put("cashAccountId", accounts.getCash());
-        body.put("loanReceivableAccountId", accounts.getLoanReceivable());
-        body.put("interestIncomeAccountId", accounts.getInterestIncome());
-        body.put("moratoryIncomeAccountId", accounts.getMoratoryIncome());
+        body.put("cashAccountId", cashAccountId);
+        body.put("loanReceivableAccountId", loanReceivableAccountId);
+        body.put("interestIncomeAccountId", interestIncomeAccountId);
+        body.put("moratoryIncomeAccountId", moratoryIncomeAccountId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -64,17 +72,17 @@ public class AccountingClient {
         if (accounts == null) {
             throw new IllegalStateException("Config accounting.accounts no está definida");
         }
-        if (accounts.getCash() == null) {
-            throw new IllegalStateException("Config accounting.accounts.cash es requerida");
+        if (accounts.getCash() == null || accounts.getCash().isBlank()) {
+            throw new IllegalStateException("Config accounting.accounts.cash (código o nombre) es requerida");
         }
-        if (accounts.getLoanReceivable() == null) {
-            throw new IllegalStateException("Config accounting.accounts.loanReceivable es requerida");
+        if (accounts.getLoanReceivable() == null || accounts.getLoanReceivable().isBlank()) {
+            throw new IllegalStateException("Config accounting.accounts.loanReceivable (código o nombre) es requerida");
         }
-        if (accounts.getInterestIncome() == null) {
-            throw new IllegalStateException("Config accounting.accounts.interestIncome es requerida");
+        if (accounts.getInterestIncome() == null || accounts.getInterestIncome().isBlank()) {
+            throw new IllegalStateException("Config accounting.accounts.interestIncome (código o nombre) es requerida");
         }
-        if (accounts.getMoratoryIncome() == null ){
-            throw new IllegalStateException("Config accounting.accounts.moratoryIncome es requerida");
+        if (accounts.getMoratoryIncome() == null || accounts.getMoratoryIncome().isBlank()) {
+            throw new IllegalStateException("Config accounting.accounts.moratoryIncome (código o nombre) es requerida");
         }
     }
 }
