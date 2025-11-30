@@ -1,46 +1,161 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-workers
-      author: yosseling
+      author: eduardo
       changes:
         - createTable:
             tableName: workers
             columns:
-              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
-              - column: { name: first_name, type: "varchar(120)", constraints: { nullable: false } }
-              - column: { name: last_name, type: "varchar(120)", constraints: { nullable: false } }
-              - column: { name: username, type: "varchar(80)", constraints: { nullable: false, unique: true } }
-              - column: { name: document, type: "varchar(50)", constraints: { nullable: false, unique: true } }
-              - column: { name: phone, type: "varchar(20)" }
-              - column: { name: email, type: "varchar(150)", constraints: { nullable: false, unique: true } }
-              - column: { name: position, type: "varchar(50)", constraints: { nullable: false } }
-              - column: { name: department, type: "varchar(50)" }
-              - column: { name: hire_date, type: date, constraints: { nullable: false } }
-              - column: { name: status, type: "varchar(15)", constraints: { nullable: false } }
-              - column: { name: created_at, type: timestamp, defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
-              - column: { name: updated_at, type: timestamp, defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
-        
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              # 🔥 NUEVO: ID de Keycloak (string)
+              - column:
+                  name: keycloak_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: first_name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: username
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: document_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: document_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: phone
+                  type: varchar(20)
+
+              - column:
+                  name: email
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: department_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: position_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: hire_date
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # === CHECK constraints ===
         - sql:
             dbms: postgresql
             sql: |
               ALTER TABLE workers
               ADD CONSTRAINT chk_workers_status
               CHECK (status IN ('ACTIVE', 'INACTIVE'));
-        
+
+              ALTER TABLE workers
+              ADD CONSTRAINT uk_workers_document
+              UNIQUE (document_type, document_number);
+
+        # === FOREIGN KEYS ===
+        - addForeignKeyConstraint:
+            baseTableName: workers
+            baseColumnNames: department_id
+            constraintName: fk_workers_department
+            referencedTableName: departments
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        - addForeignKeyConstraint:
+            baseTableName: workers
+            baseColumnNames: position_id
+            constraintName: fk_workers_position
+            referencedTableName: positions
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        # === INDEXES ===
         - createIndex:
             tableName: workers
             indexName: idx_workers_status
             columns:
-              - column: { name: status }
-        
+              - column:
+                  name: status
+
         - createIndex:
             tableName: workers
             indexName: idx_workers_email
             columns:
-              - column: { name: email }
-        
+              - column:
+                  name: email
+
         - createIndex:
             tableName: workers
-            indexName: idx_workers_document
+            indexName: idx_workers_document_number
             columns:
-              - column: { name: document }
+              - column:
+                  name: document_number
+
+        # 🔥 NUEVO: índice para keycloak_id
+        - createIndex:
+            tableName: workers
+            indexName: idx_workers_keycloak_id
+            columns:
+              - column:
+                  name: keycloak_id

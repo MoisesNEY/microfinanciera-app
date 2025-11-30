@@ -9,6 +9,14 @@ import com.microfinance.customer_microservice.application.dto.input.ClientReplac
 import com.microfinance.customer_microservice.application.dto.input.FullClientDTO;
 import com.microfinance.customer_microservice.application.dto.output.ClientResponseDTO;
 
+// Agregar imports para los DTOs de direcciones y contactos
+import com.microfinance.customer_microservice.application.dto.input.AddressCreateDTO;
+import com.microfinance.customer_microservice.application.dto.input.AddressUpdateDTO;
+import com.microfinance.customer_microservice.application.dto.output.AddressResponseDTO;
+import com.microfinance.customer_microservice.application.dto.input.ContactInfoCreateDTO;
+import com.microfinance.customer_microservice.application.dto.input.ContactInfoUpdateDTO;
+import com.microfinance.customer_microservice.application.dto.output.ContactInfoResponseDTO;
+
 public interface IClientService {
     ClientResponseDTO createClient(ClientCreateDTO clientCreateDTO);
     ClientResponseDTO createClientWithRelations(FullClientDTO fullClientDTO);
@@ -19,4 +27,12 @@ public interface IClientService {
     void deActivateClient(UUID id);
     ClientResponseDTO updateClient(UUID id, ClientUpdateDTO clientUpdateDTO);
     ClientResponseDTO replaceClient(UUID id, ClientReplaceDTO clientReplaceDTO);
+    ClientResponseDTO activateClient(UUID id);
+    ClientResponseDTO deactivateClient(UUID id);
+    AddressResponseDTO updateClientAddress(UUID clientId, UUID addressId, AddressUpdateDTO addressUpdateDTO);
+    AddressResponseDTO addClientAddress(UUID clientId, AddressCreateDTO addressCreateDTO);
+    void removeClientAddress(UUID clientId, UUID addressId);
+    ContactInfoResponseDTO updateClientContact(UUID clientId, UUID contactId, ContactInfoUpdateDTO contactInfoUpdateDTO);
+    ContactInfoResponseDTO addClientContact(UUID clientId, ContactInfoCreateDTO contactInfoCreateDTO);
+    void removeClientContact(UUID clientId, UUID contactId);
 }

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-foreign-keys-to-clients
+      author: moises
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: clients
+            baseColumnNames: nationality_id
+            referencedTableName: nationalities
+            referencedColumnNames: id
+            constraintName: fk_clients_nationality
+        - addForeignKeyConstraint:
+            baseTableName: clients
+            baseColumnNames: occupation_id
+            referencedTableName: occupations
+            referencedColumnNames: id
+            constraintName: fk_clients_occupation

@@ -29,8 +29,9 @@ spring:
           discovery:
             locator:
               enabled: true
+
           globalcors:
-            add-to-simple-url-handler-mapping: true  # ⚡️ CLAVE: Para rutas dinámicas
+            add-to-simple-url-handler-mapping: true
             cors-configurations:
               '[/**]':
                 allowed-origins:
@@ -56,10 +57,15 @@ spring:
                   - "Content-Disposition"
                 allow-credentials: true
                 max-age: 3600
+
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+
           routes:
-            # Accounting Microservice
+
+            # ============================
+            #      ACCOUNTING SERVICE
+            # ============================
             - id: accounting_transactions
               uri: lb://ACCOUNTING-MICROSERVICE
               predicates:
@@ -75,7 +81,10 @@ spring:
               predicates:
                 - Path=/api/chart-of-accounts/**
 
-            # Customer Microservice
+
+            # ============================
+            #        CUSTOMER SERVICE
+            # ============================
             - id: customer_contact
               uri: lb://CUSTOMER-MICROSERVICE
               predicates:
@@ -91,7 +100,19 @@ spring:
               predicates:
                 - Path=/api/address/**
 
-            # Loan Microservice
+            - id: customer_nationalities
+              uri: lb://CUSTOMER-MICROSERVICE
+              predicates:
+                - Path=/api/nationalities/**
+
+            - id: customer_occupations
+              uri: lb://CUSTOMER-MICROSERVICE
+              predicates:
+                - Path=/api/occupations/**
+                
+            # ============================
+            #        LOAN SERVICE
+            # ============================
             - id: loan_applications
               uri: lb://LOAN-MICROSERVICE
               predicates:
@@ -112,17 +133,37 @@ spring:
               predicates:
                 - Path=/api/loan-schedules/**
 
-            # Payment Microservice
+
+            # ============================
+            #        PAYMENT SERVICE
+            # ============================
             - id: payment_payments
               uri: lb://PAYMENT-MICROSERVICE
               predicates:
                 - Path=/api/payments/**
 
-            # Workers Microservice
+
+            # ============================
+            #        WORKERS SERVICE
+            # ============================
+            # Trabajadores (CRUD)
             - id: workers_workers
               uri: lb://WORKERS-MICROSERVICE
               predicates:
                 - Path=/workers/**
+
+            # Departamentos (Select dinámico)
+            - id: workers_departments
+              uri: lb://WORKERS-MICROSERVICE
+              predicates:
+                - Path=/departments/**
+
+            # Posiciones (Select dinámico según departmentId)
+            - id: workers_positions
+              uri: lb://WORKERS-MICROSERVICE
+              predicates:
+                - Path=/positions/**
+
 
 jackson:
   date-format: yyyy-MM-dd

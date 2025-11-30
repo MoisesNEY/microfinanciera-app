@@ -13,11 +13,12 @@ import org.springdoc.core.models.GroupedOpenApi;
     info = @Info(
         title = "Workers Microservice API",
         version = "v1",
-        description = "CRUD y consulta de trabajadores (ms-workers).",
+        description = "CRUD de trabajadores, departamentos, posiciones y roles.",
         contact = @Contact(name = "Microfinance Team", email = "dev@acme.com")
     ),
     servers = {
-        @Server(url = "http://localhost:8088", description = "Servidor de desarrollo")
+        @Server(url = "http://localhost:8088", description = "Servidor Local"),
+        @Server(url = "http://workers-microservice:8088", description = "Docker Network")
     }
 )
 public class OpenApiConfig {
@@ -25,8 +26,13 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi workersApi() {
         return GroupedOpenApi.builder()
-            .group("workers")
-            .pathsToMatch("/workers/**")
+            .group("workers-microservice")
+            .pathsToMatch(
+                "/workers/**",
+                "/departments/**",
+                "/positions/**",
+                "/worker-roles/**"
+            )
             .packagesToScan("com.microfinance.workers_microservice.web")
             .build();
     }

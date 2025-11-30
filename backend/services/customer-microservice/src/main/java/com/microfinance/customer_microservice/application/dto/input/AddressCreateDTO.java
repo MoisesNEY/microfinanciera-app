@@ -1,6 +1,5 @@
 package com.microfinance.customer_microservice.application.dto.input;
 
-import java.util.UUID;
 import com.microfinance.customer_microservice.domain.enums.AddressType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,9 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressCreateDTO {
-
-    @NotNull(message = "Client ID cannot be null")
-    private UUID clientId;
 
     @NotNull(message = "Address type cannot be null")
     private AddressType addressType;

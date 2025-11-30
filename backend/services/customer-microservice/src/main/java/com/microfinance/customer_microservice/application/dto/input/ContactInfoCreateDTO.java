@@ -1,9 +1,6 @@
 package com.microfinance.customer_microservice.application.dto.input;
 
-import java.util.UUID;
-
 import com.microfinance.customer_microservice.domain.enums.ContactType;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,9 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactInfoCreateDTO {
-
-    @NotNull(message = "Client ID cannot be null")
-    private UUID clientId;
 
     @NotNull(message = "Contact Type cannot be null")
     private ContactType contactType;

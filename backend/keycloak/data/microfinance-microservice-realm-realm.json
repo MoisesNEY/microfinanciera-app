@@ -47,25 +47,17 @@
   "failureFactor" : 30,
   "roles" : {
     "realm" : [ {
-      "id" : "e3633ef0-aada-41ce-a058-412a1f287415",
-      "name" : "supervisor_creditos",
-      "description" : "Supervisa préstamos, pagos y contabilidad.",
+      "id" : "ef63c5c4-4fb6-4f88-8ca4-6323b950722c",
+      "name" : "jefe_finanzas",
+      "description" : "Dirección del área financiera.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
       "attributes" : { }
     }, {
-      "id" : "42c97dab-0295-47ff-bcda-64ebed331e24",
-      "name" : "uma_authorization",
-      "description" : "${role_uma_authorization}",
-      "composite" : false,
-      "clientRole" : false,
-      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
-      "attributes" : { }
-    }, {
-      "id" : "5cfb4f72-b3f0-4cff-bb2a-4780900a7777",
-      "name" : "asesor_credito",
-      "description" : "Registra clientes y procesa solicitudes.",
+      "id" : "427c1499-dab4-48b6-974a-0285ce27be97",
+      "name" : "soporte_ti",
+      "description" : "Soporte técnico y mantenimiento.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
@@ -79,6 +71,62 @@
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
       "attributes" : { }
     }, {
+      "id" : "dc978a40-000f-4400-b3ff-4d04587911cf",
+      "name" : "jefe_creditos",
+      "description" : "Dirección y control del área de créditos.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "513d5826-8ff7-40eb-844c-32a7ae4d8d27",
+      "name" : "asistente_admin",
+      "description" : "Apoyo en tareas administrativas generales.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "1f89ca4f-854f-4df6-9207-30f446d6d16e",
+      "name" : "reclutador",
+      "description" : "Selección, contratación y evaluación de personal.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "c418afc7-7240-4697-8e17-896c576c878d",
+      "name" : "offline_access",
+      "description" : "${role_offline-access}",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "5453bc6b-1e52-45eb-b7c9-3f4848da4a8b",
+      "name" : "cajero",
+      "description" : "Registra y valida pagos.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "e3633ef0-aada-41ce-a058-412a1f287415",
+      "name" : "supervisor_creditos",
+      "description" : "Supervisa préstamos, pagos y contabilidad.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "a4af22c2-8d71-4ccb-8fdf-2f907c9e3827",
+      "name" : "gerente_general",
+      "description" : "Dirección general de la institución.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
       "id" : "4d5dfce8-52f3-48a6-a3a2-cbf6ab5b68d7",
       "name" : "cobrador",
       "description" : "Gestiona cobros en campo.",
@@ -87,9 +135,169 @@
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
       "attributes" : { }
     }, {
+      "id" : "d0584a90-9e66-4466-9e22-5853eeea7cde",
+      "name" : "tesorero",
+      "description" : "Manejo de fondos y flujo de caja institucional.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
       "id" : "b42c7b9b-58d7-4984-81f8-cebec7c1b06b",
       "name" : "admin_general",
       "description" : "Control total del sistema.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "52a7dc9e-6e5d-4548-a0fc-dd9df74fadd1",
+      "name" : "archivador",
+      "description" : "Gestión documental y archivo institucional.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "e17beec8-fca9-4fd0-b9a3-06158be51682",
+      "name" : "jefe_servicio",
+      "description" : "Supervisión del área de servicio al cliente.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "516a34e5-1b91-4ded-814e-69964ac6e7bf",
+      "name" : "jefe_auditoria",
+      "description" : "Dirección del área de auditoría.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "4580dba4-3b50-4756-b591-a21c25a95046",
+      "name" : "analista_financiero",
+      "description" : "Análisis económico y financiero.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "f161f973-b996-4fd0-8239-c8d90b6a7244",
+      "name" : "desarrollador",
+      "description" : "Desarrollo y mantenimiento de software.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "b65f5250-7338-4c03-ac15-5c143b3d4550",
+      "name" : "admin_sistemas",
+      "description" : "Administración técnica y operativa del sistema.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "5cfb4f72-b3f0-4cff-bb2a-4780900a7777",
+      "name" : "asesor_credito",
+      "description" : "Registra clientes y procesa solicitudes.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "f8a4690f-9871-405b-8c52-ddd170549604",
+      "name" : "jefe_ti",
+      "description" : "Dirección del área de tecnología.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "d78cff87-f12c-4b6a-9051-558f82fed03c",
+      "name" : "jefe_caja",
+      "description" : "Supervisión del área de caja.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "7ae0c367-535f-4052-aad7-e6126eb9cba0",
+      "name" : "jefe_contabilidad",
+      "description" : "Dirección del área contable.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "359482ab-d282-49f3-9a4f-64a0b9bb5d36",
+      "name" : "contador",
+      "description" : "Control contable y reportes financieros.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "bf54742f-959d-4824-a5a4-0b10a1b2fc40",
+      "name" : "asistente_contable",
+      "description" : "Apoyo en registro contable y conciliaciones.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "d6e6bce4-9281-4d6d-9893-f5e808ba1423",
+      "name" : "analista_riesgo",
+      "description" : "Evalúa solicitudes y analiza riesgo crediticio.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "b1b29f6c-2294-4591-b1a6-c50707373e13",
+      "name" : "jefe_admin",
+      "description" : "Dirección del área administrativa.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "42c97dab-0295-47ff-bcda-64ebed331e24",
+      "name" : "uma_authorization",
+      "description" : "${role_uma_authorization}",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "9e8e2f4c-95fe-4e48-b96e-ec7fd91e21bb",
+      "name" : "jefe_cobranza",
+      "description" : "Control y supervisión del área de cobranza.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "757e7ef8-bb4e-4e80-a60a-08d433290af5",
+      "name" : "subgerente",
+      "description" : "Gestión operativa y apoyo a gerencia general.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "a1f9a64b-73a7-45fc-b6c1-a2f46784bbf6",
+      "name" : "auditor_interno",
+      "description" : "Auditoría interna y control de procesos.",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
+      "attributes" : { }
+    }, {
+      "id" : "0e68f471-33c6-49dc-aa1b-481cb0bac66e",
+      "name" : "gestor_mora",
+      "description" : "Gestiona clientes en mora y acuerdos de pago.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
@@ -109,25 +317,17 @@
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
       "attributes" : { }
     }, {
-      "id" : "359482ab-d282-49f3-9a4f-64a0b9bb5d36",
-      "name" : "contador",
-      "description" : "Control contable y reportes financieros.",
+      "id" : "7a8f014f-5f07-488d-ac8f-c7940cbf0f9b",
+      "name" : "jefe_rrhh",
+      "description" : "Dirección del área de Recursos Humanos.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
       "attributes" : { }
     }, {
-      "id" : "c418afc7-7240-4697-8e17-896c576c878d",
-      "name" : "offline_access",
-      "description" : "${role_offline-access}",
-      "composite" : false,
-      "clientRole" : false,
-      "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
-      "attributes" : { }
-    }, {
-      "id" : "5453bc6b-1e52-45eb-b7c9-3f4848da4a8b",
-      "name" : "cajero",
-      "description" : "Registra y valida pagos.",
+      "id" : "b298d6d0-7592-4708-a609-b08ca997fe33",
+      "name" : "atencion_cliente",
+      "description" : "Atención y soporte a clientes.",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2a8fc04b-9041-4fc6-8e1e-f7aba3ef8dec",
@@ -304,6 +504,7 @@
       } ],
       "security-admin-console" : [ ],
       "admin-cli" : [ ],
+      "workers-microservice-client" : [ ],
       "account-console" : [ ],
       "microfinanciera-flutter" : [ ],
       "broker" : [ {
@@ -473,6 +674,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "admin_general", "default-roles-microfinance-microservice-realm" ],
     "clientRoles" : {
+      "realm-management" : [ "realm-admin" ],
       "frontend-client" : [ "ROLE_ADMIN" ]
     },
     "notBefore" : 0,
@@ -603,6 +805,31 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
+    "id" : "8bd5bde4-3f69-45e3-9422-227b34a7a19a",
+    "username" : "oswaldo",
+    "firstName" : "Oswaldo",
+    "lastName" : "Bustamante",
+    "email" : "oswaldo@gmail.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1764004516026,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "5a4e6f49-269d-4ff3-8d66-28cab97780ee",
+      "type" : "password",
+      "createdDate" : 1764004516124,
+      "secretData" : "{\"value\":\"vkLNEKBJMkSCZfG6xfd4wm7E/qE6mX+dKvJH5mc0XNE=\",\"salt\":\"v+xrHD5yboBMtaT1TPXXSw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm", "admin_sistemas" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "6c7f7b85-97ba-4f41-bc7e-175469b0ee77",
     "username" : "ricardo",
     "firstName" : "Ricardo",
@@ -640,6 +867,23 @@
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-microfinance-microservice-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "7b912e8f-e303-4316-9784-6f6da58048dc",
+    "username" : "service-account-workers-microservice-client",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1763964414325,
+    "totp" : false,
+    "serviceAccountClientId" : "workers-microservice-client",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm" ],
+    "clientRoles" : {
+      "realm-management" : [ "query-users", "query-clients", "view-clients", "manage-users", "view-users", "view-realm", "manage-clients", "manage-realm" ]
+    },
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -1036,6 +1280,50 @@
       "tls.client.certificate.bound.access.tokens" : "false",
       "display.on.consent.screen" : "false",
       "token.response.type.bearer.lower-case" : "false"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
+    "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "offline_access", "organization", "microprofile-jwt" ]
+  }, {
+    "id" : "ee105dba-a7ce-4e8b-badb-b90ef0478fdc",
+    "clientId" : "workers-microservice-client",
+    "name" : "",
+    "description" : "",
+    "rootUrl" : "",
+    "adminUrl" : "",
+    "baseUrl" : "",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "w1C2X4HuSFqrprXdU5WUsiiCO34Moc73",
+    "redirectUris" : [ "*" ],
+    "webOrigins" : [ ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : true,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : true,
+    "serviceAccountsEnabled" : true,
+    "publicClient" : false,
+    "frontchannelLogout" : true,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "realm_client" : "false",
+      "oidc.ciba.grant.enabled" : "false",
+      "client.secret.creation.time" : "1763964414",
+      "backchannel.logout.session.required" : "true",
+      "standard.token.exchange.enabled" : "false",
+      "frontchannel.logout.session.required" : "true",
+      "post.logout.redirect.uris" : "+",
+      "oauth2.device.authorization.grant.enabled" : "false",
+      "display.on.consent.screen" : "false",
+      "use.jwks.url" : "false",
+      "backchannel.logout.revoke.offline.tokens" : "false",
+      "dpop.bound.access.tokens" : "false"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : true,
@@ -1721,7 +2009,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper", "saml-user-property-mapper" ]
       }
     }, {
       "id" : "bcde7666-5d08-4086-b594-1b0a7028f3a9",
@@ -1739,7 +2027,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-address-mapper", "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "saml-user-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper" ]
       }
     }, {
       "id" : "37b308b0-ff58-46d3-aa0b-69e042a4be15",
@@ -2522,7 +2810,7 @@
     "cibaInterval" : "5",
     "realmReusableOtpCode" : "false"
   },
-  "keycloakVersion" : "26.4.5",
+  "keycloakVersion" : "26.4.6",
   "userManagedAccessAllowed" : false,
   "organizationsEnabled" : false,
   "verifiableCredentialsEnabled" : false,

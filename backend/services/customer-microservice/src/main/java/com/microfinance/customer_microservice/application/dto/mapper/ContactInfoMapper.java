@@ -22,8 +22,8 @@ public abstract class ContactInfoMapper {
     @Mapping(source = "client", target = "clientId", qualifiedByName = "ClientEntityToUUID")
     public abstract ContactInfoResponseDTO toContactInfoResponseDTO(ContactInfoEntity contactInfoEntity);
 
-    @Mapping(source = "clientId", target = "client", qualifiedByName = "UUIDToClientEntity")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "client", ignore = true) 
     public abstract ContactInfoEntity toContactInfoEntity(ContactInfoCreateDTO contactInfoCreateDTO);
 
     @Named("ClientEntityToUUID")

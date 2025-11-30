@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-worker-roles
+      author: eduardo
+      changes:
+        - createTable:
+            tableName: worker_roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: worker_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: role_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: worker_roles
+            columnNames: worker_id, role_name
+            constraintName: uk_worker_roles_worker_role
+
+        - addForeignKeyConstraint:
+            baseTableName: worker_roles
+            baseColumnNames: worker_id
+            constraintName: fk_worker_roles_worker
+            referencedTableName: workers
+            referencedColumnNames: id
+            onDelete: CASCADE

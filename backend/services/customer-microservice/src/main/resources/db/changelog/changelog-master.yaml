@@ -7,3 +7,9 @@ databaseChangeLog:
       file: db/changelog/1.0/002-create-addresses-table.yaml
   - include:
       file: db/changelog/1.0/003-create-contact-info-table.yaml
+  - include:
+      file: db/changelog/1.0/004-create-nationalities-table.yaml
+  - include:
+      file: db/changelog/1.0/005-create-occupations-table.yaml
+  - include:
+      file: db/changelog/1.0/006-add-foreign-keys.yaml

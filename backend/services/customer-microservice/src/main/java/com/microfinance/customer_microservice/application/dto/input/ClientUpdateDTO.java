@@ -1,6 +1,7 @@
 package com.microfinance.customer_microservice.application.dto.input;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.microfinance.customer_microservice.domain.enums.DocumentType;
 import com.microfinance.customer_microservice.domain.enums.Gender;
@@ -31,17 +32,13 @@ public class ClientUpdateDTO {
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-
     private Gender gender;
 
-    @Size(max = 50, message = "Nationality cannot exceed 50 characters")
-    private String nationality;
+    private UUID nationalityId;
 
+    private UUID occupationId;
 
     private Marital_Status maritalStatus;
-
-    @Size(max = 100, message = "Occupation cannot exceed 100 characters")
-    private String occupation;
 
     @Size(max = 100, message = "Economic activity cannot exceed 100 characters")
     private String economicActivity;

@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-nationalities-table
+      author: moises
+      changes:
+        - createTable:
+            tableName: nationalities
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name, type: VARCHAR(100), constraints: { nullable: false, unique: true } }
+              - column: { name: demonym, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: is_active, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO nationalities (id, name, demonym, created_at, updated_at) VALUES
+              (gen_random_uuid(), 'Nicaragua', 'nicaragüense', NOW(), NOW()),
+              (gen_random_uuid(), 'Honduras', 'hondureño', NOW(), NOW()),
+              (gen_random_uuid(), 'Costa Rica', 'costarricense', NOW(), NOW()),
+              (gen_random_uuid(), 'El Salvador', 'salvadoreño', NOW(), NOW()),
+              (gen_random_uuid(), 'Guatemala', 'guatemalteco', NOW(), NOW()),
+              (gen_random_uuid(), 'Panamá', 'panameño', NOW(), NOW()),
+              (gen_random_uuid(), 'Estados Unidos', 'estadounidense', NOW(), NOW()),
+              (gen_random_uuid(), 'México', 'mexicano', NOW(), NOW()),
+              (gen_random_uuid(), 'Colombia', 'colombiano', NOW(), NOW()),
+              (gen_random_uuid(), 'España', 'español', NOW(), NOW()),
+              (gen_random_uuid(), 'Argentina', 'argentino', NOW(), NOW()),
+              (gen_random_uuid(), 'Otro', 'otro', NOW(), NOW());

@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-occupations-table
+      author: moises
+      changes:
+        - createTable:
+            tableName: occupations
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name, type: VARCHAR(100), constraints: { nullable: false, unique: true } }
+              - column: { name: description, type: VARCHAR(255) }
+              - column: { name: is_active, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO occupations (id, name, description, created_at, updated_at) VALUES
+              (gen_random_uuid(), 'Agricultor', 'Persona que se dedica a la agricultura', NOW(), NOW()),
+              (gen_random_uuid(), 'Comerciante', 'Persona que se dedica al comercio', NOW(), NOW()),
+              (gen_random_uuid(), 'Empleado público', 'Trabajador del sector público', NOW(), NOW()),
+              (gen_random_uuid(), 'Empleado privado', 'Trabajador del sector privado', NOW(), NOW()),
+              (gen_random_uuid(), 'Empresario', 'Dueño de negocio o empresa', NOW(), NOW()),
+              (gen_random_uuid(), 'Estudiante', 'Persona que se dedica a estudiar', NOW(), NOW()),
+              (gen_random_uuid(), 'Jubilado', 'Persona retirada con pensión', NOW(), NOW()),
+              (gen_random_uuid(), 'Ama de casa', 'Persona que se dedica al hogar', NOW(), NOW()),
+              (gen_random_uuid(), 'Profesional', 'Persona con título profesional', NOW(), NOW()),
+              (gen_random_uuid(), 'Técnico', 'Persona con formación técnica', NOW(), NOW()),
+              (gen_random_uuid(), 'Otro', 'Otra ocupación no listada', NOW(), NOW());
