@@ -23,7 +23,11 @@ public class LoanProductController {
     public List<LoanProduct> all() {
         return service.all(false);
     }
-
+    //  Endpoint para obtener SOLO los eliminados
+    @GetMapping("/deleted")
+    public List<LoanProduct> deleted() {
+        return service.all(true);
+    }
     @GetMapping("/{id}")
     public LoanProduct one(@PathVariable UUID id) {
         return service.one(id,false);

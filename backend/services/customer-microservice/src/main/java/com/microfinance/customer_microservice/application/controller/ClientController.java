@@ -23,6 +23,14 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import java.util.List;
 
+// Agregar imports para los DTOs de direcciones y contactos
+import com.microfinance.customer_microservice.application.dto.input.AddressCreateDTO;
+import com.microfinance.customer_microservice.application.dto.input.AddressUpdateDTO;
+import com.microfinance.customer_microservice.application.dto.output.AddressResponseDTO;
+import com.microfinance.customer_microservice.application.dto.input.ContactInfoCreateDTO;
+import com.microfinance.customer_microservice.application.dto.input.ContactInfoUpdateDTO;
+import com.microfinance.customer_microservice.application.dto.output.ContactInfoResponseDTO;
+
 @RestController
 @RequestMapping("/api/clients")
 public class ClientController {
@@ -33,6 +41,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
+    // Endpoints existentes para clientes...
     @PostMapping
     public ResponseEntity<ClientResponseDTO> createClient(@Valid @RequestBody ClientCreateDTO clientCreateDTO) {
         ClientResponseDTO createdClient = clientService.createClient(clientCreateDTO);
@@ -53,16 +62,15 @@ public class ClientController {
     }
 
     @GetMapping
-public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
-    try {
-        List<ClientResponseDTO> clients = clientService.getAllClients();
-        return new ResponseEntity<>(clients, HttpStatus.OK);
-    } catch (Exception e) {
-        e.printStackTrace(); // 🧩 Esto imprimirá la traza exacta en los logs de Docker
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
+        try {
+            List<ClientResponseDTO> clients = clientService.getAllClients();
+            return new ResponseEntity<>(clients, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-}
-
 
     @GetMapping("/inactive/{id}")
     public ResponseEntity<ClientResponseDTO> getClientActiveById(@PathVariable UUID id) {
@@ -93,6 +101,72 @@ public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deActivateClient(@PathVariable UUID id) {
         clientService.deActivateClient(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<ClientResponseDTO> activateClient(@PathVariable UUID id) {
+        ClientResponseDTO activatedClient = clientService.activateClient(id);
+        return new ResponseEntity<>(activatedClient, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<ClientResponseDTO> deactivateClient(@PathVariable UUID id) {
+        ClientResponseDTO deactivatedClient = clientService.deactivateClient(id);
+        return new ResponseEntity<>(deactivatedClient, HttpStatus.OK);
+    }
+
+    // ========== ENDPOINTS PARA GESTIÓN DE DIRECCES ==========
+
+    @PatchMapping("/{clientId}/addresses/{addressId}")
+    public ResponseEntity<AddressResponseDTO> updateClientAddress(
+            @PathVariable UUID clientId, 
+            @PathVariable UUID addressId,
+            @Valid @RequestBody AddressUpdateDTO addressUpdateDTO) {
+        AddressResponseDTO updatedAddress = clientService.updateClientAddress(clientId, addressId, addressUpdateDTO);
+        return new ResponseEntity<>(updatedAddress, HttpStatus.OK);
+    }
+
+    @PostMapping("/{clientId}/addresses")
+    public ResponseEntity<AddressResponseDTO> addClientAddress(
+            @PathVariable UUID clientId,
+            @Valid @RequestBody AddressCreateDTO addressCreateDTO) {
+        AddressResponseDTO newAddress = clientService.addClientAddress(clientId, addressCreateDTO);
+        return new ResponseEntity<>(newAddress, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{clientId}/addresses/{addressId}")
+    public ResponseEntity<Void> removeClientAddress(
+            @PathVariable UUID clientId,
+            @PathVariable UUID addressId) {
+        clientService.removeClientAddress(clientId, addressId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // ========== ENDPOINTS PARA GESTIÓN DE CONTACTOS ==========
+
+    @PatchMapping("/{clientId}/contacts/{contactId}")
+    public ResponseEntity<ContactInfoResponseDTO> updateClientContact(
+            @PathVariable UUID clientId, 
+            @PathVariable UUID contactId,
+            @Valid @RequestBody ContactInfoUpdateDTO contactInfoUpdateDTO) {
+        ContactInfoResponseDTO updatedContact = clientService.updateClientContact(clientId, contactId, contactInfoUpdateDTO);
+        return new ResponseEntity<>(updatedContact, HttpStatus.OK);
+    }
+
+    @PostMapping("/{clientId}/contacts")
+    public ResponseEntity<ContactInfoResponseDTO> addClientContact(
+            @PathVariable UUID clientId,
+            @Valid @RequestBody ContactInfoCreateDTO contactInfoCreateDTO) {
+        ContactInfoResponseDTO newContact = clientService.addClientContact(clientId, contactInfoCreateDTO);
+        return new ResponseEntity<>(newContact, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{clientId}/contacts/{contactId}")
+    public ResponseEntity<Void> removeClientContact(
+            @PathVariable UUID clientId,
+            @PathVariable UUID contactId) {
+        clientService.removeClientContact(clientId, contactId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

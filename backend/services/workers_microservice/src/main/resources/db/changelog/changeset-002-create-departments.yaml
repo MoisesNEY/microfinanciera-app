@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-departments
+      author: eduardo
+      changes:
+        - createTable:
+            tableName: departments
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+
+        # ===== SEED DEPARTAMENTOS =====
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "ADMIN" }
+              - column: { name: name, value: "Administración" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "CREDITOS" }
+              - column: { name: name, value: "Créditos" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "COBRANZA" }
+              - column: { name: name, value: "Cobranza" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "CONTABILIDAD" }
+              - column: { name: name, value: "Contabilidad" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "FINANZAS" }
+              - column: { name: name, value: "Finanzas" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "CAJA" }
+              - column: { name: name, value: "Caja" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "TI" }
+              - column: { name: name, value: "Sistemas / Tecnología" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "RRHH" }
+              - column: { name: name, value: "Recursos Humanos" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "AUDITORIA" }
+              - column: { name: name, value: "Auditoría Interna" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "ATENCION_CLIENTE" }
+              - column: { name: name, value: "Atención al Cliente" }
+              - column: { name: is_active, valueBoolean: true }
+
+        - insert:
+            tableName: departments
+            columns:
+              - column: { name: code, value: "GERENCIA" }
+              - column: { name: name, value: "Gerencia General" }
+              - column: { name: is_active, valueBoolean: true }

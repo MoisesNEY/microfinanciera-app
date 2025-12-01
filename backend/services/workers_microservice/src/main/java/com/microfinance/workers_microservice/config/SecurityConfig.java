@@ -3,6 +3,7 @@ package com.microfinance.workers_microservice.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,25 +18,51 @@ public class SecurityConfig {
             HttpSecurity http,
             @Value("${APP_SECURITY_DISABLED:false}") boolean disabled
     ) throws Exception {
+
         http.csrf(csrf -> csrf.disable());
 
+        // ============================
+        //       MODO DESARROLLO
+        // ============================
         if (disabled) {
-            // Modo desarrollo - sin seguridad (total acceso)
             return http
-                    .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                    .authorizeHttpRequests(auth ->
+                            auth.anyRequest().permitAll()
+                    )
                     .build();
         }
 
-        // Modo producción - con seguridad pero endpoints públicos para workers
+        // ============================
+        //     MODO PRODUCCIÓN
+        // ============================
         return http
                 .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/workers/**").permitAll()        // Acceso sin auth a workers
-                    .requestMatchers("/api-docs/**").permitAll()    // OpenAPI
-                    .requestMatchers("/swagger-ui/**").permitAll()     // Swagger UI
-                    .requestMatchers("/actuator/**").permitAll()       // Health checks
-                    .anyRequest().authenticated()                      // Resto requiere autenticación
+
+                    // -------- Workers (CRUD) --------
+                    .requestMatchers(HttpMethod.GET, "/workers/**").permitAll()   // GET público
+                    .requestMatchers("/workers/**").authenticated()               // POST/PUT/PATCH/DELETE → requieren token
+
+                    // -------- Departments (para selects dinámicos) --------
+                    .requestMatchers(HttpMethod.GET, "/departments/**").permitAll()  // GET público
+                    .requestMatchers("/departments/**").authenticated()              // CRUD admin → requiere token
+
+                    // -------- Positions (para selects dinámicos) --------
+                    .requestMatchers(HttpMethod.GET, "/positions/**").permitAll()    // GET público
+                    .requestMatchers("/positions/**").authenticated()                // CRUD admin → requiere token
+
+                    // -------- Documentación --------
+                    .requestMatchers("/api-docs/**").permitAll()
+                    .requestMatchers("/swagger-ui/**").permitAll()
+
+                    // -------- Actuator (health checks) --------
+                    .requestMatchers("/actuator/**").permitAll()
+
+                    // -------- Cualquier otra ruta --------
+                    .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults())) // Keycloak
+
+                // Keycloak JWT (Resource Server)
+                .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
                 .build();
     }
 }

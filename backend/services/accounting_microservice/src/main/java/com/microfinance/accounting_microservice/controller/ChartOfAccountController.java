@@ -23,6 +23,12 @@ private final ChartOfAccountService chartOfAccountService;
         return ResponseEntity.ok(chartOfAccountService.findAll(deleted));
     }
 
+    // Endpoint específico para eliminados
+    @GetMapping("/deleted")
+    public ResponseEntity<List<ChartOfAccountDTO>> getDeleted() {
+        return ResponseEntity.ok(chartOfAccountService.findAll(true));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ChartOfAccountDTO> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(chartOfAccountService.findById(id));

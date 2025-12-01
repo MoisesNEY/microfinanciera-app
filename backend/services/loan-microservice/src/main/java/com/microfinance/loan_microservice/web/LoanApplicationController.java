@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/loan-applications")
@@ -22,6 +23,11 @@ public class LoanApplicationController {
     @GetMapping
     public List<LoanApplication> all() {
         return service.all(false);
+    }
+    //  Endpoint para obtener SOLO las solicitudes eliminadas
+    @GetMapping("/deleted")
+    public List<LoanApplication> deleted() {
+        return service.all(true);
     }
 
     @GetMapping("/{id}")
@@ -50,5 +56,30 @@ public class LoanApplicationController {
     @ResponseStatus(HttpStatus.OK)
     public void activate(@PathVariable UUID id) {
         service.Activate(id);
+    }
+
+    /**
+     * Obtiene una solicitud con información completa del cliente
+     */
+    @GetMapping("/{id}/with-client")
+    public Map<String, Object> getApplicationWithClient(@PathVariable UUID id) {
+        return service.getApplicationWithClientDetails(id);
+    }
+
+    /**
+     * Obtiene todas las solicitudes con información de clientes
+     */
+    @GetMapping("/with-clients")
+    public List<Map<String, Object>> getAllApplicationsWithClients(
+            @RequestParam(required = false) Boolean deleted) {
+        return service.getAllApplicationsWithClientDetails(deleted != null ? deleted : false);
+    }
+
+    /**
+     * Obtiene información de un cliente específico
+     */
+    @GetMapping("/clients/{clientId}")
+    public Map<String, Object> getClientInfo(@PathVariable UUID clientId) {
+        return service.getClientBasicInfo(clientId);
     }
 }

@@ -1,0 +1,289 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-positions
+      author: eduardo
+      changes:
+        - createTable:
+            tableName: positions
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: department_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: realm_role
+                  type: varchar(80)
+
+              - column:
+                  name: client_role
+                  type: varchar(80)
+
+              # 🔥 NUEVO: client_id del cliente donde vive el client_role
+              - column:
+                  name: client_id
+                  type: varchar(200)
+
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: positions
+            columnNames: department_id, code
+            constraintName: uk_positions_department_code
+
+        - addForeignKeyConstraint:
+            baseTableName: positions
+            baseColumnNames: department_id
+            constraintName: fk_positions_department
+            referencedTableName: departments
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        # ===== SEEDS POSITIONS (con Realm Role, Client Role y Client Id) =====
+
+        # CREDITOS
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ASESOR_CREDITO', 'Asesor de créditos', 'asesor_credito', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CREDITOS';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'SUPERVISOR_CREDITOS', 'Supervisor de créditos', 'supervisor_creditos', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CREDITOS';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ANALISTA_RIESGO', 'Analista de riesgo', 'analista_riesgo', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CREDITOS';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_CREDITOS', 'Jefe de créditos', 'jefe_creditos', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CREDITOS';
+
+        # COBRANZA
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'COBRADOR', 'Cobrador', 'cobrador', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'COBRANZA';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'GESTOR_MORA', 'Gestor de mora', 'gestor_mora', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'COBRANZA';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_COBRANZA', 'Jefe de cobranza', 'jefe_cobranza', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'COBRANZA';
+
+        # CONTABILIDAD
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'CONTADOR', 'Contador', 'contador', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CONTABILIDAD';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ASISTENTE_CONTABLE', 'Asistente contable', 'asistente_contable', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CONTABILIDAD';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_CONTABILIDAD', 'Jefe de contabilidad', 'jefe_contabilidad', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CONTABILIDAD';
+
+        # FINANZAS
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'TESORERO', 'Tesorero', 'tesorero', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'FINANZAS';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ANALISTA_FINANCIERO', 'Analista financiero', 'analista_financiero', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'FINANZAS';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_FINANZAS', 'Jefe de finanzas', 'jefe_finanzas', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'FINANZAS';
+
+        # CAJA
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'CAJERO', 'Cajero', 'cajero', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CAJA';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_CAJA', 'Jefe de caja', 'jefe_caja', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'CAJA';
+
+        # TI
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ADMIN_SISTEMAS', 'Administrador de sistemas', 'admin_sistemas', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'TI';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'SOPORTE_TI', 'Soporte técnico', 'soporte_ti', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'TI';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'DESARROLLADOR', 'Desarrollador', 'desarrollador', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'TI';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_TI', 'Jefe de TI', 'jefe_ti', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'TI';
+
+        # ADMINISTRACIÓN
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ASISTENTE_ADMIN', 'Asistente administrativo', 'asistente_admin', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'ADMIN';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ARCHIVADOR', 'Archivador documental', 'archivador', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'ADMIN';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_ADMIN', 'Jefe de administración', 'jefe_admin', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'ADMIN';
+
+        # RRHH
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'RECLUTADOR', 'Reclutador', 'reclutador', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'RRHH';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_RRHH', 'Jefe de RRHH', 'jefe_rrhh', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'RRHH';
+
+        # AUDITORIA
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'AUDITOR_INTERNO', 'Auditor interno', 'auditor_interno', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'AUDITORIA';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_AUDITORIA', 'Jefe de auditoría', 'jefe_auditoria', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'AUDITORIA';
+
+        # ATENCIÓN AL CLIENTE
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'ATENCION_CLIENTE', 'Atención al cliente', 'atencion_cliente', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'ATENCION_CLIENTE';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'JEFE_SERVICIO', 'Jefe de servicio', 'jefe_servicio', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'ATENCION_CLIENTE';
+
+        # GERENCIA
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'GERENTE_GENERAL', 'Gerente general', 'gerente_general', 'ROLE_ADMIN', 'frontend-client', true
+              FROM departments d WHERE d.code = 'GERENCIA';
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
+              SELECT d.id, 'SUBGERENTE', 'Subgerente', 'subgerente', 'ROLE_USER', 'frontend-client', true
+              FROM departments d WHERE d.code = 'GERENCIA';

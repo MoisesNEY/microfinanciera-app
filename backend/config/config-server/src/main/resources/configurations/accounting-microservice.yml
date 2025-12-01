@@ -37,7 +37,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8085/realms/mf
+          issuer-uri: http://localhost:8085/realms/microfinance-microservice-realm
 
 logging:
   level:
@@ -92,7 +92,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/mf
+          issuer-uri: http://keycloak:8085/realms/microfinance-microservice-realm
 
 logging:
   level:

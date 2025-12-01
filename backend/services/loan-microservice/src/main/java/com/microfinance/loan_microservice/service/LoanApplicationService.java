@@ -1,21 +1,27 @@
 package com.microfinance.loan_microservice.service;
 
-import com.microfinance.loan_microservice.domain.Loan;
 import com.microfinance.loan_microservice.domain.LoanApplication;
 import com.microfinance.loan_microservice.dto.LoanApplicationDTOs;
 import com.microfinance.loan_microservice.repository.LoanApplicationRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class LoanApplicationService {
     private final LoanApplicationRepository repo;
+    private final CustomerServiceClient customerServiceClient;
 
-    public LoanApplicationService(LoanApplicationRepository repo) {
+    public LoanApplicationService(LoanApplicationRepository repo, 
+                                CustomerServiceClient customerServiceClient) {
         this.repo = repo;
+        this.customerServiceClient = customerServiceClient;
     }
 
     public List<LoanApplication> all(Boolean deleted) {
@@ -84,5 +90,115 @@ public class LoanApplicationService {
 
         // Guardar el cambio
         repo.save(application);
+    }
+
+    // ============ NUEVOS MÉTODOS CON MAP ============
+
+    /**
+     * Obtiene una solicitud con información completa del cliente
+     */
+    public Map<String, Object> getApplicationWithClientDetails(UUID id) {
+        LoanApplication application = one(id, false);
+        return enrichApplicationWithClient(application);
+    }
+
+    /**
+     * Obtiene todas las solicitudes con información de clientes
+     */
+    public List<Map<String, Object>> getAllApplicationsWithClientDetails(Boolean deleted) {
+        List<LoanApplication> applications = repo.findAllByDeleted(deleted);
+        
+        return applications.parallelStream()
+                .map(this::enrichApplicationWithClient)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Enriquece una solicitud con información del cliente
+     */
+    private Map<String, Object> enrichApplicationWithClient(LoanApplication application) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        // 1. Agregar los datos de la solicitud
+        result.put("application", convertToMap(application));
+        
+        // 2. Intentar obtener información del cliente
+        try {
+            Map<String, Object> clientData = customerServiceClient.getClientById(application.getCustomerId());
+            result.put("client", clientData);
+            result.put("clientAvailable", true);
+        } catch (Exception e) {
+            // Si falla, agregar información mínima
+            Map<String, Object> minimalClient = new HashMap<>();
+            minimalClient.put("id", application.getCustomerId().toString());
+            minimalClient.put("error", "No se pudo obtener información del cliente");
+            result.put("client", minimalClient);
+            result.put("clientAvailable", false);
+            result.put("clientError", e.getMessage());
+        }
+        
+        return result;
+    }
+
+    /**
+     * Convierte LoanApplication a Map (puedes usar ObjectMapper si prefieres)
+     */
+    private Map<String, Object> convertToMap(LoanApplication application) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", application.getId());
+        map.put("customerId", application.getCustomerId());
+        map.put("loanProductId", application.getLoanProductId());
+        map.put("requestedAmount", application.getRequestedAmount());
+        map.put("termMonths", application.getTermMonths());
+        map.put("status", application.getStatus());
+        map.put("applicationDate", application.getApplicationDate());
+        map.put("approvedDate", application.getApprovedDate());
+        map.put("officerId", application.getOfficerId());
+        map.put("deleted", application.isDeleted());
+        map.put("deletedAt", application.getDeletedAt());
+        return map;
+    }
+
+    /**
+     * Método utilitario para obtener solo datos básicos del cliente
+     */
+    public Map<String, Object> getClientBasicInfo(UUID clientId) {
+        try {
+            return customerServiceClient.getClientById(clientId);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("id", clientId.toString());
+            errorResponse.put("error", "No se pudo obtener información del cliente");
+            errorResponse.put("details", e.getMessage());
+            return errorResponse;
+        }
+    }
+
+    /**
+     * Obtiene solo información específica del cliente
+     */
+    public String getClientFullName(UUID clientId) {
+        try {
+            Map<String, Object> client = customerServiceClient.getClientById(clientId);
+            String firstName = (String) client.getOrDefault("firstName", "");
+            String lastName = (String) client.getOrDefault("lastName", "");
+            return (firstName + " " + lastName).trim();
+        } catch (Exception e) {
+            return "Cliente " + clientId.toString().substring(0, 8) + "...";
+        }
+    }
+
+    /**
+     * Obtiene el documento de identificación del cliente
+     */
+    public String getClientDocument(UUID clientId) {
+        try {
+            Map<String, Object> client = customerServiceClient.getClientById(clientId);
+            String docType = (String) client.getOrDefault("idDocumentType", "");
+            String docNumber = (String) client.getOrDefault("idDocumentNumber", "");
+            return docType + ": " + docNumber;
+        } catch (Exception e) {
+            return "Documento no disponible";
+        }
     }
 }

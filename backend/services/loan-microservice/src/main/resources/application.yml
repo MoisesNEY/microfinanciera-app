@@ -17,3 +17,20 @@ accounting:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: true
+
+# ==================== API GATEWAY CONFIGURATION ====================
+api:
+  gateway:
+    url: http://api-gateway:8080  # ← ESTA LÍNEA FALTABA
+
+#==================== CUSTOMER SERVICE CONFIGURATION ====================
+customer:
+  service:
+    url: ${api.gateway.url}  # ← Ahora sí referencia la variable correcta
+
+# ==================== FEIGN CLIENT CONFIGURATION ====================
+feign:
+  client:
+    config:
+      api-gateway:  # Nombre debe coincidir con @FeignClient("api-gateway")
+        # El interceptor se aplica automáticamente gracias a @Component en FeignRequestInterceptor

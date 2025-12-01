@@ -25,6 +25,11 @@ private final TransactionService transactionService;
         return ResponseEntity.ok(transactionService.findAll(deleted));
     }
 
+    @GetMapping("/deleted")
+    public ResponseEntity<List<TransactionResponseDTO>> getDeleted() {
+    return ResponseEntity.ok(transactionService.findAll(true));
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<TransactionResponseDTO> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(transactionService.findById(id));

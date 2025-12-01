@@ -2,6 +2,7 @@ package com.microfinance.customer_microservice.domain.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.microfinance.customer_microservice.domain.enums.DocumentType;
 import com.microfinance.customer_microservice.domain.enums.Gender;
@@ -11,17 +12,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
-
-import java.util.UUID;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,15 +61,17 @@ public class ClientEntity {
     @Column(name = "gender", nullable = true)
     private Gender gender;
 
-    @Column(name = "nationality", length = 50, nullable = false)
-    private String nationality;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nationality_id", nullable = false)
+    private NationalityEntity nationality;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "occupation_id", nullable = false)
+    private OccupationEntity occupation;
 
     @Enumerated(EnumType.STRING)    
     @Column(name = "marital_status", nullable = true)
     private Marital_Status maritalStatus;
-
-    @Column(name ="occupation", length = 100, nullable = true)
-    private String occupation;
 
     @Column(name ="economic_activity", nullable = false)
     private String economicActivity;
@@ -93,13 +95,4 @@ public class ClientEntity {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    /*
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AddressEntity> addresses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContactInfoEntity> contactInfoList = new ArrayList<>();
-     */
-
 }

@@ -22,7 +22,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8085/realms/mf
+          issuer-uri: http://localhost:8085/realms/microfinance-microservice-realm
 
 springdoc:
   api-docs:
@@ -75,7 +75,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/mf
+          issuer-uri: http://keycloak:8085/realms/microfinance-microservice-realm
 
 eureka:
   client:

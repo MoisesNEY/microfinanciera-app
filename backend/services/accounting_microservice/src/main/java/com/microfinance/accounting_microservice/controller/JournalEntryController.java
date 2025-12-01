@@ -24,6 +24,12 @@ private final JournalEntryService journalEntryService;
         return ResponseEntity.ok(journalEntryService.findAll(deleted));
     }
 
+    // Endpoint específico para eliminados (para consistencia)
+    @GetMapping("/deleted")
+    public ResponseEntity<List<JournalEntryDTO>> getDeleted() {
+        return ResponseEntity.ok(journalEntryService.findAll(true));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<JournalEntryDTO> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(journalEntryService.findById(id));

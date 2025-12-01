@@ -22,7 +22,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8085/realms/mf
+          issuer-uri: http://localhost:8085/realms/microfinance-microservice-realm
 
 springdoc:
   api-docs:
@@ -41,8 +41,9 @@ management:
     health:
       show-details: ALWAYS
 
+
 # ==========================================
-# Perfil DEV
+# PERFIL DEV
 # ==========================================
 ---
 spring:
@@ -59,8 +60,16 @@ eureka:
     service-url:
       defaultZone: http://localhost:8078/eureka
 
+# 🔥 CONFIG DEV PARA KEYCLOAK DESDE HOST
+keycloak:
+  url: http://localhost:8085
+  realm: microfinance-microservice-realm
+  client-id: workers-microservice-client
+  client-secret: w1C2X4HuSFqrprXdU5WUsiiCO34Moc73
+
+
 # ==========================================
-# Perfil PROD
+# PERFIL PROD (DOCKER)
 # ==========================================
 ---
 spring:
@@ -77,7 +86,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/mf
+          issuer-uri: http://keycloak:8085/realms/microfinance-microservice-realm
 
 springdoc:
   api-docs:
@@ -95,3 +104,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:8078/eureka
+
+# 🔥 CONFIG PROD PARA KEYCLOAK DESDE DOCKER
+keycloak:
+  url: http://keycloak:8085
+  realm: microfinance-microservice-realm
+  client-id: workers-microservice-client
+  client-secret: w1C2X4HuSFqrprXdU5WUsiiCO34Moc73

@@ -13,7 +13,6 @@ import com.microfinance.customer_microservice.application.dto.output.AddressResp
 import org.mapstruct.Named;
 import java.util.UUID;
 
-
 @Mapper(componentModel = "spring")
 public abstract class AddressMapper {
 
@@ -23,10 +22,9 @@ public abstract class AddressMapper {
     @Mapping(source = "client", target = "clientId", qualifiedByName = "ClientEntityToUUID")
     public abstract AddressResponseDTO toAddressResponseDTO(AddressEntity addressEntity);
 
-    @Mapping(source = "clientId", target = "client", qualifiedByName = "UUIDToClientEntity")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "client", ignore = true) 
     public abstract AddressEntity toAddressEntity(AddressCreateDTO addressCreateDTO);
-
 
     @Named("ClientEntityToUUID")
     protected UUID clientEntityToUUID(ClientEntity clientEntity) {

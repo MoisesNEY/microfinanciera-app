@@ -14,9 +14,9 @@ databaseChangeLog:
               - column: { name: id_document_number, type: VARCHAR(50), constraints: { nullable: false } }
               - column: { name: date_of_birth, type: DATE, constraints: { nullable: false } }
               - column: { name: gender, type: VARCHAR(15) }
-              - column: { name: nationality, type: VARCHAR(50), constraints: { nullable: false } }
+              - column: { name: nationality_id, type: UUID, constraints: { nullable: false } }
+              - column: { name: occupation_id, type: UUID, constraints: { nullable: false } }
               - column: { name: marital_status, type: VARCHAR(20) }
-              - column: { name: occupation, type: VARCHAR(100) }
               - column: { name: economic_activity, type: VARCHAR(255), constraints: { nullable: false } }
               - column: { name: is_active, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, constraints: { nullable: false } }

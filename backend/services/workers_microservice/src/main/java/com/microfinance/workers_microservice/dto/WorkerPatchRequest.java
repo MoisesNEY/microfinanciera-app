@@ -1,22 +1,24 @@
 package com.microfinance.workers_microservice.dto;
 
+import com.microfinance.workers_microservice.domain.DocumentType;
 import com.microfinance.workers_microservice.domain.WorkerStatus;
 
 import java.time.LocalDate;
 
-/**
- * DTO para PATCH: todos los campos son opcionales (pueden venir null).
- * No usamos @NotNull/@NotBlank aquí.
- */
 public record WorkerPatchRequest(
-  String firstName,
-  String lastName,
-  String username,
-  String document,
-  String email,
-  String phone,
-  String position,
-  String department,
-  LocalDate hireDate,
-  WorkerStatus status
+        String firstName,
+        String lastName,
+        String username,
+
+        DocumentType documentType,
+        String documentNumber,
+
+        String email,
+        String phone,
+
+        Long departmentId,
+        Long positionId,
+
+        LocalDate hireDate,
+        WorkerStatus status
 ) {}

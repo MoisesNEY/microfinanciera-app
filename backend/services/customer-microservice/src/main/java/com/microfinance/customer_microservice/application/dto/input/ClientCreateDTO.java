@@ -1,6 +1,7 @@
 package com.microfinance.customer_microservice.application.dto.input;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.microfinance.customer_microservice.domain.enums.DocumentType;
 import com.microfinance.customer_microservice.domain.enums.Gender;
@@ -18,10 +19,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientCreateDTO {
-
-    @NotBlank(message = "Client code cannot be empty")
-    @Size(max = 20, message = "Client code cannot exceed 20 characters")
-    private String clientCode;
     
     @NotBlank(message = "First name cannot be empty")
     @Size(max = 50, message = "First name cannot exceed 50 characters")
@@ -42,18 +39,15 @@ public class ClientCreateDTO {
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-
     private Gender gender;
 
-    @NotBlank(message = "Nationality cannot be empty")
-    @Size(max = 50, message = "Nationality cannot exceed 50 characters")
-    private String nationality;
+    @NotNull(message = "Nationality ID cannot be null")
+    private UUID nationalityId;
 
+    @NotNull(message = "Occupation ID cannot be null")
+    private UUID occupationId;
 
     private Marital_Status maritalStatus;
-
-    @Size(max = 100, message = "Occupation cannot exceed 100 characters")
-    private String occupation;
 
     @NotBlank(message = "Economic activity cannot be empty")
     @Size(max = 100, message = "Economic activity cannot exceed 100 characters")
