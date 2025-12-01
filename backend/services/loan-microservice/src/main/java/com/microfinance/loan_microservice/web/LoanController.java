@@ -74,4 +74,9 @@ public class LoanController {
     public List<LoanPayment> payments(@PathVariable UUID id) {
         return paymentService.byLoan(id); // Nuevo: listar pagos por préstamo
     }
+
+    @GetMapping("/deleted")
+    public List<Loan> deleted() {
+    return service.all(true);
+}
 }
