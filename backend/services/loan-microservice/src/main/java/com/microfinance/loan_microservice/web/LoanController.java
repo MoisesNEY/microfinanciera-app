@@ -32,6 +32,11 @@ public class LoanController {
         return service.all(false);
     }
 
+    @GetMapping("/deleted")
+    public List<Loan> deleted() {
+    return service.all(true);
+    }
+
     @GetMapping("/{id}")
     public Loan one(@PathVariable UUID id) {
         return service.one(id, false);
@@ -75,8 +80,4 @@ public class LoanController {
         return paymentService.byLoan(id); // Nuevo: listar pagos por préstamo
     }
 
-    @GetMapping("/deleted")
-    public List<Loan> deleted() {
-    return service.all(true);
-}
 }
