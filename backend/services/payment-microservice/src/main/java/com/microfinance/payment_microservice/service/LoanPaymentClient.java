@@ -1,6 +1,7 @@
 package com.microfinance.payment_microservice.service;
 
 import com.microfinance.payment_microservice.domain.Payment;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ public class LoanPaymentClient {
     this.loanServiceUrl = loanServiceUrl;
   }
 
+  @CircuitBreaker(name = "loan-service", fallbackMethod = "applyPaymentFallback")
   public void applyPayment(Payment payment, String bearerToken) {
     String url = loanServiceUrl + "/api/loan-payments";
     Map<String, Object> body = new HashMap<>();
@@ -42,4 +44,11 @@ public class LoanPaymentClient {
     HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
     restTemplate.postForEntity(url, request, Void.class);
   }
+    @SuppressWarnings("unused")
+    private void applyPaymentFallback(Payment payment, String bearerToken, Throwable ex) {
+        throw new IllegalStateException(
+                "Loan service no disponible al aplicar pago para loanId " + payment.getLoanId(),
+                ex
+        );
+    }
 }

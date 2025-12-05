@@ -3,6 +3,7 @@ package com.microfinance.loan_microservice.service;
 import com.microfinance.loan_microservice.domain.LoanApplication;
 import com.microfinance.loan_microservice.dto.LoanApplicationDTOs;
 import com.microfinance.loan_microservice.repository.LoanApplicationRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,11 +18,13 @@ import java.util.Map;
 public class LoanApplicationService {
     private final LoanApplicationRepository repo;
     private final CustomerServiceClient customerServiceClient;
+    private final CustomerCircuitService customerCircuitService;
 
-    public LoanApplicationService(LoanApplicationRepository repo, 
-                                CustomerServiceClient customerServiceClient) {
+    public LoanApplicationService(LoanApplicationRepository repo,
+                                  CustomerServiceClient customerServiceClient, CustomerCircuitService customerCircuitService) {
         this.repo = repo;
         this.customerServiceClient = customerServiceClient;
+        this.customerCircuitService = customerCircuitService;
     }
 
     public List<LoanApplication> all(Boolean deleted) {
@@ -123,19 +126,9 @@ public class LoanApplicationService {
         result.put("application", convertToMap(application));
         
         // 2. Intentar obtener información del cliente
-        try {
-            Map<String, Object> clientData = customerServiceClient.getClientById(application.getCustomerId());
-            result.put("client", clientData);
-            result.put("clientAvailable", true);
-        } catch (Exception e) {
-            // Si falla, agregar información mínima
-            Map<String, Object> minimalClient = new HashMap<>();
-            minimalClient.put("id", application.getCustomerId().toString());
-            minimalClient.put("error", "No se pudo obtener información del cliente");
-            result.put("client", minimalClient);
-            result.put("clientAvailable", false);
-            result.put("clientError", e.getMessage());
-        }
+        Map<String, Object> clientData = customerCircuitService.getClientByIdCircuit(application.getCustomerId());
+        result.put("client", clientData);
+        result.put("clientAvailable", true);
         
         return result;
     }
@@ -164,7 +157,7 @@ public class LoanApplicationService {
      */
     public Map<String, Object> getClientBasicInfo(UUID clientId) {
         try {
-            return customerServiceClient.getClientById(clientId);
+            return customerCircuitService.getClientByIdCircuit(clientId);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("id", clientId.toString());
@@ -179,7 +172,7 @@ public class LoanApplicationService {
      */
     public String getClientFullName(UUID clientId) {
         try {
-            Map<String, Object> client = customerServiceClient.getClientById(clientId);
+            Map<String, Object> client = customerCircuitService.getClientByIdCircuit(clientId);
             String firstName = (String) client.getOrDefault("firstName", "");
             String lastName = (String) client.getOrDefault("lastName", "");
             return (firstName + " " + lastName).trim();
@@ -193,7 +186,7 @@ public class LoanApplicationService {
      */
     public String getClientDocument(UUID clientId) {
         try {
-            Map<String, Object> client = customerServiceClient.getClientById(clientId);
+            Map<String, Object> client = customerCircuitService.getClientByIdCircuit(clientId);
             String docType = (String) client.getOrDefault("idDocumentType", "");
             String docNumber = (String) client.getOrDefault("idDocumentNumber", "");
             return docType + ": " + docNumber;

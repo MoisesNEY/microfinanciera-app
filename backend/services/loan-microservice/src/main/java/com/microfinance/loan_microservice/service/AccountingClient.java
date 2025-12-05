@@ -1,6 +1,8 @@
 package com.microfinance.loan_microservice.service;
 
 import com.microfinance.loan_microservice.config.AccountingProperties;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class AccountingClient {
 
@@ -20,25 +23,28 @@ public class AccountingClient {
     private final AccountingProperties props;
     private final AccountLookupService accountLookupService;
 
-    public AccountingClient(RestTemplate restTemplate, AccountingProperties props, AccountLookupService accountLookupService) {
+    public AccountingClient(RestTemplate restTemplate, AccountingProperties props,
+            AccountLookupService accountLookupService) {
         this.restTemplate = restTemplate;
         this.props = props;
         this.accountLookupService = accountLookupService;
     }
 
+    @CircuitBreaker(name = "accounting-service", fallbackMethod = "sendPaymentAppliedFallback")
     public void sendPaymentApplied(UUID paymentId,
-                                UUID loanId,
-                                BigDecimal capital,
-                                BigDecimal interest,
-                                BigDecimal moratory,
-                                BigDecimal total,
-                                LocalDate paymentDate,
-                                String description,
-                                String bearerToken) {
+            UUID loanId,
+            BigDecimal capital,
+            BigDecimal interest,
+            BigDecimal moratory,
+            BigDecimal total,
+            LocalDate paymentDate,
+            String description,
+            String bearerToken) {
         var accounts = props.getAccounts();
         validateAccountsConfigured(accounts);
 
-        // Resolver códigos/nombres de cuentas a UUIDs consultando al accounting-microservice
+        // Resolver códigos/nombres de cuentas a UUIDs consultando al
+        // accounting-microservice
         UUID cashAccountId = accountLookupService.lookupAccountId(accounts.getCash(), bearerToken);
         UUID loanReceivableAccountId = accountLookupService.lookupAccountId(accounts.getLoanReceivable(), bearerToken);
         UUID interestIncomeAccountId = accountLookupService.lookupAccountId(accounts.getInterestIncome(), bearerToken);
@@ -65,7 +71,23 @@ public class AccountingClient {
             headers.setBearerAuth(tokenSolo);
         }
 
-        restTemplate.postForEntity(props.getService().getUrl() + "/api/accounting/payment-applied", new HttpEntity<>(body, headers), Void.class);
+        restTemplate.postForEntity(props.getService().getUrl() + "/api/accounting/payment-applied",
+                new HttpEntity<>(body, headers), Void.class);
+    }
+
+    @SuppressWarnings("unused")
+    private void sendPaymentAppliedFallback(UUID paymentId,
+            UUID loanId,
+            BigDecimal capital,
+            BigDecimal interest,
+            BigDecimal moratory,
+            BigDecimal total,
+            LocalDate paymentDate,
+            String description,
+            String bearerToken,
+            Throwable ex) {
+        log.error("Circuit breaker activado para sendPaymentApplied: {}", ex.getMessage());
+        throw new IllegalStateException("Servicio de contabilidad no disponible. No se puede procesar el pago.", ex);
     }
 
     private void validateAccountsConfigured(AccountingProperties.Accounts accounts) {

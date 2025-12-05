@@ -1,5 +1,6 @@
 package com.microfinance.workers_microservice.service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -33,7 +34,7 @@ public class KeycloakService {
     private RestTemplate restTemplate;
 
     // =========================
-    //   TOKEN ADMIN (CLIENT CREDENTIALS)
+    // TOKEN ADMIN (CLIENT CREDENTIALS)
     // =========================
 
     private String cachedToken;
@@ -43,6 +44,7 @@ public class KeycloakService {
      * Obtiene un access_token usando client_credentials.
      * Hace un cache sencillo para no pedirlo en cada request.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "getAdminAccessTokenFallback")
     private synchronized String getAdminAccessToken() {
         if (cachedToken != null && cachedTokenExpiresAt != null) {
             // Le dejamos un margen de 30 segundos antes de expirar
@@ -63,14 +65,12 @@ public class KeycloakService {
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
 
-        HttpEntity<MultiValueMap<String, String>> req =
-                new HttpEntity<>(body, headers);
+        HttpEntity<MultiValueMap<String, String>> req = new HttpEntity<>(body, headers);
 
         ResponseEntity<Map> resp = restTemplate.postForEntity(
                 tokenEndpoint,
                 req,
-                Map.class
-        );
+                Map.class);
 
         if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
             throw new IllegalStateException("No se pudo obtener access_token de Keycloak (client_credentials)");
@@ -90,6 +90,11 @@ public class KeycloakService {
         return accessToken;
     }
 
+    @SuppressWarnings("unused")
+    private String getAdminAccessTokenFallback(Throwable ex) {
+        throw new IllegalStateException("Keycloak no disponible al obtener admin token", ex);
+    }
+
     private HttpHeaders buildJsonHeadersWithAdminToken() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -98,21 +103,21 @@ public class KeycloakService {
     }
 
     // =========================
-    //   USUARIO
+    // USUARIO
     // =========================
 
     /**
      * Crea un usuario en Keycloak usando el token ADMIN (client_credentials),
      * ignorando el bearerToken del usuario.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "createUserWithUserTokenFallback")
     public String createUserWithUserToken(
             String bearerToken,
             String username,
             String email,
             String firstName,
             String lastName,
-            String password
-    ) {
+            String password) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("username", username);
         payload.put("email", email);
@@ -132,8 +137,7 @@ public class KeycloakService {
         ResponseEntity<Void> response = restTemplate.postForEntity(
                 keycloakUrl + "/admin/realms/" + realm + "/users",
                 request,
-                Void.class
-        );
+                Void.class);
 
         String location = response.getHeaders().getLocation() != null
                 ? response.getHeaders().getLocation().toString()
@@ -146,9 +150,22 @@ public class KeycloakService {
         return location.substring(location.lastIndexOf('/') + 1);
     }
 
+    @SuppressWarnings("unused")
+    private String createUserWithUserTokenFallback(
+            String bearerToken,
+            String username,
+            String email,
+            String firstName,
+            String lastName,
+            String password,
+            Throwable ex) {
+        throw new IllegalStateException("Keycloak no disponible al crear usuario " + username, ex);
+    }
+
     /**
      * 🔥 NUEVO: Crea usuario en Keycloak con ID específico (para recrear usuarios)
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakWriteFallback")
     public String createUserWithUserTokenAndId(
             String bearerToken,
             String keycloakId,
@@ -156,13 +173,12 @@ public class KeycloakService {
             String email,
             String firstName,
             String lastName,
-            String password
-    ) {
+            String password) {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("id", keycloakId);              // 🔥 Forzar ID específico
+        payload.put("id", keycloakId); // 🔥 Forzar ID específico
         payload.put("username", username);
         payload.put("email", email);
-        payload.put("emailVerified", false);        // 🔥 NECESARIO para que respete el ID
+        payload.put("emailVerified", false); // 🔥 NECESARIO para que respete el ID
         payload.put("enabled", true);
         payload.put("firstName", firstName);
         payload.put("lastName", lastName);
@@ -170,12 +186,12 @@ public class KeycloakService {
         Map<String, Object> credential = new HashMap<>();
         credential.put("type", "password");
         credential.put("value", password);
-        credential.put("temporary", false);         // 🔥 NO usar temporary=true cuando se forza ID
+        credential.put("temporary", false); // 🔥 NO usar temporary=true cuando se forza ID
         payload.put("credentials", List.of(credential));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));    // 🔥 NECESARIO
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON)); // 🔥 NECESARIO
         headers.setBearerAuth(getAdminAccessToken());
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
@@ -183,8 +199,7 @@ public class KeycloakService {
         ResponseEntity<Void> response = restTemplate.postForEntity(
                 keycloakUrl + "/admin/realms/" + realm + "/users",
                 request,
-                Void.class
-        );
+                Void.class);
 
         // 🔍 Verificar que Keycloak RESPETÓ tu ID
         String location = response.getHeaders().getLocation() != null
@@ -205,14 +220,14 @@ public class KeycloakService {
         return keycloakId;
     }
 
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakWriteFallback")
     public void updateUserWithUserToken(
             String bearerToken,
             String keycloakId,
             String email,
             String firstName,
             String lastName,
-            Boolean enabled
-    ) {
+            Boolean enabled) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("email", email);
         payload.put("firstName", firstName);
@@ -228,6 +243,7 @@ public class KeycloakService {
         restTemplate.put(url, request);
     }
 
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakWriteFallback")
     public void updateUserWithUserTokenDynamic(String bearerToken, String keycloakId, Map<String, Object> payload) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
@@ -237,12 +253,13 @@ public class KeycloakService {
     }
 
     // =========================
-    //   ROLES (READ)
+    // ROLES (READ)
     // =========================
 
     /**
      * Obtiene la definición de un Realm Role por nombre.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public Map<String, Object> getRealmRole(String bearerToken, String roleName) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -255,6 +272,7 @@ public class KeycloakService {
     /**
      * Obtiene el ID interno (UUID) del cliente (by clientId).
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     private String getClientUuid(String clientIdToUse) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -277,6 +295,7 @@ public class KeycloakService {
     /**
      * Obtiene la definición de un Client Role por nombre.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public Map<String, Object> getClientRole(String bearerToken, String clientUuid, String roleName) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -291,24 +310,23 @@ public class KeycloakService {
     }
 
     // =========================
-    //   ROLES (ASSIGN / REMOVE)
+    // ROLES (ASSIGN / REMOVE)
     // =========================
 
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakWriteFallback")
     public void assignRolesToUser(
             String bearerToken,
             String keycloakUserId,
             String realmRoleName,
             String clientRoleName,
-            String clientIdOverride
-    ) {
+            String clientIdOverride) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
 
         // Realm role
         if (realmRoleName != null && !realmRoleName.isBlank()) {
             Map<String, Object> realmRole = getRealmRole(bearerToken, realmRoleName);
             if (realmRole != null) {
-                HttpEntity<List<Map<String, Object>>> req =
-                        new HttpEntity<>(List.of(realmRole), headers);
+                HttpEntity<List<Map<String, Object>>> req = new HttpEntity<>(List.of(realmRole), headers);
 
                 String url = keycloakUrl
                         + "/admin/realms/" + realm
@@ -328,8 +346,7 @@ public class KeycloakService {
             String clientUuid = getClientUuid(effectiveClientId);
             Map<String, Object> clientRole = getClientRole(bearerToken, clientUuid, clientRoleName);
             if (clientRole != null) {
-                HttpEntity<List<Map<String, Object>>> req =
-                        new HttpEntity<>(List.of(clientRole), headers);
+                HttpEntity<List<Map<String, Object>>> req = new HttpEntity<>(List.of(clientRole), headers);
 
                 String url = keycloakUrl
                         + "/admin/realms/" + realm
@@ -346,26 +363,25 @@ public class KeycloakService {
             String bearerToken,
             String keycloakUserId,
             String realmRoleName,
-            String clientRoleName
-    ) {
+            String clientRoleName) {
         assignRolesToUser(bearerToken, keycloakUserId, realmRoleName, clientRoleName, null);
     }
 
+
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakWriteFallback")
     public void removeRolesFromUser(
             String bearerToken,
             String keycloakUserId,
             String realmRoleName,
             String clientRoleName,
-            String clientIdOverride
-    ) {
+            String clientIdOverride) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
 
         // Realm role
         if (realmRoleName != null && !realmRoleName.isBlank()) {
             Map<String, Object> realmRole = getRealmRole(bearerToken, realmRoleName);
             if (realmRole != null) {
-                HttpEntity<List<Map<String, Object>>> req =
-                        new HttpEntity<>(List.of(realmRole), headers);
+                HttpEntity<List<Map<String, Object>>> req = new HttpEntity<>(List.of(realmRole), headers);
 
                 String url = keycloakUrl
                         + "/admin/realms/" + realm
@@ -385,8 +401,7 @@ public class KeycloakService {
             String clientUuid = getClientUuid(effectiveClientId);
             Map<String, Object> clientRole = getClientRole(bearerToken, clientUuid, clientRoleName);
             if (clientRole != null) {
-                HttpEntity<List<Map<String, Object>>> req =
-                        new HttpEntity<>(List.of(clientRole), headers);
+                HttpEntity<List<Map<String, Object>>> req = new HttpEntity<>(List.of(clientRole), headers);
 
                 String url = keycloakUrl
                         + "/admin/realms/" + realm
@@ -403,18 +418,18 @@ public class KeycloakService {
             String bearerToken,
             String keycloakUserId,
             String realmRoleName,
-            String clientRoleName
-    ) {
+            String clientRoleName) {
         removeRolesFromUser(bearerToken, keycloakUserId, realmRoleName, clientRoleName, null);
     }
 
     // =========================
-    //   MÉTODOS NUEVOS / LISTADOS
+    // MÉTODOS NUEVOS / LISTADOS
     // =========================
 
     /**
      * Lista usuarios del realm (hasta un máximo razonable).
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public List<Map<String, Object>> listAllUsers(String bearerToken) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -456,6 +471,7 @@ public class KeycloakService {
     /**
      * Obtiene el detalle de un usuario por ID.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public Map<String, Object> getUserById(String bearerToken, String userId) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -485,6 +501,7 @@ public class KeycloakService {
     /**
      * Lista los Realm Roles asignados a un usuario.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public List<String> getUserRealmRoles(String bearerToken, String userId) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -513,6 +530,7 @@ public class KeycloakService {
      * Lista los Client Roles (del cliente principal) asignados a un usuario.
      * Usa keycloak.client-id como cliente base.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public List<String> getUserClientRoles(String bearerToken, String userId) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -542,12 +560,13 @@ public class KeycloakService {
     /**
      * 🔥 NUEVO: Elimina usuario de Keycloak
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakDeleteFallback")
     public void deleteUser(String bearerToken, String keycloakId) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
         String url = keycloakUrl + "/admin/realms/" + realm + "/users/" + keycloakId;
-        
+
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
         } catch (Exception e) {
@@ -558,6 +577,7 @@ public class KeycloakService {
     /**
      * 🔥 NUEVO: Busca usuario por username
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
     public Map<String, Object> getUserByUsername(String bearerToken, String username) {
         HttpHeaders headers = buildJsonHeadersWithAdminToken();
         HttpEntity<Void> req = new HttpEntity<>(headers);
@@ -571,13 +591,33 @@ public class KeycloakService {
         if (body == null || body.isEmpty()) {
             return Map.of();
         }
-        
+
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> users = (List<Map<String, Object>>) (List<?>) body;
-        
+
         return users.stream()
                 .filter(user -> Objects.equals(user.get("username"), username))
                 .findFirst()
                 .orElse(Map.of());
+    }
+
+    // =========================
+    //   FALLBACK METHODS
+    // =========================
+
+    @SuppressWarnings("unused")
+    private <T> T keycloakReadFallback(Throwable ex) {
+        throw new IllegalStateException("Keycloak no disponible para operación de lectura", ex);
+    }
+
+    @SuppressWarnings("unused")
+    private <T> T keycloakWriteFallback(Throwable ex) {
+        throw new IllegalStateException("Keycloak no disponible para operación de escritura", ex);
+    }
+
+
+    @SuppressWarnings("unused")
+    private <T> T keycloakDeleteFallback(Throwable ex) {
+        throw new IllegalStateException("Keycloak no disponible para operación de eliminación", ex);
     }
 }
