@@ -1,5 +1,6 @@
 package com.microfinance.workers_microservice.service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -43,6 +44,7 @@ public class KeycloakService {
      * Obtiene un access_token usando client_credentials.
      * Hace un cache sencillo para no pedirlo en cada request.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "getAdminAccessTokenFallback")
     private synchronized String getAdminAccessToken() {
         if (cachedToken != null && cachedTokenExpiresAt != null) {
             // Le dejamos un margen de 30 segundos antes de expirar
@@ -89,6 +91,10 @@ public class KeycloakService {
 
         return accessToken;
     }
+    @SuppressWarnings("unused")
+    private String getAdminAccessTokenFallback(Throwable ex) {
+        throw new IllegalStateException("Keycloak no disponible al obtener admin token", ex);
+    }
 
     private HttpHeaders buildJsonHeadersWithAdminToken() {
         HttpHeaders headers = new HttpHeaders();
@@ -105,6 +111,7 @@ public class KeycloakService {
      * Crea un usuario en Keycloak usando el token ADMIN (client_credentials),
      * ignorando el bearerToken del usuario.
      */
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "createUserWithUserTokenFallback")
     public String createUserWithUserToken(
             String bearerToken,
             String username,
@@ -144,6 +151,18 @@ public class KeycloakService {
         }
 
         return location.substring(location.lastIndexOf('/') + 1);
+    }
+    @SuppressWarnings("unused")
+    private String createUserWithUserTokenFallback(
+            String bearerToken,
+            String username,
+            String email,
+            String firstName,
+            String lastName,
+            String password,
+            Throwable ex
+    ) {
+        throw new IllegalStateException("Keycloak no disponible al crear usuario " + username, ex);
     }
 
     /**
