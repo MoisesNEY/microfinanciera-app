@@ -79,7 +79,7 @@
         "realm" : [ "create-realm" ],
         "client" : {
           "microfinance-microservice-realm-realm" : [ "manage-identity-providers", "create-client", "view-authorization", "manage-users", "manage-clients", "query-groups", "impersonation", "query-clients", "query-users", "manage-events", "view-realm", "view-users", "query-realms", "view-clients", "view-events", "manage-authorization", "manage-realm", "view-identity-providers" ],
-          "master-realm" : [ "view-identity-providers", "view-realm", "view-events", "impersonation", "query-realms", "manage-users", "view-users", "view-clients", "manage-events", "manage-realm", "query-clients", "create-client", "manage-identity-providers", "manage-authorization", "manage-clients", "view-authorization", "query-users", "query-groups" ]
+          "master-realm" : [ "view-identity-providers", "view-realm", "view-events", "impersonation", "query-realms", "manage-users", "view-users", "view-clients", "manage-events", "manage-realm", "query-clients", "create-client", "manage-authorization", "manage-identity-providers", "manage-clients", "view-authorization", "query-users", "query-groups" ]
         }
       },
       "clientRole" : false,
@@ -1475,7 +1475,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper", "saml-role-list-mapper" ]
       }
     }, {
       "id" : "0082cd9f-4a25-443c-8458-03e1cef8caee",
@@ -1502,7 +1502,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-sha256-pairwise-sub-mapper", "oidc-address-mapper", "saml-user-property-mapper", "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-address-mapper", "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "oidc-usermodel-property-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper" ]
       }
     }, {
       "id" : "d7659b67-3716-4d08-8ad8-31902e489064",

@@ -887,6 +887,31 @@
     },
     "notBefore" : 0,
     "groups" : [ ]
+  }, {
+    "id" : "47d9a4e6-6861-4bf3-9e89-891ffcdb10a5",
+    "username" : "yossselingn",
+    "firstName" : "Yosseling Massiel ",
+    "lastName" : "Ney Mayorga",
+    "email" : "mayorgayosseling7@gmail.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1764699103993,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "e2eeeed8-fa4a-422d-86ff-fd3a8972b406",
+      "type" : "password",
+      "createdDate" : 1764699104311,
+      "secretData" : "{\"value\":\"BVNo3CuwBTZWb+SijusmBH6tux3PDoKuGnv/FLVIbE8=\",\"salt\":\"h0dn/QU83OK/OYwog94G5A==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-microfinance-microservice-realm", "jefe_creditos" ],
+    "clientRoles" : {
+      "frontend-client" : [ "ROLE_USER" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
   } ],
   "scopeMappings" : [ {
     "clientScope" : "offline_access",
@@ -1984,7 +2009,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-address-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "oidc-usermodel-property-mapper", "saml-user-property-mapper", "oidc-address-mapper" ]
       }
     }, {
       "id" : "bcde7666-5d08-4086-b594-1b0a7028f3a9",
@@ -2002,7 +2027,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "saml-user-property-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper" ]
+        "allowed-protocol-mapper-types" : [ "saml-user-property-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "37b308b0-ff58-46d3-aa0b-69e042a4be15",
