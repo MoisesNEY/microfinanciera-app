@@ -44,6 +44,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> createPayment(
             @RequestBody PaymentRequest request,
             @RequestHeader("Authorization") String bearerToken) {
+        // El cashierId se obtiene automáticamente del token JWT
         PaymentResponse savedPayment = paymentService.createAndApply(request, bearerToken);
         return ResponseEntity.ok(savedPayment);
     }
@@ -59,8 +60,12 @@ public class PaymentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable UUID id, @RequestBody PaymentRequest request) {
-        return ResponseEntity.ok(paymentService.update(id, request));
+    public ResponseEntity<PaymentResponse> updatePayment(
+            @PathVariable UUID id, 
+            @RequestBody PaymentRequest request,
+            @RequestHeader("Authorization") String bearerToken) {
+        // El cashierId se obtiene automáticamente del token JWT
+        return ResponseEntity.ok(paymentService.update(id, request, bearerToken));
     }
     
     @DeleteMapping("/{id}")

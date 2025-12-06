@@ -313,6 +313,16 @@ private boolean areRoleListsEqual(List<String> list1, List<String> list2) {
     }
 
     // =========================
+    //   GET BY KEYCLOAK ID
+    // =========================
+    @Transactional(readOnly = true)
+    public WorkerResponse getByKeycloakId(String keycloakId) {
+        return workerRepository.findByKeycloakId(keycloakId)
+                .map(this::toResponse)
+                .orElseThrow(() -> new EntityNotFoundException("worker no encontrado con keycloakId: " + keycloakId));
+    }
+
+    // =========================
     //   UPDATE (PUT)
     // =========================
     @Transactional

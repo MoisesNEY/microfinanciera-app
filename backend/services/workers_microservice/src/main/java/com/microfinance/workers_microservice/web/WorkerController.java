@@ -49,6 +49,11 @@ public class WorkerController {
         return service.get(id, status);
     }
 
+    @GetMapping("/by-keycloak-id/{keycloakId}")
+    public WorkerResponse getByKeycloakId(@PathVariable String keycloakId) {
+        return service.getByKeycloakId(keycloakId);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<WorkerResponse> update(
             @PathVariable UUID id,
