@@ -3,7 +3,6 @@ package com.microfinance.loan_microservice.service;
 import com.microfinance.loan_microservice.domain.LoanApplication;
 import com.microfinance.loan_microservice.dto.LoanApplicationDTOs;
 import com.microfinance.loan_microservice.repository.LoanApplicationRepository;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,12 +18,16 @@ public class LoanApplicationService {
     private final LoanApplicationRepository repo;
     private final CustomerServiceClient customerServiceClient;
     private final CustomerCircuitService customerCircuitService;
+    private final JwtTokenService jwtTokenService;
 
     public LoanApplicationService(LoanApplicationRepository repo,
-                                  CustomerServiceClient customerServiceClient, CustomerCircuitService customerCircuitService) {
+                                  CustomerServiceClient customerServiceClient, 
+                                  CustomerCircuitService customerCircuitService,
+                                  JwtTokenService jwtTokenService) {
         this.repo = repo;
         this.customerServiceClient = customerServiceClient;
         this.customerCircuitService = customerCircuitService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     public List<LoanApplication> all(Boolean deleted) {
@@ -36,7 +39,7 @@ public class LoanApplicationService {
                 .orElseThrow(() -> new RuntimeException("LoanApplication not found with id: " + id));
     }
 
-    public LoanApplication create(LoanApplicationDTOs.Create dto) {
+    public LoanApplication create(LoanApplicationDTOs.Create dto, String bearerToken) {
         LoanApplication app = new LoanApplication();
         app.setCustomerId(dto.customerId()); // Nuevo: ref a cliente externo
         app.setLoanProductId(dto.loanProductId());
@@ -45,11 +48,25 @@ public class LoanApplicationService {
         app.setStatus(dto.status());
         app.setApplicationDate(dto.applicationDate());
         app.setApprovedDate(dto.approvedDate());
-        app.setOfficerId(dto.officerId());
+        
+        // Obtener officerId del token JWT si no se proporciona en el DTO
+        UUID officerId = dto.officerId();
+        if (officerId == null) {
+            try {
+                officerId = jwtTokenService.getWorkerIdFromToken(bearerToken);
+            } catch (Exception e) {
+                throw new IllegalStateException(
+                    "No se pudo obtener el ID del trabajador desde el token JWT. " +
+                    "Asegúrate de que el usuario esté autenticado correctamente. Error: " + e.getMessage(),
+                    e
+                );
+            }
+        }
+        app.setOfficerId(officerId);
         return repo.save(app);
     }
 
-    public LoanApplication update(UUID id, LoanApplicationDTOs.Create dto) {
+    public LoanApplication update(UUID id, LoanApplicationDTOs.Create dto, String bearerToken) {
         LoanApplication app = one(id, false); // one() ya valida que no esté eliminado
         app.setCustomerId(dto.customerId()); // Nuevo: ref a cliente externo
         app.setLoanProductId(dto.loanProductId());
@@ -58,7 +75,21 @@ public class LoanApplicationService {
         app.setStatus(dto.status());
         app.setApplicationDate(dto.applicationDate());
         app.setApprovedDate(dto.approvedDate());
-        app.setOfficerId(dto.officerId());
+        
+        // Obtener officerId del token JWT si no se proporciona en el DTO
+        UUID officerId = dto.officerId();
+        if (officerId == null) {
+            try {
+                officerId = jwtTokenService.getWorkerIdFromToken(bearerToken);
+            } catch (Exception e) {
+                throw new IllegalStateException(
+                    "No se pudo obtener el ID del trabajador desde el token JWT. " +
+                    "Asegúrate de que el usuario esté autenticado correctamente. Error: " + e.getMessage(),
+                    e
+                );
+            }
+        }
+        app.setOfficerId(officerId);
         return repo.save(app);
     }
 

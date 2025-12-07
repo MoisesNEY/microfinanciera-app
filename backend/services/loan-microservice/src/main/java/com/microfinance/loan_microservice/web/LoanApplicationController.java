@@ -37,13 +37,18 @@ public class LoanApplicationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LoanApplication create(@Valid @RequestBody LoanApplicationDTOs.Create dto) {
-        return service.create(dto);
+    public LoanApplication create(
+            @Valid @RequestBody LoanApplicationDTOs.Create dto,
+            @RequestHeader(value = "Authorization", required = false) String bearerToken) {
+        return service.create(dto, bearerToken);
     }
 
     @PutMapping("/{id}")
-    public LoanApplication update(@PathVariable UUID id, @Valid @RequestBody LoanApplicationDTOs.Create dto) {
-        return service.update(id, dto);
+    public LoanApplication update(
+            @PathVariable UUID id,
+            @Valid @RequestBody LoanApplicationDTOs.Create dto,
+            @RequestHeader(value = "Authorization", required = false) String bearerToken) {
+        return service.update(id, dto, bearerToken);
     }
 
     @DeleteMapping("/{id}")

@@ -28,6 +28,11 @@ customer:
   service:
     url: ${api.gateway.url}  # ← Ahora sí referencia la variable correcta
 
+#==================== WORKER SERVICE CONFIGURATION ====================
+worker:
+  service:
+    url: ${api.gateway.url}  # URL del workers-microservice a través del API Gateway
+
 # ==================== FEIGN CLIENT CONFIGURATION ====================
 feign:
   client:
