@@ -82,7 +82,7 @@ databaseChangeLog:
             columns:
               - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
               - column: { name: transaction_id, type: uuid, constraints: { nullable: false } }
-              - column: { name: account_id, type: uuid, constraints: { nullable: false } } 
+              - column: { name: account_id, type: uuid, constraints: { nullable: false } }
               - column: { name: debit_amount, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: credit_amount, type: "decimal(18,2)", constraints: { nullable: false } }
               - column: { name: entry_date, type: timestamp, constraints: { nullable: false } }
@@ -154,7 +154,24 @@ databaseChangeLog:
         - sql:
             dbms: postgresql
             sql: |
-              -- Crear constraint único solo para valores no nulos
               CREATE UNIQUE INDEX idx_chart_accounts_logical_name_unique 
               ON chart_of_accounts(logical_name) 
               WHERE logical_name IS NOT NULL;
+
+  # =========================
+  # Insert initial chart of accounts data
+  # =========================
+  - changeSet:
+      id: 007-insert-initial-chart-of-accounts
+      author: equipo
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO chart_of_accounts (id, account_code, account_name, account_type, logical_name)
+              VALUES 
+                (gen_random_uuid(), '1001', 'Caja General', 'ACTIVO', 'CASH_ACCOUNT'),
+                (gen_random_uuid(), '1002', 'Cuenta por cobrar', 'ACTIVO', 'LOAN_RECEIVABLE_ACCOUNT'),
+                (gen_random_uuid(), '1003', 'Ingreso por intereses', 'INGRESO', 'INTEREST_INCOME_ACCOUNT'),
+                (gen_random_uuid(), '1004', 'Ingreso por mora', 'INGRESO', 'MORATORY_INCOME_ACCOUNT')
+              ON CONFLICT (account_code) DO NOTHING;

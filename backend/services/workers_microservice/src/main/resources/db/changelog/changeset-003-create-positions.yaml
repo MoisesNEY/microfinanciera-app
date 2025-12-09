@@ -2,6 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: 003-create-positions
       author: eduardo
+      validCheckSum: 9:4fe2fdc5ed26c369818a3dc4a22d3f61
       changes:
         - createTable:
             tableName: positions
@@ -130,14 +131,14 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'ASISTENTE_CONTABLE', 'Asistente contable', 'asistente_contable', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'ASISTENTE_CONTABLE', 'Asistente contable', 'asistente_contable', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'CONTABILIDAD';
 
         - sql:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'JEFE_CONTABILIDAD', 'Jefe de contabilidad', 'jefe_contabilidad', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'JEFE_CONTABILIDAD', 'Jefe de contabilidad', 'jefe_contabilidad', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'CONTABILIDAD';
 
         # FINANZAS
@@ -152,14 +153,14 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'ANALISTA_FINANCIERO', 'Analista financiero', 'analista_financiero', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'ANALISTA_FINANCIERO', 'Analista financiero', 'analista_financiero', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'FINANZAS';
 
         - sql:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'JEFE_FINANZAS', 'Jefe de finanzas', 'jefe_finanzas', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'JEFE_FINANZAS', 'Jefe de finanzas', 'jefe_finanzas', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'FINANZAS';
 
         # CAJA
@@ -211,7 +212,7 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'ASISTENTE_ADMIN', 'Asistente administrativo', 'asistente_admin', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'ASISTENTE_ADMIN', 'Asistente administrativo', 'asistente_admin', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'ADMIN';
 
         - sql:
@@ -248,14 +249,14 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'AUDITOR_INTERNO', 'Auditor interno', 'auditor_interno', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'AUDITOR_INTERNO', 'Auditor interno', 'auditor_interno', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'AUDITORIA';
 
         - sql:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'JEFE_AUDITORIA', 'Jefe de auditoría', 'jefe_auditoria', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'JEFE_AUDITORIA', 'Jefe de auditoría', 'jefe_auditoria', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'AUDITORIA';
 
         # ATENCIÓN AL CLIENTE
@@ -292,5 +293,5 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'SUBGERENTE', 'Subgerente', 'subgerente', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'SUBGERENTE', 'Subgerente', 'subgerente', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'GERENCIA';

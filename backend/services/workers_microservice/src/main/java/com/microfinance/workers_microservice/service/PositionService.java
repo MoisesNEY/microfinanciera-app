@@ -2,6 +2,7 @@ package com.microfinance.workers_microservice.service;
 
 import com.microfinance.workers_microservice.domain.Department;
 import com.microfinance.workers_microservice.domain.Position;
+import com.microfinance.workers_microservice.dto.PositionUpdateRequest;
 import com.microfinance.workers_microservice.repository.DepartmentRepository;
 import com.microfinance.workers_microservice.repository.PositionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,12 +42,13 @@ public class PositionService {
                 .orElseThrow(() -> new EntityNotFoundException("Departamento no encontrado"));
 
         p.setDepartment(d);
-        // clientId viene en el JSON -> p.setClientId(...) ya viene seteado si el frontend lo manda
+        // clientId viene en el JSON -> p.setClientId(...) ya viene seteado si el
+        // frontend lo manda
         return repo.save(p);
     }
 
     @Transactional
-    public Position update(Long id, Position req) {
+    public Position update(Long id, PositionUpdateRequest req) {
         Position p = repo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Posición no encontrada"));
 
@@ -54,7 +56,7 @@ public class PositionService {
         p.setCode(req.getCode());
         p.setRealmRole(req.getRealmRole());
         p.setClientRole(req.getClientRole());
-        p.setClientId(req.getClientId()); // 🔥 NUEVO
+        p.setClientId(req.getClientId());
         p.setActive(req.isActive());
 
         return repo.save(p);

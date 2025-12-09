@@ -30,6 +30,7 @@ import com.microfinance.customer_microservice.application.dto.output.AddressResp
 import com.microfinance.customer_microservice.application.dto.input.ContactInfoCreateDTO;
 import com.microfinance.customer_microservice.application.dto.input.ContactInfoUpdateDTO;
 import com.microfinance.customer_microservice.application.dto.output.ContactInfoResponseDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -42,12 +43,14 @@ public class ClientController {
     }
 
     // Endpoints existentes para clientes...
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente')")
     @PostMapping
     public ResponseEntity<ClientResponseDTO> createClient(@Valid @RequestBody ClientCreateDTO clientCreateDTO) {
         ClientResponseDTO createdClient = clientService.createClient(clientCreateDTO);
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente')")
     @PostMapping("/full")
     public ResponseEntity<ClientResponseDTO> createClientWithRelations(
             @Valid @RequestBody FullClientDTO fullClientDTO) {
@@ -55,12 +58,14 @@ public class ClientController {
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'jefe_caja', 'tesorero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad')")
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> getClientById(@PathVariable UUID id) {
         ClientResponseDTO client = clientService.getClientById(id);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'jefe_caja', 'tesorero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad')")
     @GetMapping
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         try {
@@ -72,32 +77,30 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/inactive/{id}")
-    public ResponseEntity<ClientResponseDTO> getClientActiveById(@PathVariable UUID id) {
-        ClientResponseDTO client = clientService.getClientInactiveById(id);
-        return new ResponseEntity<>(client, HttpStatus.OK);
-    }
-
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'jefe_caja', 'tesorero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad')")
     @GetMapping("/inactive")
     public ResponseEntity<List<ClientResponseDTO>> getAllClientsActive() {
         List<ClientResponseDTO> clients = clientService.getAllClientsInactive();
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente', 'jefe_servicio')")
     @PatchMapping("/{id}")
-    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, 
-                                                          @Valid @RequestBody ClientUpdateDTO clientUpdateDTO) {
+    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id,
+            @Valid @RequestBody ClientUpdateDTO clientUpdateDTO) {
         ClientResponseDTO updatedClient = clientService.updateClient(id, clientUpdateDTO);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente', 'jefe_servicio')")
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponseDTO> replaceClient(@PathVariable UUID id, 
-                                                           @Valid @RequestBody ClientReplaceDTO clientReplaceDTO) {
+    public ResponseEntity<ClientResponseDTO> replaceClient(@PathVariable UUID id,
+            @Valid @RequestBody ClientReplaceDTO clientReplaceDTO) {
         ClientResponseDTO replacedClient = clientService.replaceClient(id, clientReplaceDTO);
         return new ResponseEntity<>(replacedClient, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_servicio', 'gerente_general')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deActivateClient(@PathVariable UUID id) {
         clientService.deActivateClient(id);
@@ -118,15 +121,17 @@ public class ClientController {
 
     // ========== ENDPOINTS PARA GESTIÓN DE DIRECCES ==========
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente')")
     @PatchMapping("/{clientId}/addresses/{addressId}")
     public ResponseEntity<AddressResponseDTO> updateClientAddress(
-            @PathVariable UUID clientId, 
+            @PathVariable UUID clientId,
             @PathVariable UUID addressId,
             @Valid @RequestBody AddressUpdateDTO addressUpdateDTO) {
         AddressResponseDTO updatedAddress = clientService.updateClientAddress(clientId, addressId, addressUpdateDTO);
         return new ResponseEntity<>(updatedAddress, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'atencion_cliente')")
     @PostMapping("/{clientId}/addresses")
     public ResponseEntity<AddressResponseDTO> addClientAddress(
             @PathVariable UUID clientId,
@@ -135,6 +140,7 @@ public class ClientController {
         return new ResponseEntity<>(newAddress, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_servicio')")
     @DeleteMapping("/{clientId}/addresses/{addressId}")
     public ResponseEntity<Void> removeClientAddress(
             @PathVariable UUID clientId,
@@ -147,10 +153,11 @@ public class ClientController {
 
     @PatchMapping("/{clientId}/contacts/{contactId}")
     public ResponseEntity<ContactInfoResponseDTO> updateClientContact(
-            @PathVariable UUID clientId, 
+            @PathVariable UUID clientId,
             @PathVariable UUID contactId,
             @Valid @RequestBody ContactInfoUpdateDTO contactInfoUpdateDTO) {
-        ContactInfoResponseDTO updatedContact = clientService.updateClientContact(clientId, contactId, contactInfoUpdateDTO);
+        ContactInfoResponseDTO updatedContact = clientService.updateClientContact(clientId, contactId,
+                contactInfoUpdateDTO);
         return new ResponseEntity<>(updatedContact, HttpStatus.OK);
     }
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/loan-products")
@@ -19,37 +20,46 @@ public class LoanProductController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'subgerente', 'analista_riesgo', 'supervisor_creditos', 'jefe_cobranza')")
     @GetMapping
     public List<LoanProduct> all() {
         return service.all(false);
     }
-    //  Endpoint para obtener SOLO los eliminados
+
+    // Endpoint para obtener SOLO los eliminados
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'jefe_cobranza')")
     @GetMapping("/deleted")
     public List<LoanProduct> deleted() {
         return service.all(true);
     }
+
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'subgerente', 'analista_riesgo', 'supervisor_creditos', 'jefe_cobranza')")
     @GetMapping("/{id}")
     public LoanProduct one(@PathVariable UUID id) {
-        return service.one(id,false);
+        return service.one(id, false);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_creditos', 'gerente_general', 'jefe_cobranza')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LoanProduct create(@Valid @RequestBody LoanProductDTOs.Create dto) {
         return service.create(dto);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_creditos', 'gerente_general', 'jefe_cobranza')")
     @PutMapping("/{id}")
     public LoanProduct update(@PathVariable UUID id, @Valid @RequestBody LoanProductDTOs.Create dto) {
         return service.update(id, dto);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_creditos', 'gerente_general', 'jefe_cobranza')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
 
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_creditos', 'gerente_general')")
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void activate(@PathVariable UUID id) {

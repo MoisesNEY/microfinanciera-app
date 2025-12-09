@@ -367,7 +367,6 @@ public class KeycloakService {
         assignRolesToUser(bearerToken, keycloakUserId, realmRoleName, clientRoleName, null);
     }
 
-
     @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakWriteFallback")
     public void removeRolesFromUser(
             String bearerToken,
@@ -602,7 +601,45 @@ public class KeycloakService {
     }
 
     // =========================
-    //   FALLBACK METHODS
+    // METADATA LISTS (NUEVO)
+    // =========================
+
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
+    public List<Map<String, Object>> listRealmRoles(String bearerToken) {
+        HttpHeaders headers = buildJsonHeadersWithAdminToken();
+        HttpEntity<Void> req = new HttpEntity<>(headers);
+
+        String url = keycloakUrl + "/admin/realms/" + realm + "/roles";
+        ResponseEntity<List> resp = restTemplate.exchange(url, HttpMethod.GET, req, List.class);
+        return resp.getBody() != null ? resp.getBody() : List.of();
+    }
+
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
+    public List<Map<String, Object>> listClients(String bearerToken) {
+        HttpHeaders headers = buildJsonHeadersWithAdminToken();
+        HttpEntity<Void> req = new HttpEntity<>(headers);
+
+        String url = keycloakUrl + "/admin/realms/" + realm + "/clients";
+        ResponseEntity<List> resp = restTemplate.exchange(url, HttpMethod.GET, req, List.class);
+        return resp.getBody() != null ? resp.getBody() : List.of();
+    }
+
+    @CircuitBreaker(name = "keycloak-service", fallbackMethod = "keycloakReadFallback")
+    public List<Map<String, Object>> listClientRoles(String bearerToken, String clientId) {
+        HttpHeaders headers = buildJsonHeadersWithAdminToken();
+        HttpEntity<Void> req = new HttpEntity<>(headers);
+
+        // Primero obtenemos el UUID del cliente usando el clientId (ej:
+        // frontend-client)
+        String clientUuid = getClientUuid(clientId);
+
+        String url = keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientUuid + "/roles";
+        ResponseEntity<List> resp = restTemplate.exchange(url, HttpMethod.GET, req, List.class);
+        return resp.getBody() != null ? resp.getBody() : List.of();
+    }
+
+    // =========================
+    // FALLBACK METHODS
     // =========================
 
     @SuppressWarnings("unused")
@@ -614,7 +651,6 @@ public class KeycloakService {
     private <T> T keycloakWriteFallback(Throwable ex) {
         throw new IllegalStateException("Keycloak no disponible para operación de escritura", ex);
     }
-
 
     @SuppressWarnings("unused")
     private <T> T keycloakDeleteFallback(Throwable ex) {

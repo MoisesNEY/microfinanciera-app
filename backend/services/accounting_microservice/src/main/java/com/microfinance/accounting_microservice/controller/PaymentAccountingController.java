@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Slf4j
 @RestController
@@ -22,6 +23,7 @@ public class PaymentAccountingController {
     private final PaymentAccountingService paymentAccountingService;
     private final ObjectMapper objectMapper;
 
+    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'jefe_contabilidad', 'cajero')")
     @PostMapping("/payment-applied")
     public ResponseEntity<?> recordPayment(@RequestBody String requestBody) {
         try {
@@ -31,9 +33,9 @@ public class PaymentAccountingController {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             log.info("JSON structure:");
             jsonNode.fields().forEachRemaining(entry -> log.info("  Field: {} = {} (type: {})",
-                entry.getKey(),
-                entry.getValue().asText(),
-                entry.getValue().getNodeType()));
+                    entry.getKey(),
+                    entry.getValue().asText(),
+                    entry.getValue().getNodeType()));
 
             PaymentAppliedEvent event = objectMapper.readValue(requestBody, PaymentAppliedEvent.class);
             log.info("Successfully deserialized payment: {}", event.getPaymentId());
@@ -43,7 +45,7 @@ public class PaymentAccountingController {
         } catch (Exception e) {
             log.error("Error processing payment applied request: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error processing payment: " + e.getMessage());
+                    .body("Error processing payment: " + e.getMessage());
         }
     }
 }

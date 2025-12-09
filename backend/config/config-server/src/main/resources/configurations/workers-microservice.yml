@@ -1,7 +1,7 @@
 server:
   port: 8088
 
-APP_SECURITY_DISABLED: true
+APP_SECURITY_DISABLED: false
 
 spring:
   application:

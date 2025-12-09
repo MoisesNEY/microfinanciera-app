@@ -1,7 +1,7 @@
 server:
   port: 8083
 
-APP_SECURITY_DISABLED: true
+APP_SECURITY_DISABLED: false
 
 spring:
   application:
@@ -18,6 +18,11 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/microfinance-microservice-realm
 
 
 
@@ -86,18 +91,11 @@ spring:
     password: root
   jpa:
     show-sql: false
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8085/realms/microfinance-microservice-realm
 
 eureka:
   client:
