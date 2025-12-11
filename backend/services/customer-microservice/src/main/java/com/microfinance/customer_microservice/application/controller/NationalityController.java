@@ -27,14 +27,14 @@ public class NationalityController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas')")
     @GetMapping
     public ResponseEntity<List<NationalityResponseDTO>> getAllActive() {
         List<NationalityResponseDTO> nationalities = nationalityService.getAllActive();
         return ResponseEntity.ok(nationalities);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'reclutador', 'jefe_rrhh', 'gerente_general', 'subgerente', 'jefe_creditos', 'analista_riesgo', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'reclutador', 'jefe_rrhh', 'gerente_general', 'subgerente', 'jefe_creditos', 'analista_riesgo', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas')")
     @GetMapping("/{id}")
     public ResponseEntity<NationalityResponseDTO> getById(@PathVariable UUID id) {
         NationalityResponseDTO nationality = nationalityService.getById(id);

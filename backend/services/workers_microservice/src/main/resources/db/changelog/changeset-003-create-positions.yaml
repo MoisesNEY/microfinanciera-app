@@ -183,7 +183,7 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'ADMIN_SISTEMAS', 'Administrador de sistemas', 'admin_sistemas', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'ADMIN_SISTEMAS', 'Administrador de sistemas', 'admin_sistemas', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'TI';
 
         - sql:

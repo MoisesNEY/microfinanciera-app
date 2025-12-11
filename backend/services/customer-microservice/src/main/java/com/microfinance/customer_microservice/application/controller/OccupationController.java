@@ -27,14 +27,14 @@ public class OccupationController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'cajero', 'cobrador', 'jefe_servicio', 'analista_riesgo', 'supervisor_creditos', 'gerente_general', 'subgerente', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'asistente_admin', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas')")
     @GetMapping
     public ResponseEntity<List<OccupationResponseDTO>> getAllActive() {
         List<OccupationResponseDTO> occupations = occupationService.getAllActive();
         return ResponseEntity.ok(occupations);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'analista_riesgo', 'gerente_general', 'subgerente', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'analista_riesgo', 'gerente_general', 'subgerente', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas')")
     @GetMapping("/{id}")
     public ResponseEntity<OccupationResponseDTO> getById(@PathVariable UUID id) {
         OccupationResponseDTO occupation = occupationService.getById(id);
