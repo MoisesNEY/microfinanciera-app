@@ -77,13 +77,13 @@ public class LoanController {
         service.Activate(id);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cobrador', 'jefe_creditos', 'jefe_caja', 'tesorero', 'cajero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'admin_sistemas')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cobrador', 'jefe_creditos', 'supervisor_creditos', 'jefe_caja', 'tesorero', 'cajero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'admin_sistemas')")
     @GetMapping("/{id}/schedules")
     public List<LoanSchedule> schedules(@PathVariable UUID id) {
         return scheduleService.byLoan(id); // Nuevo: listar cuotas por préstamo
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cobrador', 'cajero', 'jefe_creditos', 'jefe_caja', 'tesorero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'admin_sistemas')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cobrador', 'cajero', 'supervisor_creditos', 'jefe_creditos', 'jefe_caja', 'tesorero', 'jefe_cobranza', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'archivador', 'jefe_ti', 'desarrollador', 'soporte_ti', 'admin_sistemas')")
     @GetMapping("/{id}/payments")
     public List<LoanPayment> payments(@PathVariable UUID id) {
         return paymentService.byLoan(id); // Nuevo: listar pagos por préstamo

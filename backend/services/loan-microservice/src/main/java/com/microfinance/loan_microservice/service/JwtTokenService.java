@@ -18,10 +18,12 @@ import java.util.UUID;
 
 /**
  * Servicio para extraer información del token JWT de Keycloak.
- * Extrae el ID del trabajador (keycloakId) del token y lo convierte al UUID interno.
+ * Extrae el ID del trabajador (keycloakId) del token y lo convierte al UUID
+ * interno.
  * 
  * Soporta dos modos:
- * 1. Obtener el token del SecurityContext (cuando Spring Security lo ha procesado)
+ * 1. Obtener el token del SecurityContext (cuando Spring Security lo ha
+ * procesado)
  * 2. Decodificar manualmente el bearerToken proporcionado como parámetro
  */
 @Service
@@ -38,7 +40,7 @@ public class JwtTokenService {
             WorkerServiceClient workerServiceClient,
             @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri:}") String issuerUri) {
         this.workerServiceClient = workerServiceClient;
-        
+
         // Configurar JwtDecoder si tenemos issuer-uri, sino será null
         if (issuerUri != null && !issuerUri.isBlank()) {
             this.jwtDecoder = NimbusJwtDecoder.withIssuerLocation(issuerUri).build();
@@ -53,7 +55,8 @@ public class JwtTokenService {
      * Primero intenta obtenerlo del SecurityContext, si no está disponible,
      * intenta decodificar el bearerToken proporcionado.
      * 
-     * @param bearerToken Token JWT opcional (formato "Bearer <token>" o solo "<token>")
+     * @param bearerToken Token JWT opcional (formato "Bearer <token>" o solo
+     *                    "<token>")
      * @return El keycloakId del usuario autenticado, o null si no está disponible
      */
     public String getKeycloakIdFromToken(String bearerToken) {
@@ -62,19 +65,20 @@ public class JwtTokenService {
         if (keycloakId != null) {
             return keycloakId;
         }
-        
-        // Si no está en SecurityContext y se proporcionó bearerToken, decodificarlo manualmente
+
+        // Si no está en SecurityContext y se proporcionó bearerToken, decodificarlo
+        // manualmente
         if (bearerToken != null && !bearerToken.isBlank()) {
             keycloakId = getKeycloakIdFromBearerToken(bearerToken);
             if (keycloakId != null) {
                 return keycloakId;
             }
         }
-        
+
         log.error("No se pudo extraer el keycloakId del token JWT");
         return null;
     }
-    
+
     /**
      * Obtiene el keycloakId del SecurityContext de Spring Security.
      */
@@ -82,47 +86,69 @@ public class JwtTokenService {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             log.debug("Authentication type: {}", authentication != null ? authentication.getClass().getName() : "null");
-            
+
             if (authentication == null) {
                 log.debug("SecurityContext no tiene Authentication");
                 return null;
             }
-            
+
             if (authentication instanceof JwtAuthenticationToken) {
                 JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
                 Jwt jwt = jwtAuth.getToken();
-                
+
                 if (jwt != null) {
-                    String sub = jwt.getClaimAsString(SUB_CLAIM);
+                    // Intentar obtener el subject directamente (standard)
+                    String sub = jwt.getSubject();
+                    if (sub == null || sub.isBlank()) {
+                        // Fallback a buscar el claim por nombre
+                        sub = jwt.getClaimAsString(SUB_CLAIM);
+                    }
+
                     if (sub != null && !sub.isBlank()) {
                         log.debug("KeycloakId extraído del SecurityContext: {}", sub);
                         return sub;
                     }
                 }
             } else {
-                log.debug("La autenticación no es de tipo JwtAuthenticationToken. Tipo: {}", authentication.getClass().getName());
+                log.debug("La autenticación no es de tipo JwtAuthenticationToken. Tipo: {}",
+                        authentication.getClass().getName());
+                // Si no es JwtAuthenticationToken, tal vez es otro tipo de
+                // AbstractOAuth2TokenAuthenticationToken o similar
+                if (authentication.getPrincipal() instanceof Jwt) {
+                    Jwt jwt = (Jwt) authentication.getPrincipal();
+                    String sub = jwt.getSubject();
+                    if (sub != null && !sub.isBlank()) {
+                        return sub;
+                    }
+                } else if (authentication.getPrincipal() instanceof String) {
+                    // En algunos casos (ej. keycloak adapter antiguo) el principal es el ID
+                    return (String) authentication.getPrincipal();
+                }
             }
         } catch (Exception e) {
             log.debug("Error al extraer keycloakId del SecurityContext: {}", e.getMessage());
         }
         return null;
     }
-    
+
     /**
      * Decodifica manualmente el bearerToken y extrae el keycloakId.
      */
     private String getKeycloakIdFromBearerToken(String bearerToken) {
         try {
             // Remover el prefijo "Bearer " si existe
-            String tokenValue = bearerToken.startsWith(BEARER_PREFIX) 
-                ? bearerToken.substring(BEARER_PREFIX.length()) 
-                : bearerToken;
-            
+            String tokenValue = bearerToken.startsWith(BEARER_PREFIX)
+                    ? bearerToken.substring(BEARER_PREFIX.length())
+                    : bearerToken;
+
             // Intentar decodificar con JwtDecoder si está disponible
             if (jwtDecoder != null) {
                 try {
                     Jwt jwt = jwtDecoder.decode(tokenValue);
-                    String sub = jwt.getClaimAsString(SUB_CLAIM);
+                    String sub = jwt.getSubject();
+                    if (sub == null || sub.isBlank()) {
+                        sub = jwt.getClaimAsString(SUB_CLAIM);
+                    }
                     if (sub != null && !sub.isBlank()) {
                         log.debug("KeycloakId extraído del bearerToken (JwtDecoder): {}", sub);
                         return sub;
@@ -131,7 +157,7 @@ public class JwtTokenService {
                     log.debug("Error al decodificar con JwtDecoder: {}", e.getMessage());
                 }
             }
-            
+
             // Fallback: decodificar manualmente usando Nimbus JWT
             JWT jwt = JWTParser.parse(tokenValue);
             String sub = jwt.getJWTClaimsSet().getSubject();
@@ -149,27 +175,34 @@ public class JwtTokenService {
 
     /**
      * Obtiene el UUID interno del trabajador desde el token JWT.
-     * Primero extrae el keycloakId del token, luego consulta el microservicio de workers
+     * Primero extrae el keycloakId del token, luego consulta el microservicio de
+     * workers
      * para obtener el UUID interno del trabajador.
      * 
-     * @param bearerToken Token JWT opcional (formato "Bearer <token>" o solo "<token>")
+     * @param bearerToken Token JWT opcional (formato "Bearer <token>" o solo
+     *                    "<token>")
      * @return El UUID interno del trabajador
      * @throws IllegalStateException si no se puede obtener el keycloakId del token
      */
     public UUID getWorkerIdFromToken(String bearerToken) {
-        // Obtener keycloakId del token (intenta SecurityContext primero, luego bearerToken)
+        // Obtener keycloakId del token (intenta SecurityContext primero, luego
+        // bearerToken)
         String keycloakId = getKeycloakIdFromToken(bearerToken);
-        
+
         if (keycloakId == null || keycloakId.isBlank()) {
             log.warn("No se pudo obtener keycloakId del token");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String authType = auth != null ? auth.getClass().getName() : "null";
+            int tokenLength = bearerToken != null ? bearerToken.length() : -1;
+
             throw new IllegalStateException(
-                "No se pudo extraer el keycloakId del token JWT. " +
-                "Asegúrate de que el usuario esté autenticado correctamente y que el token JWT sea válido."
-            );
+                    "No se pudo extraer el keycloakId del token JWT. " +
+                            "Contexto: " + authType + ", TokenLen: " + tokenLength + ". " +
+                            "Asegúrate de que el usuario esté autenticado correctamente y que el token JWT sea válido.");
         }
 
         log.info("KeycloakId obtenido: {}", keycloakId);
-        
+
         try {
             // Obtener el token completo para pasarlo al cliente
             String tokenForRequest = getTokenValue(bearerToken);
@@ -179,30 +212,30 @@ public class JwtTokenService {
         } catch (Exception e) {
             log.error("Error al obtener el workerId para keycloakId {}: {}", keycloakId, e.getMessage(), e);
             throw new IllegalStateException(
-                "No se pudo obtener el ID del trabajador desde el microservicio de workers. " +
-                "Asegúrate de que el usuario existe en el sistema. Error: " + e.getMessage(),
-                e
-            );
+                    "No se pudo obtener el ID del trabajador desde el microservicio de workers. " +
+                            "Asegúrate de que el usuario existe en el sistema. Error: " + e.getMessage(),
+                    e);
         }
     }
-    
+
     /**
      * Obtiene el token JWT completo.
      * Primero intenta obtenerlo del SecurityContext, si no está disponible,
      * usa el bearerToken proporcionado.
      * 
-     * @param bearerToken Token JWT opcional (formato "Bearer <token>" o solo "<token>")
+     * @param bearerToken Token JWT opcional (formato "Bearer <token>" o solo
+     *                    "<token>")
      * @return El token JWT como string, o null si no está disponible
      */
     public String getTokenValue(String bearerToken) {
         // Intentar obtener del SecurityContext primero
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            
+
             if (authentication != null && authentication instanceof JwtAuthenticationToken) {
                 JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
                 Jwt jwt = jwtAuth.getToken();
-                
+
                 if (jwt != null) {
                     return jwt.getTokenValue();
                 }
@@ -210,16 +243,15 @@ public class JwtTokenService {
         } catch (Exception e) {
             log.debug("No se pudo obtener el token del SecurityContext: {}", e.getMessage());
         }
-        
+
         // Si no está en SecurityContext, usar el bearerToken proporcionado
         if (bearerToken != null && !bearerToken.isBlank()) {
             // Remover el prefijo "Bearer " si existe
-            return bearerToken.startsWith(BEARER_PREFIX) 
-                ? bearerToken.substring(BEARER_PREFIX.length()) 
-                : bearerToken;
+            return bearerToken.startsWith(BEARER_PREFIX)
+                    ? bearerToken.substring(BEARER_PREFIX.length())
+                    : bearerToken;
         }
-        
+
         return null;
     }
 }
-
