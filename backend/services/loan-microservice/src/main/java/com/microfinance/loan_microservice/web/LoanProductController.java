@@ -20,20 +20,20 @@ public class LoanProductController {
         this.service = service;
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'subgerente', 'analista_riesgo', 'supervisor_creditos', 'jefe_cobranza')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'subgerente', 'analista_riesgo', 'supervisor_creditos', 'jefe_cobranza', 'archivador')")
     @GetMapping
     public List<LoanProduct> all() {
         return service.all(false);
     }
 
     // Endpoint para obtener SOLO los eliminados
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'jefe_cobranza')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'jefe_cobranza', 'archivador')")
     @GetMapping("/deleted")
     public List<LoanProduct> deleted() {
         return service.all(true);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'subgerente', 'analista_riesgo', 'supervisor_creditos', 'jefe_cobranza')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'jefe_creditos', 'atencion_cliente', 'gerente_general', 'subgerente', 'analista_riesgo', 'supervisor_creditos', 'jefe_cobranza', 'archivador')")
     @GetMapping("/{id}")
     public LoanProduct one(@PathVariable UUID id) {
         return service.one(id, false);

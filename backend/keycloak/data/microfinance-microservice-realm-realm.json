@@ -691,9 +691,9 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "reclutador", "default-roles-microfinance-microservice-realm" ],
+    "realmRoles" : [ "archivador", "default-roles-microfinance-microservice-realm" ],
     "clientRoles" : {
-      "frontend-client" : [ "ROLE_USER" ]
+      "frontend-client" : [ "ROLE_ADMIN" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
