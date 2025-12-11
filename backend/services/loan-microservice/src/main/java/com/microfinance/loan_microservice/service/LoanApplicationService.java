@@ -21,9 +21,9 @@ public class LoanApplicationService {
     private final JwtTokenService jwtTokenService;
 
     public LoanApplicationService(LoanApplicationRepository repo,
-                                  CustomerServiceClient customerServiceClient, 
-                                  CustomerCircuitService customerCircuitService,
-                                  JwtTokenService jwtTokenService) {
+            CustomerServiceClient customerServiceClient,
+            CustomerCircuitService customerCircuitService,
+            JwtTokenService jwtTokenService) {
         this.repo = repo;
         this.customerServiceClient = customerServiceClient;
         this.customerCircuitService = customerCircuitService;
@@ -48,7 +48,7 @@ public class LoanApplicationService {
         app.setStatus(dto.status());
         app.setApplicationDate(dto.applicationDate());
         app.setApprovedDate(dto.approvedDate());
-        
+
         // Obtener officerId del token JWT si no se proporciona en el DTO
         UUID officerId = dto.officerId();
         if (officerId == null) {
@@ -56,10 +56,9 @@ public class LoanApplicationService {
                 officerId = jwtTokenService.getWorkerIdFromToken(bearerToken);
             } catch (Exception e) {
                 throw new IllegalStateException(
-                    "No se pudo obtener el ID del trabajador desde el token JWT. " +
-                    "Asegúrate de que el usuario esté autenticado correctamente. Error: " + e.getMessage(),
-                    e
-                );
+                        "No se pudo obtener el ID del trabajador desde el token JWT. " +
+                                "Asegúrate de que el usuario esté autenticado correctamente. Error: " + e.getMessage(),
+                        e);
             }
         }
         app.setOfficerId(officerId);
@@ -75,7 +74,7 @@ public class LoanApplicationService {
         app.setStatus(dto.status());
         app.setApplicationDate(dto.applicationDate());
         app.setApprovedDate(dto.approvedDate());
-        
+
         // Obtener officerId del token JWT si no se proporciona en el DTO
         UUID officerId = dto.officerId();
         if (officerId == null) {
@@ -83,10 +82,9 @@ public class LoanApplicationService {
                 officerId = jwtTokenService.getWorkerIdFromToken(bearerToken);
             } catch (Exception e) {
                 throw new IllegalStateException(
-                    "No se pudo obtener el ID del trabajador desde el token JWT. " +
-                    "Asegúrate de que el usuario esté autenticado correctamente. Error: " + e.getMessage(),
-                    e
-                );
+                        "No se pudo obtener el ID del trabajador desde el token JWT. " +
+                                "Asegúrate de que el usuario esté autenticado correctamente. Error: " + e.getMessage(),
+                        e);
             }
         }
         app.setOfficerId(officerId);
@@ -141,8 +139,8 @@ public class LoanApplicationService {
      */
     public List<Map<String, Object>> getAllApplicationsWithClientDetails(Boolean deleted) {
         List<LoanApplication> applications = repo.findAllByDeleted(deleted);
-        
-        return applications.parallelStream()
+
+        return applications.stream()
                 .map(this::enrichApplicationWithClient)
                 .collect(Collectors.toList());
     }
@@ -152,15 +150,15 @@ public class LoanApplicationService {
      */
     private Map<String, Object> enrichApplicationWithClient(LoanApplication application) {
         Map<String, Object> result = new LinkedHashMap<>();
-        
+
         // 1. Agregar los datos de la solicitud
         result.put("application", convertToMap(application));
-        
+
         // 2. Intentar obtener información del cliente
         Map<String, Object> clientData = customerCircuitService.getClientByIdCircuit(application.getCustomerId());
         result.put("client", clientData);
         result.put("clientAvailable", true);
-        
+
         return result;
     }
 
