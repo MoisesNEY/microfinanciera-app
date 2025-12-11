@@ -23,25 +23,25 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'jefe_creditos', 'jefe_finanzas', 'analista_financiero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'jefe_creditos', 'jefe_finanzas', 'analista_financiero', 'soporte_ti')")
     @GetMapping
     public ResponseEntity<List<PaymentResponse>> getAllPayments() {
         return ResponseEntity.ok(paymentService.getAllPayments());
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'jefe_creditos', 'jefe_finanzas', 'analista_financiero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'jefe_creditos', 'jefe_finanzas', 'analista_financiero', 'soporte_ti')")
     @GetMapping("/inactive")
     public ResponseEntity<List<PaymentResponse>> getInactivePayments() {
         return ResponseEntity.ok(paymentService.getInactivePayments());
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'analista_financiero', 'jefe_finanzas', 'jefe_creditos')")
+    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'analista_financiero', 'jefe_finanzas', 'jefe_creditos', 'soporte_ti')")
     @GetMapping("/loan/{loanId}")
     public ResponseEntity<List<PaymentResponse>> getPaymentsByLoanId(@PathVariable UUID loanId) {
         return ResponseEntity.ok(paymentService.getPaymentsByLoanId(loanId));
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'analista_financiero', 'jefe_finanzas', 'jefe_creditos')")
+    @PreAuthorize("hasAnyRole('admin_general', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza', 'contador', 'asistente_contable', 'tesorero', 'subgerente', 'jefe_ti', 'analista_financiero', 'jefe_finanzas', 'jefe_creditos', 'soporte_ti')")
     @GetMapping("/{id}")
     public ResponseEntity<PaymentResponse> getPayment(@PathVariable UUID id) {
         return ResponseEntity.ok(paymentService.getById(id));
