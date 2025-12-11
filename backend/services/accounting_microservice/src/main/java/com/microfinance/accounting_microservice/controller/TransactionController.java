@@ -20,7 +20,7 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
-    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'asistente_contable', 'auditor_interno', 'jefe_contabilidad', 'analista_financiero', 'jefe_finanzas', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'asistente_contable', 'auditor_interno', 'jefe_contabilidad', 'analista_financiero', 'jefe_finanzas', 'tesorero', 'jefe_auditoria')")
     @GetMapping
     public ResponseEntity<List<TransactionResponseDTO>> getAll(
             @RequestParam(value = "deleted", defaultValue = "false") boolean deleted) {
@@ -33,7 +33,7 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.findAll(true));
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'asistente_contable', 'auditor_interno', 'jefe_contabilidad', 'analista_financiero', 'jefe_finanzas', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'asistente_contable', 'auditor_interno', 'jefe_contabilidad', 'analista_financiero', 'jefe_finanzas', 'tesorero', 'jefe_auditoria')")
     @GetMapping("/{id}")
     public ResponseEntity<TransactionResponseDTO> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(transactionService.findById(id));

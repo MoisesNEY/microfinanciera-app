@@ -12,11 +12,11 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U root -d postgres" ]
       interval: 5s
       timeout: 5s
       retries: 10
-    networks: [mfnet]
+    networks: [ mfnet ]
 
   config-server:
     build:
@@ -25,11 +25,11 @@ services:
     ports:
       - "8079:8079"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8079/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8079/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 10
-    networks: [mfnet]
+    networks: [ mfnet ]
 
   eureka-server:
     build:
@@ -38,7 +38,7 @@ services:
     ports:
       - "8078:8078"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8078/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8078/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 30
@@ -47,7 +47,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-    networks: [mfnet]
+    networks: [ mfnet ]
 
   api-gateway:
     build:
@@ -62,7 +62,7 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
-    networks: [mfnet]
+    networks: [ mfnet ]
 
   keycloak:
     stop_grace_period: 30s
@@ -81,6 +81,11 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_PRODUCTION: "false"
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8085" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
     volumes:
       - ../backend/keycloak/data:/opt/keycloak/data
     ports:
@@ -108,7 +113,9 @@ services:
         condition: service_started
       config-server:
         condition: service_healthy
-    networks: [mfnet]
+      keycloak:
+        condition: service_healthy
+    networks: [ mfnet ]
 
   loan-microservice:
     build:
@@ -127,7 +134,9 @@ services:
         condition: service_started
       config-server:
         condition: service_healthy
-    networks: [mfnet]
+      keycloak:
+        condition: service_healthy
+    networks: [ mfnet ]
 
   accounting-microservice:
     build:
@@ -146,7 +155,9 @@ services:
         condition: service_started
       config-server:
         condition: service_healthy
-    networks: [mfnet]
+      keycloak:
+        condition: service_healthy
+    networks: [ mfnet ]
 
   payment-microservice:
     build:
@@ -165,7 +176,9 @@ services:
         condition: service_started
       config-server:
         condition: service_healthy
-    networks: [mfnet]
+      keycloak:
+        condition: service_healthy
+    networks: [ mfnet ]
 
   workers_microservice:
     build:
@@ -184,7 +197,9 @@ services:
         condition: service_started
       config-server:
         condition: service_healthy
-    networks: [mfnet]
+      keycloak:
+        condition: service_healthy
+    networks: [ mfnet ]
 
   frontend:
     build:
@@ -210,6 +225,7 @@ services:
 
 volumes:
   pgdata:
+
 
 networks:
   mfnet:
