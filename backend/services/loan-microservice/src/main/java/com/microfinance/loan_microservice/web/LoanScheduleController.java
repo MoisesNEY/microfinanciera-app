@@ -20,7 +20,7 @@ public class LoanScheduleController {
         this.service = service;
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cajero', 'cobrador')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cajero', 'cobrador', 'jefe_creditos', 'gerente_general', 'jefe_servicio', 'soporte_ti', 'archivador')")
     @GetMapping
     public List<LoanSchedule> all(@RequestParam(value = "loanId", required = false) UUID loanId) {
         if (loanId != null) {
@@ -29,7 +29,7 @@ public class LoanScheduleController {
         return service.all(false);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cajero', 'cobrador')")
+    @PreAuthorize("hasAnyRole('admin_general', 'asesor_credito', 'cajero', 'cobrador', 'jefe_creditos', 'gerente_general', 'jefe_servicio', 'soporte_ti', 'archivador')")
     @GetMapping("/{id}")
     public LoanSchedule one(@PathVariable UUID id) {
         return service.one(id, false);
