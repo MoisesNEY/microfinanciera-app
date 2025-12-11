@@ -271,7 +271,7 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO positions (department_id, code, name, realm_role, client_role, client_id, is_active)
-              SELECT d.id, 'JEFE_SERVICIO', 'Jefe de servicio', 'jefe_servicio', 'ROLE_USER', 'frontend-client', true
+              SELECT d.id, 'JEFE_SERVICIO', 'Jefe de servicio', 'jefe_servicio', 'ROLE_ADMIN', 'frontend-client', true
               FROM departments d WHERE d.code = 'ATENCION_CLIENTE';
 
         # GERENCIA
