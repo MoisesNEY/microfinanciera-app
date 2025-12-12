@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,6 +15,6 @@ public class ExchangeRateDTO {
     private Double buyRate; // Tasa de compra bancaria
     private Double sellRate; // Tasa de venta bancaria
     private String bankSource; // "Banco Lafise", "BAC", "Banpro"
-    private LocalDateTime lastUpdate;
+    private java.time.ZonedDateTime lastUpdate;
     private String status; // "CURRENT", "STALE", "ERROR"
 }

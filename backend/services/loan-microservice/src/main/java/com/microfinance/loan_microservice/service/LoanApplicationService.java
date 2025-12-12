@@ -5,7 +5,7 @@ import com.microfinance.loan_microservice.dto.LoanApplicationDTOs;
 import com.microfinance.loan_microservice.repository.LoanApplicationRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -102,7 +102,7 @@ public class LoanApplicationService {
 
         // Marcar como eliminada
         application.setDeleted(true);
-        application.setDeletedAt(LocalDateTime.now());
+        application.setDeletedAt(ZonedDateTime.now());
 
         // Guardar el cambio
         repo.save(application);

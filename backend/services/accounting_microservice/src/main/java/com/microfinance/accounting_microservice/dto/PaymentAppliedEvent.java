@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -44,8 +44,8 @@ public class PaymentAppliedEvent {
     @JsonDeserialize(using = FlexibleBigDecimalDeserializer.class)
     private BigDecimal totalAmount;
 
-    @JsonDeserialize(using = FlexibleLocalDateTimeDeserializer.class)
-    private LocalDateTime paymentDate;
+    @JsonDeserialize(using = FlexibleZonedDateTimeDeserializer.class)
+    private ZonedDateTime paymentDate;
 
     private String description;
 
@@ -67,7 +67,7 @@ public class PaymentAppliedEvent {
         public UUID deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
                 JsonNode node = p.readValueAsTree();
-                
+
                 if (node.isNumber()) {
                     long numericValue = node.asLong();
                     System.out.println("DEBUG: Converting numeric value " + numericValue + " to UUID");
@@ -80,7 +80,8 @@ public class PaymentAppliedEvent {
                         } else {
                             try {
                                 long numericValue = Long.parseLong(value);
-                                System.out.println("DEBUG: Converting string numeric value " + numericValue + " to UUID");
+                                System.out
+                                        .println("DEBUG: Converting string numeric value " + numericValue + " to UUID");
                                 return numericValueToUUID(numericValue);
                             } catch (NumberFormatException e) {
                                 return UUID.fromString(value);
@@ -95,7 +96,7 @@ public class PaymentAppliedEvent {
                 return null;
             }
         }
-        
+
         private UUID numericValueToUUID(long value) {
             return new UUID(0, value);
         }
@@ -117,13 +118,13 @@ public class PaymentAppliedEvent {
         }
     }
 
-    static class FlexibleLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+    static class FlexibleZonedDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> {
         // Umbral para distinguir entre milisegundos y días desde el epoch
         // 1000000000 ms = ~1970-01-12, cualquier valor menor probablemente son días
         private static final long MILLIS_THRESHOLD = 1000000000L;
-        
+
         @Override
-        public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public ZonedDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             try {
                 switch (p.getCurrentToken()) {
                     case VALUE_NUMBER_INT:
@@ -136,12 +137,11 @@ public class PaymentAppliedEvent {
                             // Intentar como días desde epoch (truncando el decimal)
                             long days = (long) doubleValue;
                             LocalDate date = LocalDate.ofEpochDay(days);
-                            // Usar la fecha recibida pero con la hora actual para registrar el momento del procesamiento
-                            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-                            return date.atTime(now.toLocalTime());
+                            // Usar la fecha recibida pero con la hora actual UTC
+                            return date.atStartOfDay(ZoneOffset.UTC);
                         } else if (doubleValue >= MILLIS_THRESHOLD) {
                             // Tratar como milisegundos (puede tener decimales)
-                            return LocalDateTime.ofInstant(Instant.ofEpochMilli((long) doubleValue), ZoneOffset.UTC);
+                            return ZonedDateTime.ofInstant(Instant.ofEpochMilli((long) doubleValue), ZoneOffset.UTC);
                         } else {
                             return fallbackToNow();
                         }
@@ -159,49 +159,45 @@ public class PaymentAppliedEvent {
             }
         }
 
-        private LocalDateTime parseFromNumber(long numericValue) {
-            // Si el número es muy pequeño, probablemente son días desde el epoch (formato LocalDate)
-            // o un error de serialización. Valores menores a 1000000000 (aprox 1970-01-12) 
+        private ZonedDateTime parseFromNumber(long numericValue) {
+            // Si el número es muy pequeño, probablemente son días desde el epoch (formato
+            // LocalDate)
+            // o un error de serialización. Valores menores a 1000000000 (aprox 1970-01-12)
             // no pueden ser milisegundos válidos para fechas recientes
             if (numericValue < MILLIS_THRESHOLD && numericValue >= 0) {
                 // Tratar como días desde el epoch (1970-01-01)
                 // Esto maneja el caso cuando LocalDate se serializa como días desde epoch
-                // Usar la fecha recibida pero con la hora actual para registrar el momento del procesamiento
                 LocalDate date = LocalDate.ofEpochDay(numericValue);
-                LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-                return date.atTime(now.toLocalTime());
+                return date.atStartOfDay(ZoneOffset.UTC);
             } else if (numericValue < 0) {
                 // Números negativos no son válidos para fechas, usar fallback
                 return fallbackToNow();
             } else {
                 // Tratar como milisegundos desde el epoch
-                return LocalDateTime.ofInstant(Instant.ofEpochMilli(numericValue), ZoneOffset.UTC);
+                return ZonedDateTime.ofInstant(Instant.ofEpochMilli(numericValue), ZoneOffset.UTC);
             }
         }
 
-        private LocalDateTime parseFromArray(JsonNode arrayNode) {
+        private ZonedDateTime parseFromArray(JsonNode arrayNode) {
             if (!arrayNode.isArray() || arrayNode.size() < 3) {
                 return fallbackToNow();
             }
-            
+
             // Jackson serializa LocalDate como [año, mes, día]
             try {
                 int year = arrayNode.get(0).asInt();
                 int month = arrayNode.get(1).asInt();
                 int day = arrayNode.get(2).asInt();
                 LocalDate date = LocalDate.of(year, month, day);
-                // Usar la fecha recibida pero con la hora actual para registrar el momento del procesamiento
-                LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-                return date.atTime(now.toLocalTime());
+                return date.atStartOfDay(ZoneOffset.UTC);
             } catch (Exception e) {
                 return fallbackToNow();
             }
         }
 
-        private LocalDateTime parseFromObject(JsonNode node) {
-            JsonNode valueNode = node.has("$date") ? node.get("$date") : 
-                                node.has("date") ? node.get("date") : node;
-            
+        private ZonedDateTime parseFromObject(JsonNode node) {
+            JsonNode valueNode = node.has("$date") ? node.get("$date") : node.has("date") ? node.get("date") : node;
+
             if (valueNode.isNumber()) {
                 return parseFromNumber(valueNode.longValue());
             }
@@ -211,35 +207,42 @@ public class PaymentAppliedEvent {
             return fallbackToNow();
         }
 
-        private LocalDateTime parseFromString(String value) {
+        private ZonedDateTime parseFromString(String value) {
             if (value == null || value.isBlank()) {
                 return fallbackToNow();
             }
-            
-            // Intentar parsear como ISO_DATE_TIME (con hora)
+
+            // Intentar parsear como ISO_DATE_TIME (con hora y posible offset)
             try {
-                return OffsetDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME).toLocalDateTime();
+                return ZonedDateTime.parse(value, DateTimeFormatter.ISO_ZONED_DATE_TIME);
             } catch (Exception ignored) {
             }
-            
+
+            // Intentar parsear como ISO_DATE_TIME (sin zona explícita, asumir UTC)
+            try {
+                return OffsetDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME).toZonedDateTime();
+            } catch (Exception ignored) {
+            }
+
             // Intentar parsear como ISO_LOCAL_DATE_TIME (sin zona horaria)
             try {
-                return LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                return java.time.LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        .atZone(ZoneOffset.UTC);
             } catch (Exception ignored) {
             }
-            
+
             // Intentar parsear como LocalDate (solo fecha, sin hora)
             try {
                 LocalDate date = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
-                return date.atStartOfDay();
+                return date.atStartOfDay(ZoneOffset.UTC);
             } catch (Exception ignored) {
             }
-            
+
             return fallbackToNow();
         }
 
-        private LocalDateTime fallbackToNow() {
-            return LocalDateTime.now(ZoneOffset.UTC);
+        private ZonedDateTime fallbackToNow() {
+            return ZonedDateTime.now(ZoneOffset.UTC);
         }
     }
 }

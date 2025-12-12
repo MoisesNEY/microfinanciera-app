@@ -4,19 +4,23 @@ package com.microfinance.accounting_microservice.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "journal_entries")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class JournalEntry {
     @Id
     private UUID id;
 
     @PrePersist
-    public void ensureId(){
-        if (this.id == null) this.id = UUID.randomUUID();
+    public void ensureId() {
+        if (this.id == null)
+            this.id = UUID.randomUUID();
     }
 
     @Column(name = "transaction_id", nullable = false)
@@ -32,7 +36,7 @@ public class JournalEntry {
     private BigDecimal creditAmount;
 
     @Column(name = "entry_date", nullable = false)
-    private LocalDateTime entryDate;
+    private ZonedDateTime entryDate;
 
     @Builder.Default
     @Column(name = "deleted", nullable = false)

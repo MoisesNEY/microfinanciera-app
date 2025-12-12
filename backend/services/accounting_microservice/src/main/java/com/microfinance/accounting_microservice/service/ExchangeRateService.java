@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +71,7 @@ public class ExchangeRateService {
                 .buyRate(bankResult != null ? bankResult.buy : null)
                 .sellRate(bankResult != null ? bankResult.sell : null)
                 .bankSource(bankResult != null ? bankResult.bankName : "Desconocido")
-                .lastUpdate(LocalDateTime.now())
+                .lastUpdate(ZonedDateTime.now())
                 .status(status)
                 .build();
     }

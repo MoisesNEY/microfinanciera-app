@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,18 +37,21 @@ public class LoanScheduleService {
         List<LoanSchedule> schedules = AmortizationCalculator.buildSchedule(loan); // Nuevo: interes sobre saldo
         return repo.saveAll(schedules);
     }
+
     public List<LoanSchedule> byLoan(UUID loanId) {
         return repo.findByLoanIdOrderByInstallmentNo(loanId); // Nuevo: filtro por prestamo, orden cuotas
     }
+
     public LoanSchedule one(UUID id) {
         return repo.findById(id).orElseThrow();
     }
+
     // Método auxiliar para buscar por ID y estado deleted
     public LoanSchedule findByIdAndDeleted(UUID id, boolean deleted) {
         return repo.findByIdAndDeleted(id, deleted)
-                .orElseThrow(() -> new RuntimeException("Cronograma no encontrado con id: " + id + " y eliminado: " + deleted));
+                .orElseThrow(() -> new RuntimeException(
+                        "Cronograma no encontrado con id: " + id + " y eliminado: " + deleted));
     }
-
 
     public LoanSchedule create(LoanScheduleDTOs.Create dto) {
         LoanSchedule s = new LoanSchedule();
@@ -66,7 +69,7 @@ public class LoanScheduleService {
     }
 
     public LoanSchedule update(UUID id, LoanScheduleDTOs.Create dto) {
-        //  Usar el método auxiliar en lugar de one(id, false)
+        // Usar el método auxiliar en lugar de one(id, false)
         LoanSchedule s = findByIdAndDeleted(id, false);
         s.setLoanId(dto.loanId());
         s.setInstallmentNo(dto.installmentNo());
@@ -91,10 +94,11 @@ public class LoanScheduleService {
         }
         // Marcar como eliminado
         s.setDeleted(true);
-        s.setDeletedAt(LocalDateTime.now());
+        s.setDeletedAt(ZonedDateTime.now());
         // Guardar el cambio
         repo.save(s);
     }
+
     public void Activate(UUID id) {
         // Buscar el cronograma eliminado
         LoanSchedule s = repo.findByIdAndDeleted(id, true)
@@ -108,6 +112,7 @@ public class LoanScheduleService {
         // Guardar el cambio
         repo.save(s);
     }
+
     private BigDecimal defaultZero(BigDecimal value) {
         return value == null ? BigDecimal.ZERO : value;
     }

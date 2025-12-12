@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
@@ -23,7 +25,8 @@ public class PaymentAccountingService {
 
     @Transactional
     public Transaction recordPayment(PaymentAppliedEvent event) {
-        LocalDateTime entryDate = event.getPaymentDate() != null ? event.getPaymentDate() : LocalDateTime.now();
+        ZonedDateTime entryDate = event.getPaymentDate() != null ? event.getPaymentDate()
+                : ZonedDateTime.now(ZoneOffset.UTC);
 
         // 1) Registrar la transaccion principal
         Transaction tx = Transaction.builder()
@@ -36,7 +39,8 @@ public class PaymentAccountingService {
                 .build();
         Transaction savedTx = transactionRepository.save(tx);
 
-        // 2) Partidas dobles: Debito a caja/banco, credito a cuentas por cobrar y a ingresos
+        // 2) Partidas dobles: Debito a caja/banco, credito a cuentas por cobrar y a
+        // ingresos
         BigDecimal total = defaultZero(event.getTotalAmount());
         BigDecimal capital = defaultZero(event.getCapitalAmount());
         BigDecimal interest = defaultZero(event.getInterestAmount());

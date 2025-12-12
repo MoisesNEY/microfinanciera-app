@@ -3,7 +3,7 @@ package com.microfinance.loan_microservice.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
@@ -19,7 +19,10 @@ public class LoanProduct {
   private UUID id;
 
   @PrePersist
-  public void prePersist() { if (id == null) id = UUID.randomUUID(); }
+  public void prePersist() {
+    if (id == null)
+      id = UUID.randomUUID();
+  }
 
   @Column(nullable = false, length = 100)
   private String name;
@@ -53,5 +56,5 @@ public class LoanProduct {
   @Builder.Default
   @Column(nullable = false)
   private boolean deleted = false;
-  private LocalDateTime deletedAt;
+  private ZonedDateTime deletedAt;
 }

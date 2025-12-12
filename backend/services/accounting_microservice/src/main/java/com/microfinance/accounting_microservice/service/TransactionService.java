@@ -8,7 +8,7 @@ import com.microfinance.accounting_microservice.repository.TransactionRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,7 +49,7 @@ public class TransactionService {
     public TransactionResponseDTO update(UUID id, TransactionRequestDTO dto) {
         Transaction transaction = transactionRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
-        
+
         transaction.setTransactionType(TransactionType.valueOf(dto.getTransactionType()));
         transaction.setRelatedEntityId(dto.getRelatedEntityId());
         transaction.setAmount(dto.getAmount());
@@ -63,7 +63,7 @@ public class TransactionService {
     public void delete(UUID id) {
         Transaction transaction = transactionRepository.findByIdAndDeleted(id, false)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
-       // Validar que no esté ya eliminado
+        // Validar que no esté ya eliminado
         if (transaction.isDeleted()) {
             throw new IllegalStateException("La transaccion con id " + id + " ya está inactivo");
         }
@@ -86,13 +86,13 @@ public class TransactionService {
     }
 
     private TransactionResponseDTO toDTO(Transaction transaction) {
-    return TransactionResponseDTO.builder()
-            .id(transaction.getId())
-            .transactionType(transaction.getTransactionType().name())
-            //.relatedEntityId(transaction.getRelatedEntityId()) ← QUITAR ESTA LÍNEA
-            .amount(transaction.getAmount())
-            .transactionDate(transaction.getTransactionDate())
-            .description(transaction.getDescription())
-            .build();
+        return TransactionResponseDTO.builder()
+                .id(transaction.getId())
+                .transactionType(transaction.getTransactionType().name())
+                // .relatedEntityId(transaction.getRelatedEntityId()) ← QUITAR ESTA LÍNEA
+                .amount(transaction.getAmount())
+                .transactionDate(transaction.getTransactionDate())
+                .description(transaction.getDescription())
+                .build();
     }
 }

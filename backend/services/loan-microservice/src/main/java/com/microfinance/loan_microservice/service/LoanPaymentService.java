@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +28,8 @@ public class LoanPaymentService {
     private final AccountingClient accountingClient;
     private static final MathContext MC = new MathContext(12, RoundingMode.HALF_UP);
 
-    public LoanPaymentService(LoanPaymentRepository repo, LoanRepository loanRepo, LoanScheduleRepository scheduleRepo, AccountingClient accountingClient) {
+    public LoanPaymentService(LoanPaymentRepository repo, LoanRepository loanRepo, LoanScheduleRepository scheduleRepo,
+            AccountingClient accountingClient) {
         this.repo = repo;
         this.loanRepo = loanRepo;
         this.scheduleRepo = scheduleRepo;
@@ -53,7 +54,8 @@ public class LoanPaymentService {
         String tokenSolo = bearerToken.replaceFirst("(?i)^Bearer ", "");
         Loan loan = loanRepo.findByIdAndDeleted(dto.loanId(), false)
                 .orElseThrow(() -> new RuntimeException("Loan not found with id: " + dto.loanId()));
-        AppliedBreakdown breakdown = applyPayment(loan, dto); // Nuevo: aplicar pago a cuotas con mora sobre capital vencido
+        AppliedBreakdown breakdown = applyPayment(loan, dto); // Nuevo: aplicar pago a cuotas con mora sobre capital
+                                                              // vencido
         LoanPayment p = new LoanPayment();
         p.setLoanId(dto.loanId());
         p.setInstallmentId(dto.installmentId());
@@ -63,16 +65,15 @@ public class LoanPaymentService {
         p.setReference(dto.reference());
         LoanPayment saved = repo.save(p);
         accountingClient.sendPaymentApplied(
-            saved.getId(),
-            loan.getId(),
-            breakdown.capital(),
-            breakdown.interest(),
-            breakdown.moratory(),
-            breakdown.total(),
-            dto.paymentDate(),
-            "Pago de prestamo " + loan.getId(),
-            tokenSolo
-        );
+                saved.getId(),
+                loan.getId(),
+                breakdown.capital(),
+                breakdown.interest(),
+                breakdown.moratory(),
+                breakdown.total(),
+                dto.paymentDate(),
+                "Pago de prestamo " + loan.getId(),
+                tokenSolo);
         return saved;
     }
 
@@ -97,7 +98,7 @@ public class LoanPaymentService {
         }
         // Marcar como eliminado
         p.setDeleted(true);
-        p.setDeletedAt(LocalDateTime.now());
+        p.setDeletedAt(ZonedDateTime.now());
         // Guardar el cambio
         repo.save(p);
     }
@@ -118,12 +119,13 @@ public class LoanPaymentService {
 
     private AppliedBreakdown applyPayment(Loan loan, LoanPaymentDTOs.Create dto) {
         List<LoanSchedule> schedules = scheduleRepo.findByLoanIdOrderByInstallmentNo(dto.loanId());
-        if (schedules.isEmpty()) return new AppliedBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        if (schedules.isEmpty())
+            return new AppliedBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
         // Si se envia una cuota especifica, la procesamos primero
         if (dto.installmentId() != null) {
             schedules.sort(Comparator.comparing((LoanSchedule s) -> !s.getId().equals(dto.installmentId()))
-                .thenComparing(LoanSchedule::getInstallmentNo));
+                    .thenComparing(LoanSchedule::getInstallmentNo));
         }
 
         BigDecimal remaining = dto.amount();
@@ -133,13 +135,16 @@ public class LoanPaymentService {
         BigDecimal totalCapital = BigDecimal.ZERO;
 
         for (LoanSchedule s : schedules) {
-            if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
+            if (remaining.compareTo(BigDecimal.ZERO) <= 0)
+                break;
 
             BigDecimal principalOutstanding = s.getPrincipalDue().subtract(s.getPrincipalPaid(), MC);
-            if (principalOutstanding.compareTo(BigDecimal.ZERO) < 0) principalOutstanding = BigDecimal.ZERO;
+            if (principalOutstanding.compareTo(BigDecimal.ZERO) < 0)
+                principalOutstanding = BigDecimal.ZERO;
 
             BigDecimal interestOutstanding = s.getInterestDue().subtract(s.getInterestPaid(), MC);
-            if (interestOutstanding.compareTo(BigDecimal.ZERO) < 0) interestOutstanding = BigDecimal.ZERO;
+            if (interestOutstanding.compareTo(BigDecimal.ZERO) < 0)
+                interestOutstanding = BigDecimal.ZERO;
 
             BigDecimal mora = calculateMora(loan, s, paymentDate, principalOutstanding);
 
@@ -165,7 +170,7 @@ public class LoanPaymentService {
             s.setTotalPaid(totalPaid);
 
             boolean fullyPaid = s.getPrincipalPaid().compareTo(s.getPrincipalDue()) >= 0
-                && s.getInterestPaid().compareTo(s.getInterestDue()) >= 0;
+                    && s.getInterestPaid().compareTo(s.getInterestDue()) >= 0;
 
             if (fullyPaid) {
                 s.setStatus("PAGADA");
@@ -183,20 +188,24 @@ public class LoanPaymentService {
         return new AppliedBreakdown(totalCapital, totalInterest, totalMora, totalApplied);
     }
 
-    private BigDecimal calculateMora(Loan loan, LoanSchedule schedule, LocalDate paymentDate, BigDecimal principalOutstanding) {
-        if (principalOutstanding.compareTo(BigDecimal.ZERO) <= 0) return BigDecimal.ZERO;
-        if (!paymentDate.isAfter(schedule.getDueDate())) return BigDecimal.ZERO;
+    private BigDecimal calculateMora(Loan loan, LoanSchedule schedule, LocalDate paymentDate,
+            BigDecimal principalOutstanding) {
+        if (principalOutstanding.compareTo(BigDecimal.ZERO) <= 0)
+            return BigDecimal.ZERO;
+        if (!paymentDate.isAfter(schedule.getDueDate()))
+            return BigDecimal.ZERO;
         long daysLate = ChronoUnit.DAYS.between(schedule.getDueDate(), paymentDate);
-        if (daysLate <= 0) return BigDecimal.ZERO;
+        if (daysLate <= 0)
+            return BigDecimal.ZERO;
 
         BigDecimal dailyMoratoryRate = loan.getMoratoryRate()
-            .divide(BigDecimal.valueOf(100), MC)
-            .divide(BigDecimal.valueOf(365), MC);
+                .divide(BigDecimal.valueOf(100), MC)
+                .divide(BigDecimal.valueOf(365), MC);
 
         return principalOutstanding
-            .multiply(dailyMoratoryRate, MC)
-            .multiply(BigDecimal.valueOf(daysLate), MC)
-            .setScale(2, RoundingMode.HALF_UP);
+                .multiply(dailyMoratoryRate, MC)
+                .multiply(BigDecimal.valueOf(daysLate), MC)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private void refreshLoanStatus(Loan loan) {

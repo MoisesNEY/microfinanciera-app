@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
@@ -21,14 +21,16 @@ public class Loan {
 
   @PrePersist
   public void prePersist() {
-    if (id == null) id = UUID.randomUUID();
-    if (createdAt == null) createdAt = LocalDateTime.now();
+    if (id == null)
+      id = UUID.randomUUID();
+    if (createdAt == null)
+      createdAt = ZonedDateTime.now();
     updatedAt = createdAt;
   }
 
   @PreUpdate
   public void preUpdate() {
-    updatedAt = LocalDateTime.now();
+    updatedAt = ZonedDateTime.now();
   }
 
   @Column(nullable = false)
@@ -69,14 +71,14 @@ public class Loan {
   private String sectorEconomico;
 
   @Column(nullable = false)
-  private LocalDateTime createdAt; // Nuevo: trazabilidad legal
+  private ZonedDateTime createdAt; // Nuevo: trazabilidad legal
 
   @Column(nullable = false)
-  private LocalDateTime updatedAt; // Nuevo: trazabilidad legal
+  private ZonedDateTime updatedAt; // Nuevo: trazabilidad legal
 
   @Builder.Default
   @Column(nullable = false)
   private boolean deleted = false;
-  private LocalDateTime deletedAt;
+  private ZonedDateTime deletedAt;
 
 }

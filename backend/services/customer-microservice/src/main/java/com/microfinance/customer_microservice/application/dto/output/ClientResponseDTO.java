@@ -1,7 +1,7 @@
 package com.microfinance.customer_microservice.application.dto.output;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,9 +33,9 @@ public class ClientResponseDTO {
     private Marital_Status maritalStatus;
     private String economicActivity;
     private boolean active;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
+
     private List<AddressResponseDTO> addresses;
     private List<ContactInfoResponseDTO> contactInfoList;
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
@@ -20,7 +20,10 @@ public class LoanPayment {
   private UUID id;
 
   @PrePersist
-  public void prePersist() { if (id == null) id = UUID.randomUUID(); }
+  public void prePersist() {
+    if (id == null)
+      id = UUID.randomUUID();
+  }
 
   @Column(nullable = false)
   private UUID loanId; // Nuevo: vínculo obligatorio al préstamo
@@ -43,5 +46,5 @@ public class LoanPayment {
   @Builder.Default
   @Column(nullable = false)
   private boolean deleted = false;
-  private LocalDateTime deletedAt;
+  private ZonedDateTime deletedAt;
 }

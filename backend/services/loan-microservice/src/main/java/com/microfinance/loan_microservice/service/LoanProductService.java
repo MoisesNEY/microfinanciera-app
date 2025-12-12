@@ -7,7 +7,7 @@ import com.microfinance.loan_microservice.repository.LoanProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,7 +70,7 @@ public class LoanProductService {
 
         // Marcar como eliminado
         product.setDeleted(true);
-        product.setDeletedAt(LocalDateTime.now());
+        product.setDeletedAt(ZonedDateTime.now());
 
         // Guardar el cambio
         repo.save(product);
@@ -92,7 +92,8 @@ public class LoanProductService {
     }
 
     private void validateMoratoryRate(BigDecimal interestRate, BigDecimal moratoryRate) {
-        if (interestRate == null || moratoryRate == null) return;
+        if (interestRate == null || moratoryRate == null)
+            return;
         BigDecimal maxAllowed = interestRate.multiply(BigDecimal.valueOf(0.25));
         if (moratoryRate.compareTo(maxAllowed) > 0) {
             throw new IllegalArgumentException("La tasa moratoria no puede ser mayor al 25% de la tasa corriente");

@@ -4,12 +4,12 @@ package com.microfinance.accounting_microservice.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "transactions")
-@Data 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,8 +18,9 @@ public class Transaction {
     private UUID id;
 
     @PrePersist
-    public void ensureId(){
-        if (this.id == null) this.id = UUID.randomUUID();
+    public void ensureId() {
+        if (this.id == null)
+            this.id = UUID.randomUUID();
     }
 
     @Enumerated(EnumType.STRING)
@@ -32,7 +33,7 @@ public class Transaction {
     private BigDecimal amount;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDateTime transactionDate;
+    private ZonedDateTime transactionDate;
 
     private String description;
 

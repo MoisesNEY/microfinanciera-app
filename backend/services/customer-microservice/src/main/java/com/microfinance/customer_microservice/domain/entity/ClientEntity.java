@@ -1,7 +1,7 @@
 package com.microfinance.customer_microservice.domain.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import com.microfinance.customer_microservice.domain.enums.DocumentType;
@@ -69,30 +69,30 @@ public class ClientEntity {
     @JoinColumn(name = "occupation_id", nullable = false)
     private OccupationEntity occupation;
 
-    @Enumerated(EnumType.STRING)    
+    @Enumerated(EnumType.STRING)
     @Column(name = "marital_status", nullable = true)
     private Marital_Status maritalStatus;
 
-    @Column(name ="economic_activity", nullable = false)
+    @Column(name = "economic_activity", nullable = false)
     private String economicActivity;
 
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private ZonedDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private ZonedDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = ZonedDateTime.now();
+        this.updatedAt = ZonedDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = ZonedDateTime.now();
     }
 }
