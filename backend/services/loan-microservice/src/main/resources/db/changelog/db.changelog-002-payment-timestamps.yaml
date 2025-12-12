@@ -1,0 +1,26 @@
+databaseChangeLog:
+  # =========================
+  # Add timestamp fields to loan_payments
+  # =========================
+  - changeSet:
+      id: 011-add-timestamps-to-loan-payments
+      author: equipo
+      changes:
+        - addColumn:
+            tableName: loan_payments
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: true
+        - sql:
+            dbms: postgresql
+            comment: "Remove default value from created_at after populating existing records"
+            sql: ALTER TABLE loan_payments ALTER COLUMN created_at DROP DEFAULT;

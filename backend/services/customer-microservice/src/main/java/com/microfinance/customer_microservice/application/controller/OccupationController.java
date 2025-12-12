@@ -34,7 +34,7 @@ public class OccupationController {
         return ResponseEntity.ok(occupations);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'analista_riesgo', 'gerente_general', 'subgerente', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'analista_riesgo', 'gerente_general', 'subgerente', 'jefe_creditos', 'reclutador', 'jefe_rrhh', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas', 'cobrador', 'jefe_caja', 'jefe_cobranza')")
     @GetMapping("/{id}")
     public ResponseEntity<OccupationResponseDTO> getById(@PathVariable UUID id) {
         OccupationResponseDTO occupation = occupationService.getById(id);

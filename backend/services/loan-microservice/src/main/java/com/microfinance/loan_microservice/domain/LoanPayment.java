@@ -19,12 +19,6 @@ public class LoanPayment {
   @Id
   private UUID id;
 
-  @PrePersist
-  public void prePersist() {
-    if (id == null)
-      id = UUID.randomUUID();
-  }
-
   @Column(nullable = false)
   private UUID loanId; // Nuevo: vínculo obligatorio al préstamo
 
@@ -43,8 +37,30 @@ public class LoanPayment {
   @Column(length = 100)
   private String reference; // Nuevo: referencia o comprobante
 
+  @Column(nullable = false, updatable = false)
+  private ZonedDateTime createdAt; // Timestamp de creación del pago
+
+  @Column
+  private ZonedDateTime updatedAt; // Timestamp de última actualización
+
   @Builder.Default
   @Column(nullable = false)
   private boolean deleted = false;
+
   private ZonedDateTime deletedAt;
+
+  @PrePersist
+  protected void onCreate() {
+    if (id == null) {
+      id = UUID.randomUUID();
+    }
+    if (createdAt == null) {
+      createdAt = ZonedDateTime.now();
+    }
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = ZonedDateTime.now();
+  }
 }

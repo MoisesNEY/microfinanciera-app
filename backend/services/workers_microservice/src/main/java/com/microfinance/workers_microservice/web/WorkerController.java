@@ -50,7 +50,7 @@ public class WorkerController {
         return service.get(id, status);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_rrhh', 'reclutador', 'jefe_admin', 'gerente_general', 'jefe_cobranza', 'cajero', 'jefe_creditos', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'asesor_credito', 'atencion_cliente', 'supervisor_creditos')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_rrhh', 'reclutador', 'jefe_admin', 'gerente_general', 'jefe_cobranza', 'cajero', 'jefe_creditos', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'asesor_credito', 'atencion_cliente', 'supervisor_creditos', 'cobrador', 'jefe_caja')")
     @GetMapping("/by-keycloak-id/{keycloakId}")
     public WorkerResponse getByKeycloakId(@PathVariable String keycloakId) {
         return service.getByKeycloakId(keycloakId);

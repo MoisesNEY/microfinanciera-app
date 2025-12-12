@@ -110,7 +110,7 @@ public class ChartOfAccountController {
      * @param logicalNameOrCodeOrName Nombre lógico, código o nombre de la cuenta
      * @return DTO de la cuenta encontrada
      */
-    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'asistente_contable', 'jefe_contabilidad', 'auditor_interno', 'jefe_auditoria', 'gerente_general', 'analista_financiero', 'jefe_finanzas', 'tesorero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'asistente_contable', 'jefe_contabilidad', 'auditor_interno', 'jefe_auditoria', 'gerente_general', 'analista_financiero', 'jefe_finanzas', 'tesorero', 'cajero', 'jefe_caja', 'cobrador', 'jefe_cobranza')")
     @GetMapping("/lookup/{logicalNameOrCodeOrName}")
     public ResponseEntity<ChartOfAccountDTO> lookup(@PathVariable String logicalNameOrCodeOrName) {
         return ResponseEntity.ok(chartOfAccountService.findByCodeOrName(logicalNameOrCodeOrName));

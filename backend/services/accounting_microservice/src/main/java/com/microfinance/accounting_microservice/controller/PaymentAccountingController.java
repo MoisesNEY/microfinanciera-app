@@ -23,7 +23,7 @@ public class PaymentAccountingController {
     private final PaymentAccountingService paymentAccountingService;
     private final ObjectMapper objectMapper;
 
-    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'jefe_contabilidad', 'cajero')")
+    @PreAuthorize("hasAnyRole('admin_general', 'contador', 'jefe_contabilidad', 'cajero', 'cobrador', 'jefe_caja', 'jefe_cobranza')")
     @PostMapping("/payment-applied")
     public ResponseEntity<?> recordPayment(@RequestBody String requestBody) {
         try {

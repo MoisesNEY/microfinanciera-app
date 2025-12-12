@@ -34,7 +34,7 @@ public class NationalityController {
         return ResponseEntity.ok(nationalities);
     }
 
-    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'reclutador', 'jefe_rrhh', 'gerente_general', 'subgerente', 'jefe_creditos', 'analista_riesgo', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas')")
+    @PreAuthorize("hasAnyRole('admin_general', 'jefe_admin', 'asesor_credito', 'atencion_cliente', 'reclutador', 'jefe_rrhh', 'gerente_general', 'subgerente', 'jefe_creditos', 'analista_riesgo', 'jefe_finanzas', 'analista_financiero', 'contador', 'asistente_contable', 'jefe_contabilidad', 'tesorero', 'admin_sistemas', 'cobrador', 'jefe_caja', 'jefe_cobranza')")
     @GetMapping("/{id}")
     public ResponseEntity<NationalityResponseDTO> getById(@PathVariable UUID id) {
         NationalityResponseDTO nationality = nationalityService.getById(id);
