@@ -38,6 +38,11 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8085/realms/microfinance-microservice-realm
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=30m,maximumSize=100
+
 
 logging:
   level:
@@ -58,6 +63,21 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+
+# ==========================================
+# ===== CONFIGURACIÓN PARA EXCHANGE RATE SERVICE (NUEVO) =====
+
+exchange-rate:
+  bcn:
+    wsdl-url: "https://servicios.bcn.gob.ni/Tc_Servicio/ServicioTC.asmx?WSDL"
+    timeout: 5000
+  banks:
+    lafise-url: "https://www.lafise.com/blb/"
+    bac-url: "https://www.bac.net/"
+    banpro-url: "https://www.banpro.com.ni/"
+    scraping-timeout: 5000
+  cache:
+    ttl-minutes: 30
 
 # ==========================================
 # Perfil DEV

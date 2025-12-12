@@ -87,6 +87,12 @@ spring:
               predicates:
                 - Path=/api/accounting/**
 
+            # NUEVA RUTA: Exchange Rates
+            - id: accounting_exchange_rates
+              uri: lb://ACCOUNTING-MICROSERVICE
+              predicates:
+                - Path=/api/exchange-rates/**
+
 
             # ============================
             #        CUSTOMER SERVICE
