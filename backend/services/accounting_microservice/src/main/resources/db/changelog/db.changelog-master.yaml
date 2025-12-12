@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: classpath:db/changelog/db.changelog-001-contabilidad.yaml
+  - include:
+      file: classpath:db/changelog/db.changelog-008-fix-logical-names.yaml

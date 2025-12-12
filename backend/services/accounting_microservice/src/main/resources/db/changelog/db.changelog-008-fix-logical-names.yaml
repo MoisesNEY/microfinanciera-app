@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-fix-logical-names
+      author: equipo
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              UPDATE chart_of_accounts SET logical_name = 'CASH_ACCOUNT' WHERE account_code = '1001' AND logical_name IS NULL;
+              UPDATE chart_of_accounts SET logical_name = 'LOAN_RECEIVABLE_ACCOUNT' WHERE account_code = '1002' AND logical_name IS NULL;
+              UPDATE chart_of_accounts SET logical_name = 'INTEREST_INCOME_ACCOUNT' WHERE account_code = '1003' AND logical_name IS NULL;
+              UPDATE chart_of_accounts SET logical_name = 'MORATORY_INCOME_ACCOUNT' WHERE account_code = '1004' AND logical_name IS NULL;

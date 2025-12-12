@@ -4,6 +4,7 @@ import com.microfinance.accounting_microservice.dto.ChartOfAccountDTO;
 import com.microfinance.accounting_microservice.domain.ChartOfAccount;
 import com.microfinance.accounting_microservice.domain.AccountType;
 import com.microfinance.accounting_microservice.repository.ChartOfAccountRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,14 +43,14 @@ public class ChartOfAccountService {
 
     public ChartOfAccountDTO findById(UUID id) {
         ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, false)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Chart of account not found with id: " + id));
         return toDTO(account);
     }
 
     public ChartOfAccountDTO update(UUID id, ChartOfAccountDTO dto) {
         ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, false)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
-        
+                .orElseThrow(() -> new EntityNotFoundException("Chart of account not found with id: " + id));
+
         account.setAccountCode(dto.getAccountCode());
         account.setAccountName(dto.getAccountName());
         account.setLogicalName(dto.getLogicalName());
@@ -62,7 +63,7 @@ public class ChartOfAccountService {
 
     public void delete(UUID id) {
         ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, false)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Chart of account not found with id: " + id));
 
         if (account.isDeleted()) {
             throw new IllegalStateException("La cuenta con id " + id + " ya está inactiva");
@@ -74,7 +75,7 @@ public class ChartOfAccountService {
 
     public void activate(UUID id) {
         ChartOfAccount account = chartOfAccountRepository.findByIdAndDeleted(id, true)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Chart of account not found with id: " + id));
 
         if (!account.isDeleted()) {
             throw new IllegalStateException("El id " + id + " ya está activo");
@@ -89,11 +90,11 @@ public class ChartOfAccountService {
      * 
      * @param accountCode Código de la cuenta
      * @return DTO de la cuenta encontrada
-     * @throws RuntimeException si no se encuentra la cuenta
+     * @throws EntityNotFoundException si no se encuentra la cuenta
      */
     public ChartOfAccountDTO findByCode(String accountCode) {
         ChartOfAccount account = chartOfAccountRepository.findByAccountCodeAndDeleted(accountCode, false)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with code: " + accountCode));
+                .orElseThrow(() -> new EntityNotFoundException("Chart of account not found with code: " + accountCode));
         return toDTO(account);
     }
 
@@ -102,11 +103,11 @@ public class ChartOfAccountService {
      * 
      * @param accountName Nombre de la cuenta
      * @return DTO de la cuenta encontrada
-     * @throws RuntimeException si no se encuentra la cuenta
+     * @throws EntityNotFoundException si no se encuentra la cuenta
      */
     public ChartOfAccountDTO findByName(String accountName) {
         ChartOfAccount account = chartOfAccountRepository.findByAccountNameIgnoreCaseAndDeleted(accountName, false)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with name: " + accountName));
+                .orElseThrow(() -> new EntityNotFoundException("Chart of account not found with name: " + accountName));
         return toDTO(account);
     }
 
@@ -115,11 +116,13 @@ public class ChartOfAccountService {
      * 
      * @param logicalName Nombre lógico de la cuenta (ej: "CASH_ACCOUNT")
      * @return DTO de la cuenta encontrada
-     * @throws RuntimeException si no se encuentra la cuenta
+     * @throws EntityNotFoundException si no se encuentra la cuenta
      */
     public ChartOfAccountDTO findByLogicalName(String logicalName) {
         ChartOfAccount account = chartOfAccountRepository.findByLogicalNameIgnoreCaseAndDeleted(logicalName, false)
-                .orElseThrow(() -> new RuntimeException("Chart of account not found with logical name: " + logicalName));
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                "Chart of account not found with logical name: " + logicalName));
         return toDTO(account);
     }
 
@@ -129,28 +132,32 @@ public class ChartOfAccountService {
      * 
      * @param logicalNameOrCodeOrName Nombre lógico, código o nombre de la cuenta
      * @return DTO de la cuenta encontrada
-     * @throws RuntimeException si no se encuentra la cuenta
+     * @throws EntityNotFoundException si no se encuentra la cuenta
      */
     public ChartOfAccountDTO findByCodeOrName(String logicalNameOrCodeOrName) {
         // 1) Primero intentar por nombre lógico (más semántico)
-        Optional<ChartOfAccount> byLogicalName = chartOfAccountRepository.findByLogicalNameIgnoreCaseAndDeleted(logicalNameOrCodeOrName, false);
+        Optional<ChartOfAccount> byLogicalName = chartOfAccountRepository
+                .findByLogicalNameIgnoreCaseAndDeleted(logicalNameOrCodeOrName, false);
         if (byLogicalName.isPresent()) {
             return toDTO(byLogicalName.get());
         }
-        
+
         // 2) Si no se encuentra por nombre lógico, intentar por código
-        Optional<ChartOfAccount> byCode = chartOfAccountRepository.findByAccountCodeAndDeleted(logicalNameOrCodeOrName, false);
+        Optional<ChartOfAccount> byCode = chartOfAccountRepository.findByAccountCodeAndDeleted(logicalNameOrCodeOrName,
+                false);
         if (byCode.isPresent()) {
             return toDTO(byCode.get());
         }
-        
+
         // 3) Si no se encuentra por código, intentar por nombre
-        Optional<ChartOfAccount> byName = chartOfAccountRepository.findByAccountNameIgnoreCaseAndDeleted(logicalNameOrCodeOrName, false);
+        Optional<ChartOfAccount> byName = chartOfAccountRepository
+                .findByAccountNameIgnoreCaseAndDeleted(logicalNameOrCodeOrName, false);
         if (byName.isPresent()) {
             return toDTO(byName.get());
         }
-        
-        throw new RuntimeException("Chart of account not found with logical name, code or name: " + logicalNameOrCodeOrName);
+
+        throw new EntityNotFoundException(
+                "Chart of account not found with logical name, code or name: " + logicalNameOrCodeOrName);
     }
 
     private ChartOfAccountDTO toDTO(ChartOfAccount account) {
