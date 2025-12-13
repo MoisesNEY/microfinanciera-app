@@ -8,6 +8,10 @@ import java.util.Optional;
 
 public interface JournalEntryRepository extends JpaRepository<JournalEntry, UUID> {
     List<JournalEntry> findAllByDeleted(Boolean deleted);
-    Optional<JournalEntry> findByIdAndDeleted(UUID id, Boolean deleted);
-}
 
+    Optional<JournalEntry> findByIdAndDeleted(UUID id, Boolean deleted);
+
+    @org.springframework.data.jpa.repository.Query("SELECT j.accountId, SUM(j.debitAmount), SUM(j.creditAmount) FROM JournalEntry j WHERE j.entryDate <= :date AND j.deleted = false GROUP BY j.accountId")
+    List<Object[]> getBalancesByDate(
+            @org.springframework.data.repository.query.Param("date") java.time.ZonedDateTime date);
+}
