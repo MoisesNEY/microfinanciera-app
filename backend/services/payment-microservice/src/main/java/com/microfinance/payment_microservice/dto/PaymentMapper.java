@@ -24,6 +24,7 @@ public class PaymentMapper {
         paymentResponse.setId(payment.getId());
         paymentResponse.setLoanId(payment.getLoanId());
         paymentResponse.setPaymentDate(payment.getPaymentDate());
+        paymentResponse.setCreatedAt(payment.getCreatedAt());
         paymentResponse.setAmountPaid(payment.getAmountPaid());
         paymentResponse.setPaymentMethod(payment.getPaymentMethod());
         paymentResponse.setTransactionReference(payment.getTransactionReference());

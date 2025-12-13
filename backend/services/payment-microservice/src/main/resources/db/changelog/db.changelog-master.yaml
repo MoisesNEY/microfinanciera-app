@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: classpath:db/changelog/db.changelog-001-pagos.yaml
+  - include:
+      file: classpath:db/changelog/db.changelog-002-payment-timestamps.yaml

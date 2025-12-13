@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-created-at-to-payments
+      author: eduardo
+      changes:
+        - addColumn:
+            tableName: payments
+            columns:
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true

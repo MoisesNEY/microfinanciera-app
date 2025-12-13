@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,12 +49,13 @@ public class Payment {
     private boolean active = true;
 
     // Constructor vacío
-    public Payment() {}
+    public Payment() {
+    }
 
     // Constructor completo
-    public Payment(UUID loanId, LocalDate paymentDate, BigDecimal amountPaid, 
-                  PaymentMethod paymentMethod, String transactionReference, 
-                  UUID cashierId, PaymentStatus status) {
+    public Payment(UUID loanId, LocalDate paymentDate, BigDecimal amountPaid,
+            PaymentMethod paymentMethod, String transactionReference,
+            UUID cashierId, PaymentStatus status) {
         this.loanId = loanId;
         this.paymentDate = paymentDate;
         this.amountPaid = amountPaid;
@@ -63,30 +67,93 @@ public class Payment {
     }
 
     // Getters y Setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public UUID getLoanId() { return loanId; }
-    public void setLoanId(UUID loanId) { this.loanId = loanId; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public LocalDate getPaymentDate() { return paymentDate; }
-    public void setPaymentDate(LocalDate paymentDate) { this.paymentDate = paymentDate; }
+    public UUID getLoanId() {
+        return loanId;
+    }
 
-    public BigDecimal getAmountPaid() { return amountPaid; }
-    public void setAmountPaid(BigDecimal amountPaid) { this.amountPaid = amountPaid; }
+    public void setLoanId(UUID loanId) {
+        this.loanId = loanId;
+    }
 
-    public PaymentMethod getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(PaymentMethod paymentMethod) { this.paymentMethod = paymentMethod; }
+    public LocalDate getPaymentDate() {
+        return paymentDate;
+    }
 
-    public String getTransactionReference() { return transactionReference; }
-    public void setTransactionReference(String transactionReference) { this.transactionReference = transactionReference; }
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
+    }
 
-    public UUID getCashierId() { return cashierId; }
-    public void setCashierId(UUID cashierId) { this.cashierId = cashierId; }
+    public BigDecimal getAmountPaid() {
+        return amountPaid;
+    }
 
-    public PaymentStatus getStatus() { return status; }
-    public void setStatus(PaymentStatus status) { this.status = status; }
+    public void setAmountPaid(BigDecimal amountPaid) {
+        this.amountPaid = amountPaid;
+    }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getTransactionReference() {
+        return transactionReference;
+    }
+
+    public void setTransactionReference(String transactionReference) {
+        this.transactionReference = transactionReference;
+    }
+
+    public UUID getCashierId() {
+        return cashierId;
+    }
+
+    public void setCashierId(UUID cashierId) {
+        this.cashierId = cashierId;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
+
+    @Column(name = "created_at")
+    private ZonedDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = ZonedDateTime.now(ZoneId.of("America/Managua"));
+        }
+    }
+
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
