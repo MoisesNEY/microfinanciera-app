@@ -19,7 +19,7 @@ public class LoanPaymentClient {
   private final String loanServiceUrl;
 
   public LoanPaymentClient(RestTemplate restTemplate,
-                @Value("${loan.service.url:http://api-gateway:8080}") String loanServiceUrl) {
+      @Value("${loan.service.url:http://api-gateway:8080}") String loanServiceUrl) {
     this.restTemplate = restTemplate;
     this.loanServiceUrl = loanServiceUrl;
   }
@@ -44,11 +44,11 @@ public class LoanPaymentClient {
     HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
     restTemplate.postForEntity(url, request, Void.class);
   }
-    @SuppressWarnings("unused")
-    private void applyPaymentFallback(Payment payment, String bearerToken, Throwable ex) {
-        throw new IllegalStateException(
-                "Loan service no disponible al aplicar pago para loanId " + payment.getLoanId(),
-                ex
-        );
-    }
+
+  @SuppressWarnings("unused")
+  private void applyPaymentFallback(Payment payment, String bearerToken, Throwable ex) {
+    throw new IllegalStateException(
+        "Loan service no disponible al aplicar pago para loanId " + payment.getLoanId(),
+        ex);
+  }
 }

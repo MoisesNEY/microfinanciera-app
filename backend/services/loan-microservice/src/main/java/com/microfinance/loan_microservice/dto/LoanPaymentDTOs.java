@@ -13,6 +13,9 @@ public class LoanPaymentDTOs {
       @NotNull @DecimalMin("0.00") BigDecimal amount, // Nuevo: monto pagado
       @NotBlank String method, // Nuevo: método de pago
       String reference // Nuevo: referencia o comprobante
-  ) {}
-  public record Update(Create data) {}
+  ) {
+  }
+
+  public record Update(Create data) {
+  }
 }

@@ -119,9 +119,13 @@ public class PaymentAppliedEvent {
     }
 
     static class FlexibleZonedDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> {
-        // Umbral para distinguir entre milisegundos y días desde el epoch
-        // 1000000000 ms = ~1970-01-12, cualquier valor menor probablemente son días
-        private static final long MILLIS_THRESHOLD = 1000000000L;
+        // Thresholds to distinguish between Epoch Days, Epoch Seconds, and Epoch Millis
+        // Days: < 100,000 (valid until year ~2243)
+        // Seconds: < 100,000,000,000 (valid until year ~5138)
+        // Millis: >= 100,000,000,000
+        private static final long DAYS_THRESHOLD = 100_000L;
+        private static final long SECONDS_THRESHOLD = 100_000_000_000L;
+        private static final java.time.ZoneId ZONE_ID = java.time.ZoneId.of("America/Managua");
 
         @Override
         public ZonedDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
@@ -130,21 +134,7 @@ public class PaymentAppliedEvent {
                     case VALUE_NUMBER_INT:
                         return parseFromNumber(p.getLongValue());
                     case VALUE_NUMBER_FLOAT:
-                        // Manejar números decimales - si es muy pequeño, probablemente es un error
-                        double doubleValue = p.getDoubleValue();
-                        if (doubleValue < MILLIS_THRESHOLD && doubleValue >= 0) {
-                            // Si es un decimal pequeño, podría ser un error de serialización
-                            // Intentar como días desde epoch (truncando el decimal)
-                            long days = (long) doubleValue;
-                            LocalDate date = LocalDate.ofEpochDay(days);
-                            // Usar la fecha recibida pero con la hora actual UTC
-                            return date.atStartOfDay(ZoneOffset.UTC);
-                        } else if (doubleValue >= MILLIS_THRESHOLD) {
-                            // Tratar como milisegundos (puede tener decimales)
-                            return ZonedDateTime.ofInstant(Instant.ofEpochMilli((long) doubleValue), ZoneOffset.UTC);
-                        } else {
-                            return fallbackToNow();
-                        }
+                        return parseFromNumber(p.getLongValue()); // Treat float timestamp as long (truncate decimals)
                     case VALUE_STRING:
                         return parseFromString(p.getValueAsString());
                     case START_ARRAY:
@@ -160,21 +150,19 @@ public class PaymentAppliedEvent {
         }
 
         private ZonedDateTime parseFromNumber(long numericValue) {
-            // Si el número es muy pequeño, probablemente son días desde el epoch (formato
-            // LocalDate)
-            // o un error de serialización. Valores menores a 1000000000 (aprox 1970-01-12)
-            // no pueden ser milisegundos válidos para fechas recientes
-            if (numericValue < MILLIS_THRESHOLD && numericValue >= 0) {
-                // Tratar como días desde el epoch (1970-01-01)
-                // Esto maneja el caso cuando LocalDate se serializa como días desde epoch
-                LocalDate date = LocalDate.ofEpochDay(numericValue);
-                return date.atStartOfDay(ZoneOffset.UTC);
-            } else if (numericValue < 0) {
-                // Números negativos no son válidos para fechas, usar fallback
+            if (numericValue < 0) {
                 return fallbackToNow();
+            }
+
+            if (numericValue < DAYS_THRESHOLD) {
+                // Treated as Epoch Days
+                return LocalDate.ofEpochDay(numericValue).atStartOfDay(ZONE_ID);
+            } else if (numericValue < SECONDS_THRESHOLD) {
+                // Treated as Epoch Seconds
+                return ZonedDateTime.ofInstant(Instant.ofEpochSecond(numericValue), ZONE_ID);
             } else {
-                // Tratar como milisegundos desde el epoch
-                return ZonedDateTime.ofInstant(Instant.ofEpochMilli(numericValue), ZoneOffset.UTC);
+                // Treated as Epoch Millis
+                return ZonedDateTime.ofInstant(Instant.ofEpochMilli(numericValue), ZONE_ID);
             }
         }
 

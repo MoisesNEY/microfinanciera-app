@@ -71,7 +71,8 @@ public class LoanPaymentService {
                 breakdown.interest(),
                 breakdown.moratory(),
                 breakdown.total(),
-                dto.paymentDate(),
+                dto.paymentDate().atTime(java.time.LocalTime.now(java.time.ZoneId.of("America/Managua")))
+                        .atZone(java.time.ZoneId.of("America/Managua")),
                 "Pago de prestamo " + loan.getId(),
                 tokenSolo);
         return saved;

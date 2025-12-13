@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +37,7 @@ public class AccountingClient {
             BigDecimal interest,
             BigDecimal moratory,
             BigDecimal total,
-            LocalDate paymentDate,
+            ZonedDateTime paymentDate,
             String description,
             String bearerToken) {
         var accounts = props.getAccounts();
@@ -82,7 +82,7 @@ public class AccountingClient {
             BigDecimal interest,
             BigDecimal moratory,
             BigDecimal total,
-            LocalDate paymentDate,
+            ZonedDateTime paymentDate,
             String description,
             String bearerToken,
             Throwable ex) {
